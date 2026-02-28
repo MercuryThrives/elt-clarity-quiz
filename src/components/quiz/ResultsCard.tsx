@@ -58,9 +58,9 @@ export default function ResultsCard({ result, answers }: ResultsCardProps) {
       {result.cta.type === "partner" && (
         <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 mb-8 text-center">
           <p className="text-sm text-amber-800 font-medium">
-            We recommend speaking with a care advisor at{" "}
-            <strong>{result.cta.name}</strong> to explore your options.
-          </p>
+  Your responses suggest it may be helpful to review your care schedule with{" "}
+  <strong>{result.cta.name}</strong> and ensure the current level of support is keeping pace with changing needs.
+</p>
         </div>
       )}
 
@@ -68,9 +68,9 @@ export default function ResultsCard({ result, answers }: ResultsCardProps) {
         <div className="mb-8">
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-center mb-2">
             <p className="text-sm text-rose-800 font-medium">
-              We recommend connecting with{" "}
-              <strong>Elder Life Transitions</strong> for a personalized consultation.
-            </p>
+  If it would be helpful, you can schedule a structured care clarity review with{" "}
+  <strong>Elder Life Transitions</strong> to assess the full picture and determine what level of support will feel sustainable moving forward.
+</p>
           </div>
           {result.cta.showEmailForm && <InlineEmailForm />}
         </div>

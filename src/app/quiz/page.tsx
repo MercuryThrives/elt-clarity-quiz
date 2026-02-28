@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { QUESTIONS } from "@/lib/quiz/questions";
+import { QUESTIONS } from '@/lib/quiz/questions'
 import ProgressBar from "@/components/quiz/ProgressBar";
 import QuestionCard from "@/components/quiz/QuestionCard";
 import Disclaimer from "@/components/quiz/Disclaimer";

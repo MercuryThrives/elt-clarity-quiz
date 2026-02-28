@@ -4,10 +4,10 @@
 import Link from 'next/link';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { normalizePartnerId } from './_lib/partner';
+import { normalizePartnerId } from '@/lib/partner';
 
 // Root-level lib is outside /src
-import { supabaseBrowser } from '../../lib/supabase/browser';
+import { supabaseBrowser } from '@/lib/supabase/browser';
 
 type PublicPartner = {
   id: string;
