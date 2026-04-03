@@ -1,6 +1,12 @@
 'use server';
 
 import { supabaseAdmin } from '@/lib/supabase/admin';
+import { Resend } from 'resend';
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+const NOTIFY_EMAIL = 'dave.johnstone@elderlifetransitions.net';
+const FROM_EMAIL = 'noreply@elderlifetransitions.net';
 
 export async function saveSubmission(
   partnerId: string | null,
@@ -41,10 +47,35 @@ export async function updateSubmissionEmail(
   submissionId: string,
   email: string
 ): Promise<void> {
-  await supabaseAdmin
+  // Save email to DB
+  const { data: submission } = await supabaseAdmin
     .from('submissions')
     .update({ email })
-    .eq('id', submissionId);
+    .eq('id', submissionId)
+    .select('total_score, tier_result, partner_id')
+    .single();
+
+  // Send notification email — fire and forget
+  const score = submission?.total_score ?? '—';
+  const tier = submission?.tier_result ?? '—';
+  const partner = submission?.partner_id ?? 'Direct (no partner)';
+
+  resend.emails.send({
+    from: FROM_EMAIL,
+    to: NOTIFY_EMAIL,
+    subject: `New Care Clarity Review Request`,
+    html: `
+      <p>A new Care Clarity Review request was submitted.</p>
+      <table>
+        <tr><td><strong>Email:</strong></td><td>${email}</td></tr>
+        <tr><td><strong>Score:</strong></td><td>${score}</td></tr>
+        <tr><td><strong>Result:</strong></td><td>${tier}</td></tr>
+        <tr><td><strong>Partner:</strong></td><td>${partner}</td></tr>
+      </table>
+    `,
+  }).catch(() => {
+    // Don't fail the user-facing action if email send fails
+  });
 }
 
 export async function markSubmissionClicked(submissionId: string): Promise<void> {
