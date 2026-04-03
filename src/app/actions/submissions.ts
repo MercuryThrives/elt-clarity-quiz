@@ -60,6 +60,7 @@ export async function updateSubmissionEmail(
   const tier = submission?.tier_result ?? '—';
   const partner = submission?.partner_id ?? 'Direct (no partner)';
 
+  console.log('[Resend] Attempting send to', NOTIFY_EMAIL, 'key present:', !!process.env.RESEND_API_KEY);
   try {
     await resend.emails.send({
       from: FROM_EMAIL,
