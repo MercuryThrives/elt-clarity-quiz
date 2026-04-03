@@ -1,20 +1,24 @@
 "use client";
 
 import { TierResult } from "@/lib/quiz/scoring";
-import { QUESTIONS } from "@/lib/quiz/questions";
+import { QUESTIONS, ANSWER_OPTIONS } from "@/lib/quiz/questions";
 import InlineEmailForm from "./InlineEmailForm";
+import { markSubmissionClicked } from "@/app/actions/submissions";
 
 interface ResultsCardProps {
   result: TierResult;
   answers: Record<string, number>;
+  submissionId: string | null;
 }
 
-// Group questions with score ≥ 3 by category
+const HIGH_CONCERN_THRESHOLD = 3;
+
+// Group questions with score ≥ HIGH_CONCERN_THRESHOLD by category
 function getInsightsByCategory(answers: Record<string, number>) {
   const grouped: Record<string, { text: string; insight: string }[]> = {};
   for (const q of QUESTIONS) {
     const score = answers[q.id];
-    if (score >= 3) {
+    if (score >= HIGH_CONCERN_THRESHOLD) {
       if (!grouped[q.category]) grouped[q.category] = [];
       grouped[q.category].push({ text: q.text, insight: q.insight });
     }
@@ -28,76 +32,111 @@ const TIER_BADGE: Record<number, { label: string; cls: string }> = {
   3: { label: "Tier 3 — Transition Point", cls: "bg-rose-100 text-rose-700" },
 };
 
-export default function ResultsCard({ result, answers }: ResultsCardProps) {
+export default function ResultsCard({ result, answers, submissionId }: ResultsCardProps) {
+  const maxScore = QUESTIONS.length * Math.max(...ANSWER_OPTIONS.map((o) => o.value));
   const insightGroups = getInsightsByCategory(answers);
   const hasInsights = Object.keys(insightGroups).length > 0;
   const badge = TIER_BADGE[result.tier];
 
   return (
     <div className="w-full max-w-2xl mx-auto">
+      {/* Required heading */}
+      <h1 className="text-[28px] font-serif text-stone-800 text-center mb-6">
+        Your Care Clarity Report
+      </h1>
+
       {/* Score header */}
       <div className="text-center mb-8">
         <div className="inline-flex items-center gap-2 mb-4">
-          <span className={`text-xs font-mono tracking-widest uppercase px-3 py-1 rounded-full ${badge.cls}`}>
+          <span
+            className={`text-[18px] font-mono tracking-widest uppercase px-3 py-1 rounded-full ${badge.cls}`}
+          >
             {badge.label}
           </span>
         </div>
-        <div className="flex items-baseline justify-center gap-2 mb-1">
+
+        <div className="flex items-baseline justify-center gap-2 mb-2">
           <span className="text-6xl font-serif font-bold text-stone-800">{result.score}</span>
-          <span className="text-stone-400 text-lg font-mono">/48</span>
+          <span className="text-[18px] text-stone-500 font-mono">/{maxScore}</span>
         </div>
-        <h2 className="text-xl md:text-2xl font-serif text-stone-700 mt-3 leading-snug max-w-lg mx-auto">
+
+        <h2 className="text-[22px] md:text-[24px] font-serif text-stone-700 mt-3 leading-snug max-w-lg mx-auto">
           {result.headline}
         </h2>
-        <p className="text-sm text-stone-500 mt-3 max-w-md mx-auto leading-relaxed">
+
+        <p className="text-[18px] text-stone-600 mt-4 max-w-md mx-auto leading-relaxed">
           {result.body}
         </p>
       </div>
 
       {/* CTA */}
-      {result.cta.type === "partner" && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-5 py-4 mb-8 text-center">
-          <p className="text-sm text-amber-800 font-medium">
-  Your responses suggest it may be helpful to review your care schedule with{" "}
-  <strong>{result.cta.name}</strong> and ensure the current level of support is keeping pace with changing needs.
-</p>
-        </div>
-      )}
+      {result.cta.type === "partner" && (() => {
+        const cta = result.cta as { type: "partner"; name: string; phone: string };
+        return (
+          <div className="mb-8 text-center">
+            <button
+              className="inline-flex items-center justify-center rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[18px] font-medium px-6 py-3 transition-colors"
+              onClick={() => {
+                if (submissionId) markSubmissionClicked(submissionId).catch(() => {});
+                window.location.href = `tel:${cta.phone}`;
+              }}
+            >
+              Call {cta.name}
+            </button>
+          </div>
+        );
+      })()}
 
       {result.cta.type === "elt" && (
         <div className="mb-8">
           <div className="rounded-xl border border-rose-200 bg-rose-50 px-5 py-4 text-center mb-2">
-            <p className="text-sm text-rose-800 font-medium">
-  If it would be helpful, you can schedule a structured care clarity review with{" "}
-  <strong>Elder Life Transitions</strong> to assess the full picture and determine what level of support will feel sustainable moving forward.
-</p>
+            <p className="text-[18px] text-rose-900 font-medium leading-relaxed">
+              You can schedule a Care Clarity Review with{" "}
+              <strong>Elder Life Transitions</strong> to walk through the full situation
+              with someone who has led assisted living and memory care communities.
+              Together we’ll review what is changing, clarify priorities, and identify
+              the most appropriate support options for the next stage.
+            </p>
           </div>
-          {result.cta.showEmailForm && <InlineEmailForm />}
+          {result.cta.showEmailForm && <InlineEmailForm submissionId={submissionId} />}
         </div>
       )}
 
       {/* Insights grouped by category */}
-      {hasInsights && (
-        <div className="mt-6">
-          <h3 className="text-xs font-mono tracking-widest uppercase text-stone-400 mb-4">
-            Areas to Watch
-          </h3>
-          <div className="space-y-4">
-            {Object.entries(insightGroups).map(([category, items]) => (
-              <div key={category} className="rounded-xl border border-stone-100 bg-white px-5 py-4">
-                <span className="inline-block bg-amber-100 text-amber-700 text-xs font-mono tracking-widest px-2 py-0.5 rounded uppercase mb-3">
-                  {category}
-                </span>
-                {items.map((item, i) => (
-                  <p key={i} className="text-xs text-stone-500 leading-relaxed mt-1">
-                    {item.insight}
-                  </p>
-                ))}
-              </div>
+<div className="mt-8">
+  {hasInsights ? (
+    <>
+      <h3 className="text-[18px] font-mono tracking-widest uppercase text-stone-600 mb-4">
+        Patterns Worth Exploring
+      </h3>
+
+      <div className="space-y-4">
+        {Object.entries(insightGroups).map(([category, items]) => (
+          <div
+            key={category}
+            className="rounded-xl border border-stone-100 bg-white px-5 py-4"
+          >
+            <span className="inline-block bg-amber-100 text-amber-800 text-[18px] font-mono tracking-widest px-3 py-1 rounded uppercase mb-3">
+              {category}
+            </span>
+
+            {items.map((item, i) => (
+              <p key={i} className="text-[18px] text-stone-600 leading-relaxed mt-2">
+                {item.insight}
+              </p>
             ))}
           </div>
-        </div>
-      )}
+        ))}
+      </div>
+    </>
+  ) : (
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-center">
+      <p className="text-[18px] text-emerald-900 leading-relaxed">
+        No high-concern areas were flagged in your responses.
+      </p>
+    </div>
+  )}
+</div>
     </div>
   );
 }

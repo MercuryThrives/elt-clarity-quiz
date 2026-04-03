@@ -6,7 +6,6 @@ import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { normalizePartnerId } from '@/lib/partner';
 
-// Root-level lib is outside /src
 import { supabaseBrowser } from '@/lib/supabase/browser';
 
 type PublicPartner = {
@@ -22,12 +21,12 @@ function IntroPageInner() {
 
   const [partner, setPartner] = useState<PublicPartner | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [partnerLogoError, setPartnerLogoError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
     async function run() {
-      // Missing/invalid partner => silent fallback
       if (!partnerId) {
         setPartner(null);
         return;
@@ -43,7 +42,6 @@ function IntroPageInner() {
 
       if (cancelled) return;
 
-      // Any error or no rows => silent fallback
       if (error || !data || data.length === 0) {
         setPartner(null);
         setIsLoading(false);
@@ -60,74 +58,107 @@ function IntroPageInner() {
     };
   }, [partnerId]);
 
+  // Reset logo error state when partner changes
+  useEffect(() => {
+    setPartnerLogoError(false);
+  }, [partnerId]);
+
   const beginHref = partnerId ? `/quiz?partner=${encodeURIComponent(partnerId)}` : '/quiz';
 
+  const partnerLogoSrc = partner?.logo_url ?? null;
+  const showPartnerSection = !!partnerLogoSrc && !partnerLogoError;
+
   return (
-    <main className="min-h-screen bg-white text-zinc-950">
-      <div className="mx-auto w-full max-w-3xl px-5 py-8">
-        <header className="flex flex-col gap-4">
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex min-w-0 items-center gap-3">
-              {partner?.logo_url ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={partner.logo_url}
-                  alt={`${partner.agency_name} logo`}
-                  className="h-10 w-10 rounded-md object-contain"
-                />
-              ) : (
-                <div className="flex h-10 w-10 items-center justify-center rounded-md bg-zinc-100 text-sm font-semibold">
-                  {partner?.agency_name ? partner.agency_name.slice(0, 1).toUpperCase() : 'E'}
-                </div>
-              )}
+    <main className="min-h-screen bg-[#faf9f7] text-stone-800">
 
-              <div className="min-w-0">
-                <div className="text-[18px] font-semibold leading-tight">
-                  {partner?.agency_name ?? 'Elder Life Transitions'}
-                </div>
-                <div className="text-[16px] text-zinc-600">In partnership with</div>
-              </div>
-            </div>
+      {/* Full-width header bar */}
+      <header className="w-full border-b border-stone-200 bg-[#faf9f7]">
+        <div className={`mx-auto flex w-full max-w-5xl items-center gap-6 px-6 py-5 ${showPartnerSection ? 'justify-center' : 'justify-start'}`}>
+          {/* ELT logo */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/elt-logo.png"
+            alt="Elder Life Transitions"
+            className="h-20 w-auto object-contain"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.display = 'none';
+              (e.currentTarget.nextElementSibling as HTMLElement | null)?.removeAttribute('hidden');
+            }}
+          />
+          <span hidden className="font-serif text-stone-800 text-[18px] tracking-tight">
+            Elder Life Transitions
+          </span>
 
-            <div className="flex items-center gap-2">
-              <div className="rounded-md bg-zinc-950 px-3 py-2 text-[16px] font-semibold text-white">
-                ELT
-              </div>
-            </div>
+          {/* Partner branding — centered between logos when present */}
+          {showPartnerSection && (
+            <>
+              <span className="font-serif italic text-stone-400 text-sm">
+                in partnership with
+              </span>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={partnerLogoSrc!}
+                alt={partner?.agency_name ?? '[Partner Agency]'}
+                className="h-20 w-auto max-w-[200px] object-contain"
+                onError={() => setPartnerLogoError(true)}
+              />
+            </>
+          )}
+        </div>
+      </header>
+
+      {/* Page body */}
+      <div className="mx-auto w-full max-w-2xl px-5 py-10">
+
+        {/* Main card */}
+        <div className="rounded-2xl border border-stone-200 bg-white/70 px-7 pt-8 pb-7 shadow-sm">
+          <h1 className="font-serif text-[30px] md:text-[34px] leading-snug text-stone-800 mb-4">
+            Home Care Reflection &amp; Clarity Tool
+          </h1>
+
+          <p className="text-[18px] leading-relaxed text-stone-600 max-w-prose">
+            This short reflection may help you notice patterns worth exploring and consider
+            whether support at home feels aligned with current needs.
+          </p>
+
+          <ul className="mt-6 space-y-2 text-[16px] text-stone-500">
+            <li className="flex items-center gap-2">
+              <span className="text-amber-500">&#10003;</span> 12 questions — takes about 3 minutes
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-amber-500">&#10003;</span> No login required
+            </li>
+            <li className="flex items-center gap-2">
+              <span className="text-amber-500">&#10003;</span> Personalized results at the end
+            </li>
+          </ul>
+
+          <div className="mt-7 flex items-center gap-4">
+            <Link
+              href={beginHref}
+              className="inline-flex h-12 items-center justify-center rounded-xl bg-amber-600 hover:bg-amber-700 px-7 text-[18px] font-medium text-white transition-colors"
+            >
+              Begin
+            </Link>
+
+            {isLoading && (
+              <span className="text-[14px] text-stone-400 font-mono">Loading…</span>
+            )}
           </div>
+        </div>
 
-          <div className="rounded-2xl border border-zinc-200 bg-white p-5 shadow-sm">
-            <h1 className="text-[28px] font-semibold leading-tight">
-              Home Care Reflection &amp; Clarity Tool
-            </h1>
-            <p className="mt-3 text-[18px] leading-7 text-zinc-700">
-              This short reflection may help you notice patterns worth exploring and consider
-              whether support at home feels aligned with current needs.
-            </p>
-
-            <div className="mt-6 flex flex-col gap-3 sm:flex-row">
-              <Link
-                href={beginHref}
-                className="inline-flex h-12 items-center justify-center rounded-xl bg-zinc-950 px-5 text-[18px] font-semibold text-white hover:bg-zinc-800"
-              >
-                Begin
-              </Link>
-
-              <div className="flex h-12 items-center text-[16px] text-zinc-600">
-                {isLoading ? 'Loading partner branding…' : '\u00a0'}
-              </div>
-            </div>
-          </div>
-        </header>
+        {/* Footer note */}
+        <p className="mt-8 text-center text-[13px] text-stone-400 leading-relaxed">
+          This tool is intended for reflection purposes only and does not constitute medical advice.
+        </p>
       </div>
     </main>
   );
 }
 
 export default function IntroPage() {
-  // Fallback can be minimal; keep it calm and non-alarming
   return (
-    <Suspense fallback={<div className="min-h-screen bg-white" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#faf9f7]" />}>
       <IntroPageInner />
     </Suspense>
   );

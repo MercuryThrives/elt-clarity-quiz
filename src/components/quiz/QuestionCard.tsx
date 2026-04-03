@@ -14,7 +14,7 @@ export default function QuestionCard({ question, selected, onSelect, questionNum
   return (
     <div className="w-full max-w-2xl mx-auto">
       <div className="mb-2 flex items-center gap-2">
-        <span className="inline-block bg-amber-100 text-amber-700 text-xs font-mono tracking-widest px-2 py-0.5 rounded uppercase">
+        <span className="inline-block bg-amber-100 text-amber-700 text-[18px] font-mono tracking-widest px-2 py-0.5 rounded uppercase">
           {question.category}
         </span>
       </div>
@@ -39,7 +39,7 @@ export default function QuestionCard({ question, selected, onSelect, questionNum
               <span className={`text-2xl font-serif font-bold mb-1 transition-colors ${isSelected ? "text-amber-600" : "text-stone-400 group-hover:text-amber-400"}`}>
                 {opt.value}
               </span>
-              <span className={`text-xs text-center leading-tight transition-colors ${isSelected ? "text-amber-700 font-medium" : "text-stone-400"}`}>
+              <span className={`text-[18px] text-center leading-tight transition-colors ${isSelected ? "text-amber-700 font-medium" : "text-stone-400"}`}>
                 {opt.label}
               </span>
               {isSelected && (

@@ -1,55 +1,80 @@
 "use client";
 
 import { useState } from "react";
+import { updateSubmissionEmail } from "@/app/actions/submissions";
 
-export default function InlineEmailForm() {
+interface InlineEmailFormProps {
+  submissionId: string | null;
+}
+
+export default function InlineEmailForm({ submissionId }: InlineEmailFormProps) {
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-  function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    if (!email) return;
-    // Submission logic to be implemented in a future batch
-    setSubmitted(true);
+function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  e.preventDefault();
+
+  const form = e.currentTarget;
+  const honeypot = (form.elements.namedItem("company") as HTMLInputElement)?.value;
+
+  if (honeypot) return;
+  if (!email) return;
+
+  if (submissionId) {
+    updateSubmissionEmail(submissionId, email).catch(() => {});
   }
+
+  setSubmitted(true);
+}
 
   if (submitted) {
     return (
-      <div className="mt-4 rounded-xl bg-emerald-50 border border-emerald-200 px-5 py-4 text-sm text-emerald-700 font-medium text-center">
-        Thank you — we’ll reach out soon with next steps.
+      <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-[18px] leading-relaxed text-emerald-900 text-center">
+        Thank you — we’ll be in touch shortly.
       </div>
     );
   }
 
   return (
     <div className="mt-6 rounded-xl border border-stone-200 bg-stone-50 px-5 py-5">
-      <p className="text-sm text-stone-700 mb-1 font-medium">
-        Request a Care Clarity Review
-      </p>
-      <p className="text-sm text-stone-600 mb-3">
-        A focused conversation to review your current support structure and clarify what would feel most sustainable.
+      <p className="mb-4 text-[18px] leading-relaxed text-stone-700">
+        Request a care clarity review with Elder Life Transitions:
       </p>
 
-      <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
-        <input
-          type="email"
-          required
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="your@email.com"
-          className="flex-1 rounded-lg border border-stone-300 bg-white px-4 py-2.5 text-sm text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent"
-        />
-        <button
-          type="submit"
-          className="rounded-lg bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold px-5 py-2.5 transition-colors whitespace-nowrap"
-        >
-          Request Review
-        </button>
-      </form>
+ <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
 
-      <p className="text-xs text-stone-400 mt-2">
-        No obligation. Your information will not be sold or shared.
-      </p>
+  <input
+    type="text"
+    name="company"
+    tabIndex={-1}
+    autoComplete="off"
+    className="hidden"
+  />
+
+  <label htmlFor="email" className="sr-only">
+    Email address
+  </label>
+
+  <input
+    id="email"
+    type="email"
+    required
+    inputMode="email"
+    autoComplete="email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    placeholder="Email address"
+    className="flex-1 rounded-xl border border-stone-300 bg-white px-4 py-3 text-[18px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-300"
+  />
+
+  <button
+    type="submit"
+    className="rounded-xl bg-stone-800 px-6 py-3 text-[18px] font-medium text-white transition-colors hover:bg-stone-900"
+  >
+    Request Review
+  </button>
+
+</form>
     </div>
   );
 }

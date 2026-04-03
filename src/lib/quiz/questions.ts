@@ -21,8 +21,9 @@ export const QUESTIONS: Question[] = [
 ];
 
 export const ANSWER_OPTIONS = [
-  { value: 1, label: "Not at all" },
-  { value: 2, label: "Rarely" },
-  { value: 3, label: "Sometimes" },
-  { value: 4, label: "Often" },
+  { value: 0, label: "Not at all" },
+  { value: 1, label: "Rarely" },
+  { value: 2, label: "Sometimes" },
+  { value: 3, label: "Often" },
+  { value: 4, label: "Very Often" },
 ];
