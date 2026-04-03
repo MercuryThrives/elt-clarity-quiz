@@ -60,22 +60,24 @@ export async function updateSubmissionEmail(
   const tier = submission?.tier_result ?? '—';
   const partner = submission?.partner_id ?? 'Direct (no partner)';
 
-  resend.emails.send({
-    from: FROM_EMAIL,
-    to: NOTIFY_EMAIL,
-    subject: `New Care Clarity Review Request`,
-    html: `
-      <p>A new Care Clarity Review request was submitted.</p>
-      <table>
-        <tr><td><strong>Email:</strong></td><td>${email}</td></tr>
-        <tr><td><strong>Score:</strong></td><td>${score}</td></tr>
-        <tr><td><strong>Result:</strong></td><td>${tier}</td></tr>
-        <tr><td><strong>Partner:</strong></td><td>${partner}</td></tr>
-      </table>
-    `,
-  }).catch((err) => {
+  try {
+    await resend.emails.send({
+      from: FROM_EMAIL,
+      to: NOTIFY_EMAIL,
+      subject: `New Care Clarity Review Request`,
+      html: `
+        <p>A new Care Clarity Review request was submitted.</p>
+        <table>
+          <tr><td><strong>Email:</strong></td><td>${email}</td></tr>
+          <tr><td><strong>Score:</strong></td><td>${score}</td></tr>
+          <tr><td><strong>Result:</strong></td><td>${tier}</td></tr>
+          <tr><td><strong>Partner:</strong></td><td>${partner}</td></tr>
+        </table>
+      `,
+    });
+  } catch (err) {
     console.error('[Resend] Failed to send notification:', err);
-  });
+  }
 }
 
 export async function markSubmissionClicked(submissionId: string): Promise<void> {
