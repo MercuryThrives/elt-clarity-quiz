@@ -57,7 +57,6 @@ export async function updateSubmissionEmail(
   const tier = submission?.tier_result ?? '—';
   const partner = submission?.partner_id ?? 'Direct (no partner)';
 
-  console.log('[Resend] Attempting send, key present:', !!process.env.RESEND_API_KEY);
   try {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
