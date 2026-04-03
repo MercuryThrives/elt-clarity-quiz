@@ -73,8 +73,8 @@ export async function updateSubmissionEmail(
         <tr><td><strong>Partner:</strong></td><td>${partner}</td></tr>
       </table>
     `,
-  }).catch(() => {
-    // Don't fail the user-facing action if email send fails
+  }).catch((err) => {
+    console.error('[Resend] Failed to send notification:', err);
   });
 }
 
