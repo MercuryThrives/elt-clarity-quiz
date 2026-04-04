@@ -8,29 +8,30 @@ interface InlineEmailFormProps {
 }
 
 export default function InlineEmailForm({ submissionId }: InlineEmailFormProps) {
+  const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
 
-function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-  e.preventDefault();
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
 
-  const form = e.currentTarget;
-  const honeypot = (form.elements.namedItem("company") as HTMLInputElement)?.value;
+    const form = e.currentTarget;
+    const honeypot = (form.elements.namedItem("company") as HTMLInputElement)?.value;
 
-  if (honeypot) return;
-  if (!email) return;
+    if (honeypot) return;
+    if (!firstName || !email) return;
 
-  if (submissionId) {
-    updateSubmissionEmail(submissionId, email).catch(() => {});
+    if (submissionId) {
+      updateSubmissionEmail(submissionId, email, firstName).catch(() => {});
+    }
+
+    setSubmitted(true);
   }
-
-  setSubmitted(true);
-}
 
   if (submitted) {
     return (
       <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-[18px] leading-relaxed text-emerald-900 text-center">
-        Thank you — we’ll be in touch shortly.
+        Thank you {firstName} — we'll be in touch shortly.
       </div>
     );
   }
@@ -41,40 +42,51 @@ function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         Request a care clarity review with Elder Life Transitions:
       </p>
 
- <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-3">
 
-  <input
-    type="text"
-    name="company"
-    tabIndex={-1}
-    autoComplete="off"
-    className="hidden"
-  />
+        <input
+          type="text"
+          name="company"
+          tabIndex={-1}
+          autoComplete="off"
+          className="hidden"
+        />
 
-  <label htmlFor="email" className="sr-only">
-    Email address
-  </label>
+        <div className="flex flex-col sm:flex-row gap-3">
+          <label htmlFor="firstName" className="sr-only">First name</label>
+          <input
+            id="firstName"
+            type="text"
+            required
+            autoComplete="given-name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            placeholder="First name"
+            className="flex-1 rounded-xl border border-stone-300 bg-white px-4 py-3 text-[18px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-300"
+          />
 
-  <input
-    id="email"
-    type="email"
-    required
-    inputMode="email"
-    autoComplete="email"
-    value={email}
-    onChange={(e) => setEmail(e.target.value)}
-    placeholder="Email address"
-    className="flex-1 rounded-xl border border-stone-300 bg-white px-4 py-3 text-[18px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-300"
-  />
+          <label htmlFor="email" className="sr-only">Email address</label>
+          <input
+            id="email"
+            type="email"
+            required
+            inputMode="email"
+            autoComplete="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email address"
+            className="flex-1 rounded-xl border border-stone-300 bg-white px-4 py-3 text-[18px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-stone-300"
+          />
+        </div>
 
-  <button
-    type="submit"
-    className="rounded-xl bg-stone-800 px-6 py-3 text-[18px] font-medium text-white transition-colors hover:bg-stone-900"
-  >
-    Request Review
-  </button>
+        <button
+          type="submit"
+          className="rounded-xl bg-stone-800 px-6 py-3 text-[18px] font-medium text-white transition-colors hover:bg-stone-900"
+        >
+          Request Review
+        </button>
 
-</form>
+      </form>
     </div>
   );
 }

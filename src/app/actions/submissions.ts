@@ -42,12 +42,13 @@ export async function saveSubmission(
 
 export async function updateSubmissionEmail(
   submissionId: string,
-  email: string
+  email: string,
+  firstName: string
 ): Promise<void> {
-  // Save email to DB
+  // Save email and name to DB
   const { data: submission } = await supabaseAdmin
     .from('submissions')
-    .update({ email })
+    .update({ email, first_name: firstName })
     .eq('id', submissionId)
     .select('total_score, tier_result, partner_id')
     .single();
@@ -67,10 +68,11 @@ export async function updateSubmissionEmail(
       body: JSON.stringify({
         from: FROM_EMAIL,
         to: NOTIFY_EMAIL,
-        subject: 'New Care Clarity Review Request',
+        subject: `Care Clarity Review Request — ${firstName}`,
         html: `
           <p>A new Care Clarity Review request was submitted.</p>
           <table>
+            <tr><td><strong>Name:</strong></td><td>${firstName}</td></tr>
             <tr><td><strong>Email:</strong></td><td>${email}</td></tr>
             <tr><td><strong>Score:</strong></td><td>${score}</td></tr>
             <tr><td><strong>Result:</strong></td><td>${tier}</td></tr>
@@ -79,8 +81,7 @@ export async function updateSubmissionEmail(
         `,
       }),
     });
-    const json = await res.json();
-    console.log('[Resend] Response:', res.status, JSON.stringify(json));
+    await res.json();
   } catch (err) {
     console.error('[Resend] Fetch error:', err);
   }
