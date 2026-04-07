@@ -8,6 +8,7 @@ import Disclaimer from "@/components/quiz/Disclaimer";
 import { useQuiz } from "@/components/quiz/QuizStore";
 import { saveSubmission } from "@/app/actions/submissions";
 import { normalizePartnerId } from "@/lib/partner";
+import PartnerHeader from "@/components/quiz/PartnerHeader";
 
 function getPartnerFromCookie(): string | null {
   if (typeof document === 'undefined') return null;
@@ -65,13 +66,8 @@ function ResultsPageInner() {
 
   return (
     <main className="min-h-screen bg-[#faf9f7] flex flex-col">
+      <PartnerHeader partnerId={partnerId} />
       <div className="flex-1 flex flex-col items-center px-4 pt-12 pb-4">
-        <div className="mb-10 text-center">
-          <span className="font-serif text-stone-800 text-lg tracking-tight">ELT</span>
-          <span className="font-mono text-[18px] text-stone-700 ml-2 tracking-widest uppercase">
-            Clarity Quiz
-          </span>
-        </div>
 
         <ResultsCard result={result} answers={answers} submissionId={submissionId} />
 

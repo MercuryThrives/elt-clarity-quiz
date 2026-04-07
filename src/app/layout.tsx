@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Care Clarity Quiz | Elder Life Transitions",
-  description: "Find out if your current care plan still fits. A personalized assessment for families navigating senior care.",
+  title: "Care Clarity Tool | Elder Life Transitions",
+  description: "Find out if your current care plan still fits. A personalized care readiness tool for families navigating senior care.",
 };
 
 export default function RootLayout({
