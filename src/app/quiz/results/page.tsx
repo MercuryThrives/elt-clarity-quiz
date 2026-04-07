@@ -9,12 +9,18 @@ import { useQuiz } from "@/components/quiz/QuizStore";
 import { saveSubmission } from "@/app/actions/submissions";
 import { normalizePartnerId } from "@/lib/partner";
 
+function getPartnerFromCookie(): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.split('; ').find(row => row.startsWith('elt_partner='));
+  return match ? decodeURIComponent(match.split('=')[1]) : null;
+}
+
 function ResultsPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { answers, reset } = useQuiz();
 
-  const partnerId = normalizePartnerId(searchParams.get("partner"));
+  const partnerId = normalizePartnerId(searchParams.get("partner")) ?? getPartnerFromCookie();
 
   const [ready, setReady] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
@@ -77,9 +83,9 @@ function ResultsPageInner() {
           <button
             onClick={() => {
               reset();
-              router.push("/quiz");
+              router.push(partnerId ? `/quiz?partner=${encodeURIComponent(partnerId)}` : "/quiz");
             }}
-            className="text-[18px] text-stone-700 hover:text-stone-600 font-mono tracking-widest uppercase transition-colors"
+            className="text-[18px] text-stone-700 hover:text-stone-600 hover:underline font-mono tracking-widest uppercase transition-colors cursor-pointer"
           >
             ← Retake Quiz
           </button>
