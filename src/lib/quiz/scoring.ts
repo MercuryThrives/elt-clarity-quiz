@@ -9,8 +9,8 @@ export interface TierResult {
 }
 
 export function calculateTier(score: number): Tier {
-  if (score <= 18) return 1;
-  if (score <= 29) return 2;
+  if (score <= 9) return 1;
+  if (score <= 23) return 2;
   return 3;
 }
 

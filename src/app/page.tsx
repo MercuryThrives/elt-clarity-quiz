@@ -5,8 +5,22 @@ import Link from 'next/link';
 import { Suspense, useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { normalizePartnerId } from '@/lib/partner';
-
 import { supabaseBrowser } from '@/lib/supabase/browser';
+
+function getPartnerFromCookie(): string | null {
+  if (typeof document === 'undefined') return null;
+  const match = document.cookie.split('; ').find(row => row.startsWith('elt_partner='));
+  return match ? decodeURIComponent(match.split('=')[1]) : null;
+}
+
+function writePartnerCookie(partnerId: string) {
+  document.cookie = [
+    'elt_partner=' + encodeURIComponent(partnerId),
+    'max-age=' + (120 * 24 * 60 * 60),
+    'path=/',
+    'SameSite=Lax',
+  ].join('; ');
+}
 
 type PublicPartner = {
   id: string;
@@ -17,7 +31,7 @@ type PublicPartner = {
 function IntroPageInner() {
   const sp = useSearchParams();
 
-  const partnerId = useMemo(() => normalizePartnerId(sp.get('partner')), [sp]);
+  const partnerId = useMemo(() => normalizePartnerId(sp.get('partner')) ?? getPartnerFromCookie(), [sp]);
 
   const [partner, setPartner] = useState<PublicPartner | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -50,13 +64,18 @@ function IntroPageInner() {
 
       setPartner(data[0] as PublicPartner);
       setIsLoading(false);
+
+      // Write cookie only when partner came from URL param (not cookie fallback)
+      if (sp.get('partner')) {
+        writePartnerCookie(partnerId!);
+      }
     }
 
     run();
     return () => {
       cancelled = true;
     };
-  }, [partnerId]);
+  }, [partnerId, sp]);
 
   // Reset logo error state when partner changes
   useEffect(() => {
@@ -112,18 +131,19 @@ function IntroPageInner() {
 
         {/* Main card */}
         <div className="rounded-2xl border border-stone-200 bg-white/70 px-7 pt-8 pb-7 shadow-sm">
-          <h1 className="font-serif text-[30px] md:text-[34px] leading-snug text-stone-800 mb-4">
-            Home Care Reflection &amp; Clarity Tool
+          <h1 className="font-serif text-[30px] md:text-[34px] leading-snug text-stone-800 mb-4 text-center">
+            Find Out If Your Current Care Plan Still Fits.
           </h1>
 
           <p className="text-[18px] leading-relaxed text-stone-600 max-w-prose">
-            This short reflection may help you notice patterns worth exploring and consider
-            whether support at home feels aligned with current needs.
+            When you're in the middle of caregiving, it can be hard to see the full picture.
+            Answer 8 questions about what you're observing at home and get a personalized report
+            showing where things stand — and what, if anything, should change.
           </p>
 
           <ul className="mt-6 space-y-2 text-[16px] text-stone-500">
             <li className="flex items-center gap-2">
-              <span className="text-amber-500">&#10003;</span> 12 questions — takes about 3 minutes
+              <span className="text-amber-500">&#10003;</span> 8 questions — takes about 2 minutes
             </li>
             <li className="flex items-center gap-2">
               <span className="text-amber-500">&#10003;</span> No login required

@@ -21,34 +21,65 @@ export default function QuestionCard({ question, selected, onSelect, questionNum
       <h2 className="text-xl md:text-2xl font-serif text-stone-800 mb-8 leading-snug">
         {question.text}
       </h2>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {ANSWER_OPTIONS.map((opt) => {
-          const isSelected = selected === opt.value;
-          return (
-            <button
-              key={opt.value}
-              onClick={() => onSelect(opt.value)}
-              className={`
-                group relative flex flex-col items-center justify-center rounded-xl border-2 py-5 px-3 transition-all duration-200 cursor-pointer
-                ${isSelected
-                  ? "border-amber-500 bg-amber-50 shadow-md shadow-amber-100"
-                  : "border-stone-200 bg-white hover:border-amber-300 hover:bg-amber-50/40"
-                }
-              `}
-            >
-              <span className={`text-2xl font-serif font-bold mb-1 transition-colors ${isSelected ? "text-amber-600" : "text-stone-400 group-hover:text-amber-400"}`}>
-                {opt.value}
-              </span>
-              <span className={`text-[18px] text-center leading-tight transition-colors ${isSelected ? "text-amber-700 font-medium" : "text-stone-400"}`}>
-                {opt.label}
-              </span>
-              {isSelected && (
-                <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500" />
-              )}
-            </button>
-          );
-        })}
-      </div>
+      {question.options ? (
+        <div className="flex flex-col gap-3">
+          {question.options.map((opt) => {
+            const isSelected = selected === opt.value;
+            return (
+              <button
+                key={opt.value}
+                onClick={() => onSelect(opt.value)}
+                className={`
+                  group relative flex items-center gap-4 rounded-xl border-2 py-4 px-5 text-left transition-all duration-200 cursor-pointer
+                  ${isSelected
+                    ? "border-amber-500 bg-amber-50 shadow-md shadow-amber-100"
+                    : "border-stone-200 bg-white hover:border-amber-300 hover:bg-amber-50/40"
+                  }
+                `}
+              >
+                <span className={`text-xl font-serif font-bold w-5 shrink-0 transition-colors ${isSelected ? "text-amber-600" : "text-stone-400 group-hover:text-amber-400"}`}>
+                  {opt.value}
+                </span>
+                <span className={`text-[18px] leading-snug transition-colors ${isSelected ? "text-amber-700 font-medium" : "text-stone-600"}`}>
+                  {opt.label}
+                </span>
+                {isSelected && (
+                  <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {ANSWER_OPTIONS.map((opt) => {
+            const isSelected = selected === opt.value;
+            return (
+              <button
+                key={opt.value}
+                onClick={() => onSelect(opt.value)}
+                className={`
+                  group relative flex flex-col items-center justify-center rounded-xl border-2 py-5 px-3 transition-all duration-200 cursor-pointer
+                  ${isSelected
+                    ? "border-amber-500 bg-amber-50 shadow-md shadow-amber-100"
+                    : "border-stone-200 bg-white hover:border-amber-300 hover:bg-amber-50/40"
+                  }
+                `}
+              >
+                <span className={`text-2xl font-serif font-bold mb-1 transition-colors ${isSelected ? "text-amber-600" : "text-stone-400 group-hover:text-amber-400"}`}>
+                  {opt.value}
+                </span>
+                <span className={`text-[18px] text-center leading-tight transition-colors ${isSelected ? "text-amber-700 font-medium" : "text-stone-400"}`}>
+                  {opt.label}
+                </span>
+                {isSelected && (
+                  <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }

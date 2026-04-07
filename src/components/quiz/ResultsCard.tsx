@@ -11,19 +11,40 @@ interface ResultsCardProps {
   submissionId: string | null;
 }
 
-const HIGH_CONCERN_THRESHOLD = 3;
+// Tie-breaking priority: Safety > Caregiver > Night > alphabetical
+const PATTERN_PRIORITY: Record<string, number> = { Safety: 1, Caregiver: 2, Night: 3 };
 
-// Group questions with score ≥ HIGH_CONCERN_THRESHOLD by category
-function getInsightsByCategory(answers: Record<string, number>) {
-  const grouped: Record<string, { text: string; insight: string }[]> = {};
-  for (const q of QUESTIONS) {
-    const score = answers[q.id];
-    if (score >= HIGH_CONCERN_THRESHOLD) {
-      if (!grouped[q.category]) grouped[q.category] = [];
-      grouped[q.category].push({ text: q.text, insight: q.insight });
-    }
+function patternSort(a: { category: string; score: number }, b: { category: string; score: number }) {
+  if (b.score !== a.score) return b.score - a.score;
+  const pa = PATTERN_PRIORITY[a.category] ?? 99;
+  const pb = PATTERN_PRIORITY[b.category] ?? 99;
+  if (pa !== pb) return pa - pb;
+  return a.category.localeCompare(b.category);
+}
+
+// Show categories where score >= 50% of max (2+). Always show 3–4 cards.
+// Returns null if all scores are 0 (triggers replacement line).
+function getFilteredInsights(answers: Record<string, number>): { category: string; insight: string }[] | null {
+  const scored = QUESTIONS.map(q => ({ category: q.category, insight: q.insight, score: answers[q.id] ?? 0 }));
+
+  if (scored.every(c => c.score === 0)) return null;
+
+  // Overview is a scoring signal only — never shown as a Patterns card
+  const EXCLUDED_FROM_PATTERNS = ['Overview'];
+  const scoredFiltered = scored.filter(c => !EXCLUDED_FROM_PATTERNS.includes(c.category));
+
+  const qualifying = scoredFiltered.filter(c => c.score >= 2);
+
+  let toShow = qualifying;
+  if (qualifying.length < 3) {
+    const qualifyingCategories = new Set(qualifying.map(c => c.category));
+    const remainder = scoredFiltered
+      .filter(c => !qualifyingCategories.has(c.category))
+      .sort(patternSort);
+    toShow = [...qualifying, ...remainder].slice(0, 3);
   }
-  return grouped;
+
+  return toShow.sort(patternSort).slice(0, 4);
 }
 
 const TIER_BADGE: Record<number, { label: string; cls: string }> = {
@@ -34,8 +55,7 @@ const TIER_BADGE: Record<number, { label: string; cls: string }> = {
 
 export default function ResultsCard({ result, answers, submissionId }: ResultsCardProps) {
   const maxScore = QUESTIONS.length * Math.max(...ANSWER_OPTIONS.map((o) => o.value));
-  const insightGroups = getInsightsByCategory(answers);
-  const hasInsights = Object.keys(insightGroups).length > 0;
+  const filteredInsights = getFilteredInsights(answers);
   const badge = TIER_BADGE[result.tier];
 
   return (
@@ -93,7 +113,7 @@ export default function ResultsCard({ result, answers, submissionId }: ResultsCa
             <p className="text-[18px] text-rose-900 font-medium leading-relaxed">
               You can schedule a Care Clarity Review with{" "}
               <strong>Elder Life Transitions</strong> to walk through the full situation
-              with someone who has led assisted living and memory care communities.
+              with a past Executive Director of Independent Living and Assisted Living/Memory Care communities.
               Together we’ll review what is changing, clarify priorities, and identify
               the most appropriate support options for the next stage.
             </p>
@@ -104,14 +124,20 @@ export default function ResultsCard({ result, answers, submissionId }: ResultsCa
 
       {/* Insights grouped by category */}
 <div className="mt-8">
-  {hasInsights ? (
+  {filteredInsights === null ? (
+    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-center">
+      <p className="text-[18px] text-emerald-900 leading-relaxed">
+        Your responses reflect a situation that appears well-supported at this time.
+      </p>
+    </div>
+  ) : (
     <>
       <h3 className="text-[18px] font-mono tracking-widest uppercase text-stone-600 mb-4">
         Patterns Worth Exploring
       </h3>
 
       <div className="space-y-4">
-        {Object.entries(insightGroups).map(([category, items]) => (
+        {filteredInsights.map(({ category, insight }) => (
           <div
             key={category}
             className="rounded-xl border border-stone-100 bg-white px-5 py-4"
@@ -119,22 +145,13 @@ export default function ResultsCard({ result, answers, submissionId }: ResultsCa
             <span className="inline-block bg-amber-100 text-amber-800 text-[18px] font-mono tracking-widest px-3 py-1 rounded uppercase mb-3">
               {category}
             </span>
-
-            {items.map((item, i) => (
-              <p key={i} className="text-[18px] text-stone-600 leading-relaxed mt-2">
-                {item.insight}
-              </p>
-            ))}
+            <p className="text-[18px] text-stone-600 leading-relaxed mt-2">
+              {insight}
+            </p>
           </div>
         ))}
       </div>
     </>
-  ) : (
-    <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 text-center">
-      <p className="text-[18px] text-emerald-900 leading-relaxed">
-        No high-concern areas were flagged in your responses.
-      </p>
-    </div>
   )}
 </div>
     </div>

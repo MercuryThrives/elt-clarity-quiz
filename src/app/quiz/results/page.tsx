@@ -19,6 +19,7 @@ function ResultsPageInner() {
   const [ready, setReady] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
   const [partnerCtaData, setPartnerCtaData] = useState<{ name: string; phone: string } | null>(null);
+  const [copied, setCopied] = useState(false);
   const saved = useRef(false);
 
   useEffect(() => {
@@ -68,15 +69,34 @@ function ResultsPageInner() {
 
         <ResultsCard result={result} answers={answers} submissionId={submissionId} />
 
-        <button
-          onClick={() => {
-            reset();
-            router.push("/quiz");
-          }}
-          className="mt-10 text-[18px] text-stone-700 hover:text-stone-600 font-mono tracking-widest uppercase transition-colors"
-        >
-          ← Retake Quiz
-        </button>
+        <div className="mt-10 flex flex-col items-center gap-3">
+          <p className="text-[13px] text-stone-400 text-center">
+            Care needs evolve. Families who check in quarterly often catch changes earlier.
+          </p>
+
+          <button
+            onClick={() => {
+              reset();
+              router.push("/quiz");
+            }}
+            className="text-[18px] text-stone-700 hover:text-stone-600 font-mono tracking-widest uppercase transition-colors"
+          >
+            ← Retake Quiz
+          </button>
+
+          <button
+            onClick={() => {
+              const url = window.location.origin + (partnerId ? `/?partner=${encodeURIComponent(partnerId)}` : '/');
+              navigator.clipboard.writeText(url).then(() => {
+                setCopied(true);
+                setTimeout(() => setCopied(false), 2000);
+              });
+            }}
+            className="text-[13px] text-stone-400 hover:text-stone-500 transition-colors"
+          >
+            {copied ? 'Link copied!' : 'Save Your Return Link'}
+          </button>
+        </div>
       </div>
       <Disclaimer />
     </main>

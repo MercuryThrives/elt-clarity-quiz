@@ -38,8 +38,11 @@ export default function InlineEmailForm({ submissionId }: InlineEmailFormProps) 
 
   return (
     <div className="mt-6 rounded-xl border border-stone-200 bg-stone-50 px-5 py-5">
-      <p className="mb-4 text-[18px] leading-relaxed text-stone-700">
-        Request a care clarity review with Elder Life Transitions:
+      <p className="mb-2 text-[20px] font-serif text-stone-800">
+        Let's talk through what you're seeing.
+      </p>
+      <p className="mb-4 text-[17px] leading-relaxed text-stone-600">
+        A free 30-minute conversation — no obligation, no pressure. We'll review your results together and identify the most appropriate next step.
       </p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
@@ -81,9 +84,9 @@ export default function InlineEmailForm({ submissionId }: InlineEmailFormProps) 
 
         <button
           type="submit"
-          className="rounded-xl bg-stone-800 px-6 py-3 text-[18px] font-medium text-white transition-colors hover:bg-stone-900"
+          className="rounded-xl bg-amber-600 px-6 py-3 text-[18px] font-medium text-white transition-colors hover:bg-amber-700"
         >
-          Request Review
+          Request My Free Review
         </button>
 
       </form>

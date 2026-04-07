@@ -3,21 +3,53 @@ export interface Question {
   category: string;
   text: string;
   insight: string;
+  options?: { value: number; label: string }[];
 }
 
 export const QUESTIONS: Question[] = [
-  { id: "Q01", category: "Social", text: "How consistently is your loved one engaging in meaningful social interaction?", insight: "Social connection is a vital factor in overall health." },
-  { id: "Q02", category: "Nutrition", text: "Have you noticed changes in eating habits, meal preparation, or food management?", insight: "Changes in eating habits often signal 'Executive Function' shifts." },
-  { id: "Q03", category: "Safety", text: "Has there been a recent fall, near-fall, or noticeable change in mobility?", insight: "A change in mobility often indicates an increased risk of future falls." },
-  { id: "Q04", category: "Support Coverage", text: "Are support needs increasingly occurring outside of currently scheduled care hours?", insight: "Frequent non-emergency calls are a common indicator of caregiver burnout." },
-  { id: "Q05", category: "Environment", text: "Is your loved one avoiding certain rooms or levels of the home due to safety or comfort concerns?", insight: "Avoiding levels of a home suggests the environment may be becoming a barrier." },
-  { id: "Q06", category: "Medical", text: "Is there a consistent and reliable system in place for medications to be taken as prescribed?", insight: "Medication errors are a leading cause of avoidable senior hospitalizations." },
-  { id: "Q07", category: "Night", text: "Are there emerging concerns at night related to anxiety, safety, or supervision?", insight: "Night-time anxiety can lead to sleep deprivation and increased risk." },
-  { id: "Q08", category: "Daily Tasks", text: "Are routine personal care tasks becoming more difficult or inconsistent?", insight: "Declining hygiene suggests that daily tasks may be becoming overwhelming." },
-  { id: "Q09", category: "Resource Alignment", text: "Is the current level of support requiring more time, coordination, or resources than originally anticipated?", insight: "There is often a tipping point where home care costs match the infrastructure of a community." },
-  { id: "Q10", category: "Backup", text: "Is there a clear backup plan if a caregiver or support routine is unexpectedly disrupted?", insight: "Effective care plans usually account for potential caregiver disruptions." },
-  { id: "Q11", category: "Caregiver", text: "Is the primary caregiver experiencing signs of strain, fatigue, or reduced personal capacity?", insight: "A primary caregiver's health is a critical factor in the senior's ongoing stability." },
-  { id: "Q12", category: "Family", text: "Is the family aligned on how evolving care needs should be addressed?", insight: "Alignment among family members is key for a successful care transition." },
+  {
+    id: "Q01",
+    category: "Overview",
+    text: "In the past few months, how would you describe the overall direction of your loved one's situation?",
+    insight: "Reduced social engagement is one of the earliest and most overlooked signals of cognitive and emotional decline — often appearing months before other changes become visible. Isolation compounds quickly once routines break down.",
+    options: [
+      { value: 0, label: "Stable and well-managed" },
+      { value: 1, label: "Mostly okay with a few concerns" },
+      { value: 2, label: "Gradually becoming harder to manage" },
+      { value: 3, label: "Several things are getting harder at once" },
+      { value: 4, label: "We're in or approaching a crisis point" },
+    ],
+  },
+  { id: "Q02", category: "Safety", text: "Has there been a recent fall, near-fall, or noticeable change in mobility?", insight: "Falls and near-falls are the pattern families most commonly underestimate. What looks like a mobility issue is often the first visible sign of broader changes in physical confidence, spatial awareness, and reaction time." },
+  { id: "Q03", category: "Support Coverage", text: "Are support needs increasingly occurring outside of currently scheduled care hours?", insight: "Support needs that spill outside scheduled care hours are a reliable early indicator of a widening gap between current care and actual need. This pattern tends to accelerate, not stabilize." },
+  {
+    id: "Q04",
+    category: "Medical",
+    text: "Is there a consistent and reliable system in place for medications to be taken as prescribed?",
+    insight: "Medication errors are among the leading causes of avoidable senior hospitalizations. When management is inconsistent, it's rarely a memory problem alone — it often reflects a broader need for structured daily support.",
+    options: [
+      { value: 0, label: "Yes, consistently" },
+      { value: 1, label: "Most of the time" },
+      { value: 2, label: "Sometimes" },
+      { value: 3, label: "Rarely" },
+      { value: 4, label: "No clear system in place" },
+    ],
+  },
+  { id: "Q05", category: "Night", text: "Are there emerging concerns at night related to anxiety, safety, or supervision?", insight: "Nighttime anxiety, confusion, or safety concerns are among the most disruptive patterns for families — and among the hardest to manage with scheduled daytime care alone. Sleep deprivation compounds every other challenge." },
+  { id: "Q06", category: "Daily Tasks", text: "Are routine personal care tasks becoming more difficult or inconsistent?", insight: "Declining personal care routines are a sensitive but important signal. When hygiene or grooming becomes inconsistent, it often reflects a combination of physical, cognitive, and motivational changes that are easier to address early than late." },
+  { id: "Q07", category: "Caregiver", text: "Is the primary caregiver experiencing signs of strain, fatigue, or reduced personal capacity?", insight: "The primary caregiver's health is the hidden variable in most care arrangements. When the caregiver is experiencing strain or reduced capacity, the stability of the entire support structure is at risk — often without anyone naming it directly." },
+  {
+    id: "Q08",
+    category: "Family",
+    text: "Is the family aligned on how evolving care needs should be addressed?",
+    insight: "Family alignment is one of the most significant factors in how smoothly a care transition goes. When family members see the situation differently, decisions get delayed — and delay in care transitions rarely benefits the person who needs support.",
+    options: [
+      { value: 0, label: "Yes, we're aligned" },
+      { value: 1, label: "Mostly aligned with some tension" },
+      { value: 2, label: "There are significant differences of opinion" },
+      { value: 3, label: "This topic hasn't really been discussed" },
+    ],
+  },
 ];
 
 export const ANSWER_OPTIONS = [
