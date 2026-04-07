@@ -84,7 +84,7 @@ export default function InlineEmailForm({ submissionId }: InlineEmailFormProps) 
 
         <button
           type="submit"
-          className="rounded-xl bg-amber-600 px-6 py-3 text-[18px] font-medium text-white transition-colors hover:bg-amber-700"
+          className="rounded-xl bg-amber-600 px-6 py-3 text-[18px] font-medium text-white transition-colors hover:bg-amber-700 cursor-pointer"
         >
           Request My Free Review
         </button>

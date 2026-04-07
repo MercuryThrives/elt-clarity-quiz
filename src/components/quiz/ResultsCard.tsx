@@ -95,7 +95,7 @@ export default function ResultsCard({ result, answers, submissionId }: ResultsCa
         return (
           <div className="mb-8 text-center">
             <button
-              className="inline-flex items-center justify-center rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[18px] font-medium px-6 py-3 transition-colors"
+              className="inline-flex items-center justify-center rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[18px] font-medium px-6 py-3 transition-colors cursor-pointer"
               onClick={() => {
                 if (submissionId) markSubmissionClicked(submissionId).catch(() => {});
                 window.location.href = `tel:${cta.phone}`;
