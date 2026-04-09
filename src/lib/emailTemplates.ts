@@ -60,9 +60,9 @@ export function buildFamilyGuideEmail(
           offers a free 30-minute conversation — no obligation, no pressure.
         </p>
         <p style="margin-top: 12px; margin-bottom: 0;">
-          <a href="https://clarity.elderlifetransitions.net"
+          <a href="https://www.elderlifetransitions.net/free-clarity-call"
             style="color: #C4621D; font-weight: 600; text-decoration: none;">
-            Learn more about how we can help &rarr;
+            Schedule your free Care Clarity Review &rarr;
           </a>
         </p>
       </div>
