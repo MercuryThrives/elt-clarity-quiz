@@ -126,12 +126,13 @@ export async function updateSubmissionEmail(
 export async function saveTier2Email(
   submissionId: string,
   email: string,
+  firstName: string,
   topCategories: string[],
   partnerName: string | null,
 ): Promise<void> {
   const { data: submission } = await supabaseAdmin
     .from('submissions')
-    .update({ email })
+    .update({ email, first_name: firstName })
     .eq('id', submissionId)
     .select('total_score, partner_id')
     .single();
@@ -198,6 +199,7 @@ export async function saveTier2Email(
         score,
         topCategories,
         email,
+        familyFirstName: firstName,
         partnerName: partnerAgencyName,
       }),
     });

@@ -87,7 +87,7 @@ function ResultsPageInner() {
           <button
             onClick={() => {
               reset();
-              router.push(partnerId ? `/quiz?partner=${encodeURIComponent(partnerId)}` : "/quiz");
+              router.push(partnerId ? `/?partner=${encodeURIComponent(partnerId)}` : "/");
             }}
             className="text-[18px] text-stone-700 hover:text-stone-600 hover:underline font-mono tracking-widest uppercase transition-colors cursor-pointer"
           >

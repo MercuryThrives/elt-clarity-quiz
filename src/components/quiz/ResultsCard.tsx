@@ -5,6 +5,7 @@ import { TierResult } from "@/lib/quiz/scoring";
 import { QUESTIONS, ANSWER_OPTIONS } from "@/lib/quiz/questions";
 import InlineEmailForm from "./InlineEmailForm";
 import { markSubmissionClicked, saveTier2Email } from "@/app/actions/submissions";
+import { GUIDE_CONTENT } from "@/lib/guideContent";
 
 interface ResultsCardProps {
   result: TierResult;
@@ -63,11 +64,12 @@ interface PatternCardProps {
   insight: string;
   truncate: boolean;
   animate?: boolean;
+  paragraphs?: string[];
 }
 
-function PatternCard({ category, insight, truncate, animate }: PatternCardProps) {
+function PatternCard({ category, insight, truncate, animate, paragraphs }: PatternCardProps) {
   const words = insight.split(' ');
-  const preview = words.slice(0, 45).join(' ') + '…';
+  const preview = words.slice(0, 60).join(' ') + '…';
 
   return (
     <div className={`relative rounded-xl border border-stone-100 bg-white px-5 py-4${animate ? ' animate-fadeIn' : ''}`}>
@@ -75,9 +77,17 @@ function PatternCard({ category, insight, truncate, animate }: PatternCardProps)
         {category}
       </span>
       <div className="relative">
-        <p className="text-[18px] text-stone-600 leading-relaxed mt-2">
-          {truncate ? preview : insight}
-        </p>
+        {paragraphs && !truncate ? (
+          <div className="mt-2 space-y-4">
+            {paragraphs.map((p, i) => (
+              <p key={i} className="text-[18px] text-stone-600 leading-relaxed">{p}</p>
+            ))}
+          </div>
+        ) : (
+          <p className="text-[18px] text-stone-600 leading-relaxed mt-2">
+            {truncate ? preview : insight}
+          </p>
+        )}
         {truncate && (
           <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent" />
         )}
@@ -111,6 +121,7 @@ export default function ResultsCard({
   const filteredInsights = getFilteredInsights(answers);
   const badge = TIER_BADGE[result.tier];
 
+  const [tier2FirstName, setTier2FirstName] = useState('');
   const [tier2Email, setTier2Email] = useState('');
   const [tier2Submitted, setTier2Submitted] = useState(false);
   const [tier2Loading, setTier2Loading] = useState(false);
@@ -118,10 +129,10 @@ export default function ResultsCard({
   const topCategories = filteredInsights?.map(i => i.category) ?? [];
 
   async function handleTier2Submit() {
-    if (!tier2Email || !submissionId) return;
+    if (!tier2FirstName || !tier2Email || !submissionId) return;
     setTier2Loading(true);
     try {
-      await saveTier2Email(submissionId, tier2Email, topCategories, agencyName ?? null);
+      await saveTier2Email(submissionId, tier2Email, tier2FirstName, topCategories, agencyName ?? null);
       setTier2Submitted(true);
     } catch (err) {
       console.error('Tier 2 capture error:', err);
@@ -160,24 +171,6 @@ export default function ResultsCard({
           {result.body}
         </p>
       </div>
-
-      {/* Tier 3: ELT CTA box (unchanged position) */}
-      {result.cta.type === "partner" && (() => {
-        const cta = result.cta as { type: "partner"; name: string; phone: string };
-        return (
-          <div className="mb-8 text-center">
-            <button
-              className="inline-flex items-center justify-center rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[18px] font-medium px-6 py-3 transition-colors cursor-pointer"
-              onClick={() => {
-                if (submissionId) markSubmissionClicked(submissionId).catch(() => {});
-                window.location.href = `tel:${cta.phone}`;
-              }}
-            >
-              Call {cta.name}
-            </button>
-          </div>
-        );
-      })()}
 
       {result.cta.type === "elt" && (
         <div className="mb-8">
@@ -224,6 +217,7 @@ export default function ResultsCard({
                         category={category}
                         insight={insight}
                         truncate={false}
+                        paragraphs={GUIDE_CONTENT[category]?.paragraphs}
                       />
                     );
                   }
@@ -249,6 +243,7 @@ export default function ResultsCard({
                       insight={insight}
                       truncate={false}
                       animate={true}
+                      paragraphs={GUIDE_CONTENT[category]?.paragraphs}
                     />
                   );
                 })}
@@ -275,22 +270,34 @@ export default function ResultsCard({
                     {' '}to help coordinate your care.
                   </p>
 
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <label htmlFor="tier2Email" className="sr-only">Email address</label>
-                    <input
-                      id="tier2Email"
-                      type="email"
-                      placeholder="Email address"
-                      inputMode="email"
-                      autoComplete="email"
-                      value={tier2Email}
-                      onChange={(e) => setTier2Email(e.target.value)}
-                      className="flex-1 rounded-xl border border-stone-300 bg-white px-4 py-3 text-[18px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
-                    />
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-col sm:flex-row gap-3">
+                      <label htmlFor="tier2FirstName" className="sr-only">First name</label>
+                      <input
+                        id="tier2FirstName"
+                        type="text"
+                        placeholder="First name"
+                        autoComplete="given-name"
+                        value={tier2FirstName}
+                        onChange={(e) => setTier2FirstName(e.target.value)}
+                        className="flex-1 rounded-xl border border-stone-300 bg-white px-4 py-3 text-[18px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                      />
+                      <label htmlFor="tier2Email" className="sr-only">Email address</label>
+                      <input
+                        id="tier2Email"
+                        type="email"
+                        placeholder="Email address"
+                        inputMode="email"
+                        autoComplete="email"
+                        value={tier2Email}
+                        onChange={(e) => setTier2Email(e.target.value)}
+                        className="flex-1 rounded-xl border border-stone-300 bg-white px-4 py-3 text-[18px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                      />
+                    </div>
                     <button
                       onClick={handleTier2Submit}
-                      disabled={!tier2Email || tier2Loading}
-                      className="rounded-xl bg-amber-600 px-6 py-3 text-[18px] font-medium text-white transition-colors hover:bg-amber-700 disabled:opacity-50 cursor-pointer"
+                      disabled={!tier2FirstName || !tier2Email || tier2Loading}
+                      className="rounded-xl bg-[#C4621D] px-6 py-3 text-[18px] font-medium text-white transition-colors hover:bg-[#A8521A] disabled:opacity-50 cursor-pointer"
                     >
                       {tier2Loading ? 'Sending…' : 'Send My Guide'}
                     </button>
@@ -323,6 +330,24 @@ export default function ResultsCard({
                   </p>
                 </div>
               )}
+
+              {/* Partner Call CTA — last element in Tier 2, after patterns and email capture */}
+              {result.cta.type === "partner" && (() => {
+                const cta = result.cta as { type: "partner"; name: string; phone: string };
+                return (
+                  <div className="mt-8 text-center">
+                    <button
+                      className="inline-flex items-center justify-center rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-[18px] font-medium px-6 py-3 transition-colors cursor-pointer"
+                      onClick={() => {
+                        if (submissionId) markSubmissionClicked(submissionId).catch(() => {});
+                        window.location.href = `tel:${cta.phone}`;
+                      }}
+                    >
+                      Call {cta.name}
+                    </button>
+                  </div>
+                );
+              })()}
             </>
           )}
         </div>
@@ -344,19 +369,28 @@ export default function ResultsCard({
               </h3>
 
               <div className="space-y-4">
-                {filteredInsights.map(({ category, insight }) => (
-                  <div
-                    key={category}
-                    className="rounded-xl border border-stone-100 bg-white px-5 py-4"
-                  >
-                    <span className="inline-block bg-amber-100 text-amber-800 text-[18px] font-mono tracking-widest px-3 py-1 rounded uppercase mb-3">
-                      {category}
-                    </span>
-                    <p className="text-[18px] text-stone-600 leading-relaxed mt-2">
-                      {insight}
-                    </p>
-                  </div>
-                ))}
+                {filteredInsights.map(({ category, insight }) => {
+                  const paragraphs = GUIDE_CONTENT[category]?.paragraphs;
+                  return (
+                    <div
+                      key={category}
+                      className="rounded-xl border border-stone-100 bg-white px-5 py-4"
+                    >
+                      <span className="inline-block bg-amber-100 text-amber-800 text-[18px] font-mono tracking-widest px-3 py-1 rounded uppercase mb-3">
+                        {category}
+                      </span>
+                      {paragraphs ? (
+                        <div className="mt-2 space-y-4">
+                          {paragraphs.map((p, i) => (
+                            <p key={i} className="text-[18px] text-stone-600 leading-relaxed">{p}</p>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[18px] text-stone-600 leading-relaxed mt-2">{insight}</p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
             </>
           )}
