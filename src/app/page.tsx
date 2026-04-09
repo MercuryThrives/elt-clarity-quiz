@@ -153,6 +153,12 @@ function IntroPageInner() {
             </li>
           </ul>
 
+          <p className="text-xs text-gray-400 mt-4 text-center max-w-md mx-auto">
+            Your responses are confidential. If you arrived through a home care agency
+            partner, your completion and general results may be shared with that agency
+            to support your care.
+          </p>
+
           <div className="mt-7 flex items-center gap-4">
             <Link
               href={beginHref}

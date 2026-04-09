@@ -5,9 +5,15 @@ import { updateSubmissionEmail } from "@/app/actions/submissions";
 
 interface InlineEmailFormProps {
   submissionId: string | null;
+  agencyName?: string | null;
+  topCategories?: string[];
 }
 
-export default function InlineEmailForm({ submissionId }: InlineEmailFormProps) {
+export default function InlineEmailForm({
+  submissionId,
+  agencyName,
+  topCategories = [],
+}: InlineEmailFormProps) {
   const [firstName, setFirstName] = useState("");
   const [email, setEmail] = useState("");
   const [submitted, setSubmitted] = useState(false);
@@ -22,7 +28,7 @@ export default function InlineEmailForm({ submissionId }: InlineEmailFormProps) 
     if (!firstName || !email) return;
 
     if (submissionId) {
-      updateSubmissionEmail(submissionId, email, firstName).catch(() => {});
+      updateSubmissionEmail(submissionId, email, firstName, topCategories).catch(() => {});
     }
 
     setSubmitted(true);
@@ -54,6 +60,15 @@ export default function InlineEmailForm({ submissionId }: InlineEmailFormProps) 
           autoComplete="off"
           className="hidden"
         />
+
+        <p className="text-xs text-gray-400">
+          By submitting this form, you agree that your results and contact information
+          may be shared with{' '}
+          <span className="font-medium">
+            {agencyName ?? 'Elder Life Transitions'}
+          </span>
+          {' '}to help coordinate your care.
+        </p>
 
         <div className="flex flex-col sm:flex-row gap-3">
           <label htmlFor="firstName" className="sr-only">First name</label>

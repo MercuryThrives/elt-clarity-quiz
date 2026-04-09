@@ -25,6 +25,7 @@ function ResultsPageInner() {
 
   const [ready, setReady] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
+  const [agencyName, setAgencyName] = useState<string | null>(null);
   const [partnerCtaData, setPartnerCtaData] = useState<{ name: string; phone: string } | null>(null);
   const [copied, setCopied] = useState(false);
   const saved = useRef(false);
@@ -44,10 +45,11 @@ function ResultsPageInner() {
     const tier = calculateTier(score);
 
     saveSubmission(partnerId, score, `Tier ${tier}`)
-      .then(({ submissionId, agencyName, partnerPhone }) => {
+      .then(({ submissionId, agencyName: fetchedAgencyName, partnerPhone }) => {
         setSubmissionId(submissionId);
-        if (agencyName && partnerPhone) {
-          setPartnerCtaData({ name: agencyName, phone: partnerPhone });
+        setAgencyName(fetchedAgencyName);
+        if (fetchedAgencyName && partnerPhone) {
+          setPartnerCtaData({ name: fetchedAgencyName, phone: partnerPhone });
         }
       })
       .catch(() => {
@@ -69,7 +71,13 @@ function ResultsPageInner() {
       <PartnerHeader partnerId={partnerId} />
       <div className="flex-1 flex flex-col items-center px-4 pt-12 pb-4">
 
-        <ResultsCard result={result} answers={answers} submissionId={submissionId} />
+        <ResultsCard
+          result={result}
+          answers={answers}
+          submissionId={submissionId}
+          agencyName={agencyName}
+          partnerId={partnerId}
+        />
 
         <div className="mt-10 flex flex-col items-center gap-3">
           <p className="text-[13px] text-stone-400 text-center">
