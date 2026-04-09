@@ -167,6 +167,7 @@ export async function saveTier2Email(
         tier: 2,
         score,
         topCategories,
+        familyFirstName: firstName,
         familyEmail: email,
         agencyName: partnerAgencyName,
         shareEmail: true,
