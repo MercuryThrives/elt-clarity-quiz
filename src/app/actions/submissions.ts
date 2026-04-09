@@ -10,7 +10,6 @@ import {
 
 const ELT_NOTIFICATION_EMAIL =
   process.env.ELT_NOTIFICATION_EMAIL ?? 'hca_app@elderlifetransitions.net';
-const FROM_NOTIFICATIONS = 'ELT Care Clarity Tool <notifications@elderlifetransitions.net>';
 const FROM_NOREPLY = 'noreply@elderlifetransitions.net';
 
 export async function saveSubmission(
@@ -83,44 +82,38 @@ export async function updateSubmissionEmail(
 
   // Notify partner if they have a notification email
   if (partnerNotificationEmail && partnerAgencyName) {
-    try {
-      await resend.emails.send({
-        from: FROM_NOTIFICATIONS,
-        to: partnerNotificationEmail,
-        subject: `Care Clarity Tool — TIER 3 Completion — ${new Date().toLocaleDateString()}`,
-        html: buildPartnerNotificationEmail({
-          tier: 3,
-          score,
-          topCategories,
-          familyFirstName: firstName,
-          familyEmail: email,
-          agencyName: partnerAgencyName,
-          shareEmail: true,
-        }),
-      });
-    } catch (err) {
-      console.error('[Resend] Partner notification error:', err);
-    }
+    const { error: partnerErr } = await resend.emails.send({
+      from: FROM_NOREPLY,
+      to: partnerNotificationEmail,
+      subject: `Care Clarity Tool — TIER 3 Completion — ${new Date().toLocaleDateString()}`,
+      html: buildPartnerNotificationEmail({
+        tier: 3,
+        score,
+        topCategories,
+        familyFirstName: firstName,
+        familyEmail: email,
+        agencyName: partnerAgencyName,
+        shareEmail: true,
+      }),
+    });
+    if (partnerErr) console.error('[Resend] Tier 3 partner notification error:', partnerErr);
   }
 
   // Priority notification to ELT for Tier 3
-  try {
-    await resend.emails.send({
-      from: FROM_NOREPLY,
-      to: ELT_NOTIFICATION_EMAIL,
-      subject: `ACTION NEEDED — New Tier 3 Lead — ${firstName} via ${partnerAgencyName ?? 'Direct'}`,
-      html: buildELTNotificationEmail({
-        tier,
-        score,
-        topCategories,
-        email,
-        familyFirstName: firstName,
-        partnerName: partnerAgencyName,
-      }),
-    });
-  } catch (err) {
-    console.error('[Resend] ELT notification error:', err);
-  }
+  const { error: eltErr } = await resend.emails.send({
+    from: FROM_NOREPLY,
+    to: ELT_NOTIFICATION_EMAIL,
+    subject: `ACTION NEEDED — New Tier 3 Lead — ${firstName} via ${partnerAgencyName ?? 'Direct'}`,
+    html: buildELTNotificationEmail({
+      tier,
+      score,
+      topCategories,
+      email,
+      familyFirstName: firstName,
+      partnerName: partnerAgencyName,
+    }),
+  });
+  if (eltErr) console.error('[Resend] Tier 3 ELT notification error:', eltErr);
 }
 
 export async function saveTier2Email(
@@ -156,56 +149,47 @@ export async function saveTier2Email(
   const resend = new Resend(process.env.RESEND_API_KEY);
 
   // Send personalized Care Planning Guide to family
-  try {
-    await resend.emails.send({
-      from: 'Elder Life Transitions <care@elderlifetransitions.net>',
-      to: email,
-      subject: 'Your Personalized Care Planning Guide',
-      html: buildFamilyGuideEmail(topCategories, partnerAgencyName),
-    });
-  } catch (err) {
-    console.error('[Resend] Family guide email error:', err);
-  }
+  const { error: guideErr } = await resend.emails.send({
+    from: FROM_NOREPLY,
+    to: email,
+    subject: 'Your Personalized Care Planning Guide',
+    html: buildFamilyGuideEmail(topCategories, partnerAgencyName),
+  });
+  if (guideErr) console.error('[Resend] Tier 2 family guide error:', guideErr);
 
   // Notify partner if they have a notification email
   if (partnerNotificationEmail && partnerAgencyName) {
-    try {
-      await resend.emails.send({
-        from: FROM_NOTIFICATIONS,
-        to: partnerNotificationEmail,
-        subject: `Care Clarity Tool — Tier 2 Completion (${new Date().toLocaleDateString()})`,
-        html: buildPartnerNotificationEmail({
-          tier: 2,
-          score,
-          topCategories,
-          familyEmail: email,
-          agencyName: partnerAgencyName,
-          shareEmail: true,
-        }),
-      });
-    } catch (err) {
-      console.error('[Resend] Partner notification error:', err);
-    }
-  }
-
-  // Notify ELT
-  try {
-    await resend.emails.send({
+    const { error: partnerErr } = await resend.emails.send({
       from: FROM_NOREPLY,
-      to: ELT_NOTIFICATION_EMAIL,
-      subject: `New Tier 2 Lead — ${partnerAgencyName ?? 'Direct'}`,
-      html: buildELTNotificationEmail({
+      to: partnerNotificationEmail,
+      subject: `Care Clarity Tool — Tier 2 Completion (${new Date().toLocaleDateString()})`,
+      html: buildPartnerNotificationEmail({
         tier: 2,
         score,
         topCategories,
-        email,
-        familyFirstName: firstName,
-        partnerName: partnerAgencyName,
+        familyEmail: email,
+        agencyName: partnerAgencyName,
+        shareEmail: true,
       }),
     });
-  } catch (err) {
-    console.error('[Resend] ELT notification error:', err);
+    if (partnerErr) console.error('[Resend] Tier 2 partner notification error:', partnerErr);
   }
+
+  // Notify ELT
+  const { error: eltErr } = await resend.emails.send({
+    from: FROM_NOREPLY,
+    to: ELT_NOTIFICATION_EMAIL,
+    subject: `New Tier 2 Lead — ${partnerAgencyName ?? 'Direct'}`,
+    html: buildELTNotificationEmail({
+      tier: 2,
+      score,
+      topCategories,
+      email,
+      familyFirstName: firstName,
+      partnerName: partnerAgencyName,
+    }),
+  });
+  if (eltErr) console.error('[Resend] Tier 2 ELT notification error:', eltErr);
 }
 
 export async function markSubmissionClicked(submissionId: string): Promise<void> {
