@@ -1,43 +1,86 @@
-Now implement the scoring engine for the SNF track. The engine reads the answered question scores and applies the following rules in priority order. The first rule that matches determines the pathway output. Q9 and Q10 scores do not affect pathway selection -- they are modifiers only.
-OPTIMISM BIAS BUMP: At any borderline where two pathways are within 1 point of each other, the logic defaults to the more supported (higher care) option.
-Rule 1 -- Complex Medical Consult (highest priority)
-TRIGGER: Q3 score = 4
-OUTPUT: pathway = 'complex-medical'
-Rule 2 -- Memory Care
-TRIGGER A: Q2 score = 4
-TRIGGER B: Q2 score = 3 AND (Q1 score >= 3 OR Q4 score >= 3)
-EXCEPTION: If Q2 = 3 AND Q1 <= 2 AND Q4 <= 2, continue to Rule 3
-OUTPUT: pathway = 'memory-care'
-Rule 3 -- Home with Family Support
-TRIGGER: Q1 <= 2 AND Q1b <= 2 AND Q2 <= 2 AND Q3 <= 2 AND Q4 = 1 AND Q5 <= 2 AND Q6 <= 2
-BIAS BUMP 1: If Q4 = 1 BUT Q5 = 2, route to 'home-hca' instead
-BIAS BUMP 2: If Q1 = 2 AND Q1b = 2 AND Q4 = 2, route to 'home-hca' instead
-OUTPUT: pathway = 'home-family'
-Rule 4 -- Home with Professional Home Care
-TRIGGER: Q1 <= 3 AND Q1b >= 2 AND Q2 <= 2 AND Q3 <= 3 AND Q4 >= 2 AND Q6 <= 3
-OUTPUT: pathway = 'home-hca'
-Rule 5 -- Independent Living with HCA Support
-TRIGGER: Q2 <= 2 AND Q1 <= 2 AND Q1b <= 2 AND Q3 <= 2 AND (Q6 >= 2 OR Q7 >= 2) AND Q8 >= 3 AND Q9 answer != 'Medicaid eligible or expecting to apply'
-BIAS BUMP: If borderline between IL and home-hca and Q6 >= 3, route to 'independent-living-hca'
-OUTPUT: pathway = 'independent-living-hca'
-Rule 6 -- Residential Care Home
-TRIGGER: Q1 >= 3 AND Q4 >= 3 AND Q6 >= 3 AND Q2 <= 3 AND Q7 <= 2
-BIAS BUMP: If borderline between residential and ALF, default to 'assisted-living'
-OUTPUT: pathway = 'residential-care'
-Rule 7 -- Assisted Living (default)
-TRIGGER: All cases that cleared Rules 1-6 AND Q1 >= 2 AND Q4 >= 2 AND Q6 >= 2
-OUTPUT: pathway = 'assisted-living'
-Also implement the two modifiers:
-Q9 Financial Modifier -- returns a copy string appended to results:
+Now build the SNF track disclosure screen and results page. Do not modify any HCA app pages.
+DISCLOSURE SCREEN
+This is the first screen families see when they arrive at the SNF track URL. It must appear before any questions load. The checkbox must be checked before the "Begin the Assessment" button becomes active.
+Screen content:
+Headline: Before We Begin
+Subheadline: A few things worth knowing about this tool and how it works.
+Body copy:
+This tool was designed to help families navigating care decisions after a skilled nursing stay. It takes about five minutes to complete and produces a personalized summary of care options that may fit your loved one's situation.
+A few important notes:
 
-Private pay: no addition
-Family support: "Family-supported arrangements vary widely -- a consultation can help clarify what is realistic long-term."
-Medicaid: "Medicaid-certified options exist -- ELT can help identify which communities accept Medicaid in your area."
-Not sure: "Understanding the financial picture early makes a significant difference -- we can walk through this together."
+This is not a clinical assessment and does not replace the advice of a licensed healthcare professional or your loved one's care team.
+This tool draws on domains from validated frameworks used in post-acute discharge planning, including the Katz Index of Independence in ADLs (Katz et al., 1963), the Lawton Instrumental ADL Scale (Lawton and Brody, 1969), and AHRQ's IDEAL Discharge Planning framework.
+Contact information requested after the assessment is used only to deliver your report and follow up with resources. No personally identifying information is collected during the assessment questions themselves.
+Elder Life Transitions (ELT) is a senior living advisory service. ELT is compensated by care communities for private-pay placements. There is no cost to families for this tool or for ELT's advisory services.
+ELT does not recommend specific communities within this tool. Results reflect care categories that appear to be worth exploring based on your answers -- not a clinical recommendation or a referral to any specific provider.
 
-Q10 Timeline Modifier -- returns a CTA urgency string:
+Checkbox: [ ] I understand that this tool provides general guidance only and does not constitute clinical advice. I also understand that Elder Life Transitions may follow up to offer resources and answer questions based on my results.
+Button (disabled until checkbox checked): Begin the Assessment
+Below button (small text): Your information is never shared without your permission.
 
-Immediately or Soon: "Discharge timelines move quickly. Getting clarity now protects your options."
-Some time or No pressure: "You have time to get this right. A conversation now means fewer surprises later."
+RESULTS PAGE
+The results page has 6 sections. Sections 1 and 2 are visible immediately. Section 3 is the email capture gate -- Sections 4, 5, and 6 are hidden until the gate is completed.
+Section 1 -- Acknowledgment
+Display this text above everything else:
+Navigating care options after a skilled nursing stay is one of the most stressful decisions a family faces. Based on what you shared, here is what appears to be worth exploring.
+Section 2 -- Primary Pathway Preview (visible before gate)
+Display:
 
-Write unit tests for at least 7 scenarios -- one per pathway -- to verify the rules fire correctly. Run the tests and show me the results before we move on.
+Pathway name in bold prominent text (use the pathway label from the scoring engine output)
+One sentence description per pathway (see mapping below)
+The text: Based on what you shared, this appears to be worth exploring.
+The text: Your report includes the care settings that align with what you described -- and the guidance that most families only get after a conversation with someone who knows this landscape well.
+
+One-sentence descriptions per pathway (display the matching one):
+
+assisted-living: Assisted living communities provide personal care support in a residential setting with 24-hour staff available.
+memory-care: Memory care communities are specifically designed for individuals living with cognitive impairment, offering secured environments and specialized staff.
+independent-living-hca: Independent living paired with a professional home care agency can provide meaningful daily support while preserving independence.
+home-hca: Professional home care allows your loved one to remain at home while receiving scheduled visits from a trained caregiver.
+home-family: Returning home with family support may be a realistic option when needs are manageable and a capable caregiver is available.
+residential-care: Residential care homes are small, licensed settings that provide assisted living-level care in a quieter, more intimate environment.
+complex-medical: Based on what you shared, your loved one's current needs may require a level of medical oversight beyond most residential care settings.
+
+Section 3 -- Email Capture Gate
+Headline: Get Your Personalized Care Options Report
+Body: Your report includes the care settings that align with what you described -- and the guidance that most families only get after a conversation with someone who knows this landscape well.
+Second paragraph: Elder Life Transitions will prepare your report and reach out to answer any questions. If you decide to explore specific communities, ELT can help you compare options, schedule tours, and navigate the process -- at no cost to your family.
+Italic text: ELT is compensated by care communities for private-pay placements. There is no cost to families.
+Fields:
+
+First Name (required)
+Email (required)
+Phone (optional, label: "To receive a personal call from ELT")
+
+Checkbox: I understand that ELT may reach out to offer guidance and answer questions.
+Button: Get My Report
+Small text below button: Your information is never shared without your permission.
+Section 4 -- Post-Gate Content (revealed after form submission)
+Display in this order:
+
+Full pathway description (placeholder text for now -- we will add content in the next prompt)
+"Why this appears to fit your situation" text (placeholder for now)
+Three anticipation bullets (placeholder for now)
+"What Most Families Do Not Know" insight (placeholder for now)
+Secondary pathway name and one-sentence description (placeholder for now)
+Financial modifier note from Q9 scoring (pull from scoring engine output)
+
+Section 5 -- CTA Block
+Primary button: Schedule a Free Consultation with ELT
+Below primary button: CTA urgency text from Q10 timeline modifier (pull from scoring engine output)
+Secondary button below: Get Your Full Report by Email
+Section 6 -- Compensation Disclosure Footer
+Elder Life Transitions is compensated by care communities for private-pay placements. Our consultation is free to families. This tool is not a clinical assessment and does not replace advice from a licensed healthcare professional.
+
+Supabase Submission
+When the email gate form is submitted, store a record in the existing submissions table with:
+
+All question answers
+Pathway output from scoring engine
+partner_id from URL parameter (if present)
+partner_type: 'snf'
+first_name, email, phone from form
+created_at timestamp in America/Denver timezone
+
+Do not trigger any emails yet -- we will wire those in the next prompt.
+Show me the disclosure screen and results page rendering in the browser before we move on. Verify the gate hides Sections 4-6 until the form is submitted, and that submission stores correctly in Supabase.

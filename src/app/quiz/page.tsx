@@ -31,10 +31,12 @@ function QuizPageInner() {
     let updatedAnswers = { ...answers, [current.id]: value };
 
     if (isLast) {
-      const params = new URLSearchParams();
-      if (partner) params.set("partner", partner);
-      if (track.id !== "hca") params.set("track", track.id);
-      router.push(`/quiz/results${params.size ? `?${params}` : ""}`);
+      if (track.id === "snf") {
+        // SNF has its own dedicated results page.
+        router.push(partner ? `/snf/results?partner=${encodeURIComponent(partner)}` : "/snf/results");
+      } else {
+        router.push(partner ? `/quiz/results?partner=${encodeURIComponent(partner)}` : "/quiz/results");
+      }
       return;
     }
 

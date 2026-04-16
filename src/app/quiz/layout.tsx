@@ -1,5 +1,4 @@
-import { QuizProvider } from "@/components/quiz/QuizStore";
-
+// QuizProvider is now at the root layout so state persists across all routes.
 export default function QuizLayout({ children }: { children: React.ReactNode }) {
-  return <QuizProvider>{children}</QuizProvider>;
+  return <>{children}</>;
 }
