@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { Suspense, useEffect, useMemo, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { normalizePartnerId } from '@/lib/partner';
 import { supabaseBrowser } from '@/lib/supabase/browser';
 
@@ -30,6 +30,17 @@ type PublicPartner = {
 
 function IntroPageInner() {
   const sp = useSearchParams();
+  const router = useRouter();
+
+  // SNF track has its own entry point. Redirect immediately so the HCA landing
+  // page is never shown to SNF visitors.
+  const trackParam = sp.get('track');
+  useEffect(() => {
+    if (trackParam === 'snf') {
+      const partner = sp.get('partner');
+      router.replace(partner ? `/snf?partner=${encodeURIComponent(partner)}` : '/snf');
+    }
+  }, [trackParam, sp, router]);
 
   const partnerId = useMemo(() => normalizePartnerId(sp.get('partner')) ?? getPartnerFromCookie(), [sp]);
 
