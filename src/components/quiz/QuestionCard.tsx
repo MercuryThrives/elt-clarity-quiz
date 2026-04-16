@@ -1,5 +1,6 @@
 "use client";
 
+import { useRef, useState } from "react";
 import { ANSWER_OPTIONS, Question } from "@/lib/quiz/questions";
 
 interface QuestionCardProps {
@@ -10,7 +11,106 @@ interface QuestionCardProps {
   total: number;
 }
 
-export default function QuestionCard({ question, selected, onSelect, questionNumber, total }: QuestionCardProps) {
+// ---------------------------------------------------------------------------
+// Slider format
+// ---------------------------------------------------------------------------
+
+function SliderQuestion({
+  question,
+  selected,
+  onSelect,
+}: {
+  question: Question;
+  selected: number | null;
+  onSelect: (value: number) => void;
+}) {
+  const opts = question.options ?? [];
+  const values = opts.map((o) => o.value);
+  const minVal = Math.min(...values);
+  const maxVal = Math.max(...values);
+
+  const [sliderPos, setSliderPos] = useState<number>(selected ?? minVal);
+  const hasInteracted = useRef(selected !== null);
+
+  const currentOpt = opts.find((o) => o.value === sliderPos);
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    hasInteracted.current = true;
+    setSliderPos(Number(e.target.value));
+  }
+
+  function handleConfirm() {
+    onSelect(sliderPos);
+  }
+
+  return (
+    <div className="w-full">
+      {/* Selected label display */}
+      <div
+        className={`mb-8 rounded-xl border-2 px-5 py-4 text-center transition-colors ${
+          hasInteracted.current
+            ? "border-amber-400 bg-amber-50"
+            : "border-stone-200 bg-white"
+        }`}
+      >
+        <p
+          className={`text-[18px] leading-snug transition-colors ${
+            hasInteracted.current ? "text-amber-800 font-medium" : "text-stone-400"
+          }`}
+        >
+          {hasInteracted.current
+            ? currentOpt?.label ?? "—"
+            : "Move the slider to select your answer"}
+        </p>
+      </div>
+
+      {/* Slider track */}
+      <div className="px-2">
+        <input
+          type="range"
+          min={minVal}
+          max={maxVal}
+          step={1}
+          value={sliderPos}
+          onChange={handleChange}
+          className="w-full h-2 accent-amber-500 cursor-pointer rounded-full"
+        />
+
+        {/* Endpoint labels */}
+        <div className="flex justify-between mt-3 text-[13px] text-stone-400">
+          <span className="max-w-[45%] leading-tight">{opts[0]?.label}</span>
+          <span className="max-w-[45%] text-right leading-tight">
+            {opts[opts.length - 1]?.label}
+          </span>
+        </div>
+      </div>
+
+      {/* Confirm button — appears once user has interacted */}
+      {hasInteracted.current && (
+        <button
+          onClick={handleConfirm}
+          className="mt-8 w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-[18px] font-medium py-4 px-6 transition-colors cursor-pointer"
+        >
+          Continue →
+        </button>
+      )}
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Main component
+// ---------------------------------------------------------------------------
+
+export default function QuestionCard({
+  question,
+  selected,
+  onSelect,
+  questionNumber,
+  total,
+}: QuestionCardProps) {
+  const useSlider = question.format === "slider" && question.options;
+
   return (
     <div className="w-full max-w-2xl mx-auto">
       <div className="mb-2 flex items-center gap-2">
@@ -21,7 +121,10 @@ export default function QuestionCard({ question, selected, onSelect, questionNum
       <h2 className="text-xl md:text-2xl font-serif text-stone-800 mb-8 leading-snug">
         {question.text}
       </h2>
-      {question.options ? (
+
+      {useSlider ? (
+        <SliderQuestion question={question} selected={selected} onSelect={onSelect} />
+      ) : question.options ? (
         <div className="flex flex-col gap-3">
           {question.options.map((opt) => {
             const isSelected = selected === opt.value;

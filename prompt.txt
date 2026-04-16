@@ -1,0 +1,43 @@
+Now implement the scoring engine for the SNF track. The engine reads the answered question scores and applies the following rules in priority order. The first rule that matches determines the pathway output. Q9 and Q10 scores do not affect pathway selection -- they are modifiers only.
+OPTIMISM BIAS BUMP: At any borderline where two pathways are within 1 point of each other, the logic defaults to the more supported (higher care) option.
+Rule 1 -- Complex Medical Consult (highest priority)
+TRIGGER: Q3 score = 4
+OUTPUT: pathway = 'complex-medical'
+Rule 2 -- Memory Care
+TRIGGER A: Q2 score = 4
+TRIGGER B: Q2 score = 3 AND (Q1 score >= 3 OR Q4 score >= 3)
+EXCEPTION: If Q2 = 3 AND Q1 <= 2 AND Q4 <= 2, continue to Rule 3
+OUTPUT: pathway = 'memory-care'
+Rule 3 -- Home with Family Support
+TRIGGER: Q1 <= 2 AND Q1b <= 2 AND Q2 <= 2 AND Q3 <= 2 AND Q4 = 1 AND Q5 <= 2 AND Q6 <= 2
+BIAS BUMP 1: If Q4 = 1 BUT Q5 = 2, route to 'home-hca' instead
+BIAS BUMP 2: If Q1 = 2 AND Q1b = 2 AND Q4 = 2, route to 'home-hca' instead
+OUTPUT: pathway = 'home-family'
+Rule 4 -- Home with Professional Home Care
+TRIGGER: Q1 <= 3 AND Q1b >= 2 AND Q2 <= 2 AND Q3 <= 3 AND Q4 >= 2 AND Q6 <= 3
+OUTPUT: pathway = 'home-hca'
+Rule 5 -- Independent Living with HCA Support
+TRIGGER: Q2 <= 2 AND Q1 <= 2 AND Q1b <= 2 AND Q3 <= 2 AND (Q6 >= 2 OR Q7 >= 2) AND Q8 >= 3 AND Q9 answer != 'Medicaid eligible or expecting to apply'
+BIAS BUMP: If borderline between IL and home-hca and Q6 >= 3, route to 'independent-living-hca'
+OUTPUT: pathway = 'independent-living-hca'
+Rule 6 -- Residential Care Home
+TRIGGER: Q1 >= 3 AND Q4 >= 3 AND Q6 >= 3 AND Q2 <= 3 AND Q7 <= 2
+BIAS BUMP: If borderline between residential and ALF, default to 'assisted-living'
+OUTPUT: pathway = 'residential-care'
+Rule 7 -- Assisted Living (default)
+TRIGGER: All cases that cleared Rules 1-6 AND Q1 >= 2 AND Q4 >= 2 AND Q6 >= 2
+OUTPUT: pathway = 'assisted-living'
+Also implement the two modifiers:
+Q9 Financial Modifier -- returns a copy string appended to results:
+
+Private pay: no addition
+Family support: "Family-supported arrangements vary widely -- a consultation can help clarify what is realistic long-term."
+Medicaid: "Medicaid-certified options exist -- ELT can help identify which communities accept Medicaid in your area."
+Not sure: "Understanding the financial picture early makes a significant difference -- we can walk through this together."
+
+Q10 Timeline Modifier -- returns a CTA urgency string:
+
+Immediately or Soon: "Discharge timelines move quickly. Getting clarity now protects your options."
+Some time or No pressure: "You have time to get this right. A conversation now means fewer surprises later."
+
+Write unit tests for at least 7 scenarios -- one per pathway -- to verify the rules fire correctly. Run the tests and show me the results before we move on.

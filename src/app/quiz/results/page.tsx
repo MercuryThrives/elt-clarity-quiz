@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { buildTierResult, calculateTier } from "@/lib/quiz/scoring";
+import { resolveTrack } from "@/lib/quiz/track";
 import ResultsCard from "@/components/quiz/ResultsCard";
 import Disclaimer from "@/components/quiz/Disclaimer";
 import { useQuiz } from "@/components/quiz/QuizStore";
@@ -22,6 +22,7 @@ function ResultsPageInner() {
   const { answers, reset } = useQuiz();
 
   const partnerId = normalizePartnerId(searchParams.get("partner")) ?? getPartnerFromCookie();
+  const track = resolveTrack(searchParams.get("track"));
 
   const [ready, setReady] = useState(false);
   const [submissionId, setSubmissionId] = useState<string | null>(null);
@@ -41,8 +42,8 @@ function ResultsPageInner() {
     if (saved.current) return;
     saved.current = true;
 
-    const score = Object.values(answers).reduce((sum, v) => sum + v, 0);
-    const tier = calculateTier(score);
+    const score = track.calculateScore(answers);
+    const tier = track.calculateTier(score);
 
     saveSubmission(partnerId, score, `Tier ${tier}`)
       .then(({ submissionId, agencyName: fetchedAgencyName, partnerPhone }) => {
@@ -63,8 +64,8 @@ function ResultsPageInner() {
   if (!answers || Object.keys(answers).length === 0) return null;
   if (!ready) return <div className="min-h-screen bg-[#faf9f7]" />;
 
-  const score = Object.values(answers).reduce((sum, v) => sum + v, 0);
-  const result = buildTierResult(score, partnerCtaData);
+  const score = track.calculateScore(answers);
+  const result = track.buildTierResult(score, partnerCtaData);
 
   return (
     <main className="min-h-screen bg-[#faf9f7] flex flex-col">
@@ -77,6 +78,8 @@ function ResultsPageInner() {
           submissionId={submissionId}
           agencyName={agencyName}
           partnerId={partnerId}
+          trackQuestions={track.questions}
+          trackGuideContent={track.guideContent}
         />
 
         <div className="mt-10 flex flex-col items-center gap-3">

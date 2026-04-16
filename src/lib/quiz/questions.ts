@@ -4,6 +4,12 @@ export interface Question {
   text: string;
   insight: string;
   options?: { value: number; label: string }[];
+  /** 'slider' renders a drag-to-select scale; 'list' (default) renders radio-style buttons. */
+  format?: 'list' | 'slider';
+  /** If true, the answer is tracked but excluded from the score total. */
+  modifier?: boolean;
+  /** Skip this question when a preceding question has a specific answer, auto-assigning a score. */
+  skipIf?: { questionId: string; triggerValue: number; autoScore: number };
 }
 
 export const QUESTIONS: Question[] = [

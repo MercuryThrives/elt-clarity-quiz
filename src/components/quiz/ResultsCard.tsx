@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { TierResult } from "@/lib/quiz/scoring";
-import { QUESTIONS, ANSWER_OPTIONS } from "@/lib/quiz/questions";
+import { QUESTIONS, ANSWER_OPTIONS, Question } from "@/lib/quiz/questions";
 import InlineEmailForm from "./InlineEmailForm";
 import { markSubmissionClicked, saveTier2Email } from "@/app/actions/submissions";
 import { GUIDE_CONTENT } from "@/lib/guideContent";
@@ -13,6 +13,10 @@ interface ResultsCardProps {
   submissionId: string | null;
   agencyName?: string | null;
   partnerId?: string | null;
+  /** Track-specific questions. Defaults to HCA questions when omitted. */
+  trackQuestions?: Question[];
+  /** Track-specific guide content. Defaults to HCA guide content when omitted. */
+  trackGuideContent?: Record<string, { title: string; paragraphs: string[] }>;
 }
 
 // Tie-breaking priority: Safety > Caregiver > Night > alphabetical
@@ -28,8 +32,13 @@ function patternSort(a: { category: string; score: number }, b: { category: stri
 
 // Show categories where score >= 50% of max (2+). Always show 3–4 cards.
 // Returns null if all scores are 0 (triggers replacement line).
-function getFilteredInsights(answers: Record<string, number>): { category: string; insight: string }[] | null {
-  const scored = QUESTIONS.map(q => ({ category: q.category, insight: q.insight, score: answers[q.id] ?? 0 }));
+function getFilteredInsights(
+  answers: Record<string, number>,
+  questions: Question[],
+): { category: string; insight: string }[] | null {
+  const scored = questions
+    .filter((q) => !q.modifier)
+    .map((q) => ({ category: q.category, insight: q.insight, score: answers[q.id] ?? 0 }));
 
   if (scored.every(c => c.score === 0)) return null;
 
@@ -116,9 +125,19 @@ export default function ResultsCard({
   answers,
   submissionId,
   agencyName,
+  trackQuestions,
+  trackGuideContent,
 }: ResultsCardProps) {
-  const maxScore = QUESTIONS.length * Math.max(...ANSWER_OPTIONS.map((o) => o.value));
-  const filteredInsights = getFilteredInsights(answers);
+  const questions = trackQuestions ?? QUESTIONS;
+  const guideContent = trackGuideContent ?? GUIDE_CONTENT;
+
+  const scoringQuestions = questions.filter((q) => !q.modifier);
+  const maxScore = scoringQuestions.reduce((sum, q) => {
+    const opts = q.options ?? ANSWER_OPTIONS;
+    return sum + Math.max(...opts.map((o) => o.value));
+  }, 0);
+
+  const filteredInsights = getFilteredInsights(answers, questions);
   const badge = TIER_BADGE[result.tier];
 
   const [tier2FirstName, setTier2FirstName] = useState('');
@@ -217,7 +236,7 @@ export default function ResultsCard({
                         category={category}
                         insight={insight}
                         truncate={false}
-                        paragraphs={GUIDE_CONTENT[category]?.paragraphs}
+                        paragraphs={guideContent[category]?.paragraphs}
                       />
                     );
                   }
@@ -243,7 +262,7 @@ export default function ResultsCard({
                       insight={insight}
                       truncate={false}
                       animate={true}
-                      paragraphs={GUIDE_CONTENT[category]?.paragraphs}
+                      paragraphs={guideContent[category]?.paragraphs}
                     />
                   );
                 })}
@@ -370,7 +389,7 @@ export default function ResultsCard({
 
               <div className="space-y-4">
                 {filteredInsights.map(({ category, insight }) => {
-                  const paragraphs = GUIDE_CONTENT[category]?.paragraphs;
+                  const paragraphs = guideContent[category]?.paragraphs;
                   return (
                     <div
                       key={category}
