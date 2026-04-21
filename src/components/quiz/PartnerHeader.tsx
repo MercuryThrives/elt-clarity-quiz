@@ -36,12 +36,12 @@ export default function PartnerHeader({ partnerId }: PartnerHeaderProps) {
 
   return (
     <header className="w-full border-b border-stone-200 bg-[#faf9f7]">
-      <div className={`mx-auto flex w-full max-w-5xl items-center gap-6 px-6 py-3 ${showPartner ? "justify-center" : "justify-start"}`}>
+      <div className={`mx-auto flex w-full max-w-5xl items-center gap-6 px-6 py-5 ${showPartner ? "justify-center" : "justify-start"}`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/elt-logo.png"
           alt="Elder Life Transitions"
-          className="h-12 w-auto object-contain"
+          className="h-20 w-auto object-contain"
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).style.display = "none";
             (e.currentTarget.nextElementSibling as HTMLElement | null)?.removeAttribute("hidden");
@@ -60,7 +60,7 @@ export default function PartnerHeader({ partnerId }: PartnerHeaderProps) {
             <img
               src={logoUrl!}
               alt={agencyName ?? "Partner Agency"}
-              className="h-12 w-auto max-w-[160px] object-contain"
+              className="h-20 w-auto max-w-[200px] object-contain"
               onError={() => setLogoError(true)}
             />
           </>

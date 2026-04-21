@@ -1,22 +1,27 @@
-# SNF Landing Page -- Button Label and Design Fix
+There are five fixes needed on the SNF track before we add email triggers. Address all five before moving on.
+Fix 1 -- Gate copy is not pathway-aware
+The second paragraph in the email capture gate currently says "If you decide to explore specific communities, ELT can help you compare options, schedule tours, and navigate the process" regardless of which pathway was identified. This is incorrect for home care and complex medical pathways where there are no communities involved.
+Make this paragraph pathway-aware:
+For pathways assisted-living, memory-care, independent-living-hca, residential-care -- keep existing copy:
+"If you decide to explore specific communities, ELT can help you compare options, schedule tours, and navigate the process -- at no cost to your family."
+For pathway home-hca replace with:
+"If you decide to explore home care options, ELT can help you identify the right agencies, ask the right questions, and make a confident decision -- at no cost to your family."
+For pathway home-family replace with:
+"ELT can connect you with local resources and stay available as a trusted advisor as your loved one's situation evolves -- at no cost to your family."
+For pathway complex-medical replace with:
+"ELT can help you understand your options, identify the right questions to ask the discharge team, and connect you with the right resources -- at no cost to your family."
+Also audit the full results page for any other references to "communities" or "tours" and apply the same pathway-aware logic -- these words should only appear when the pathway is community-based.
+Fix 2 -- Get My Report button color
+The Get My Report button on the email capture gate appears faded or muted -- it looks like a disabled state even when active. Change it to match the same active orange color used on the question answer cards and throughout the HCA app. It should look identical in weight and color to other primary action buttons in the app.
+Fix 3 -- Question card selected state
+When a family selects an answer on the question screens, the selected state needs to be visually obvious. Currently the selection is too subtle. Make the selected card state match the HCA app exactly -- same filled radio button, same highlighted border or background color change, same visual weight. A family should be able to glance at the screen and immediately see which answer they selected.
+Fix 4 -- Persistent form field labels
+The First Name and Email fields on the gate form use placeholder text only -- when the family starts typing the label disappears and they lose track of which field they are in. Add a persistent label above each field:
 
-## Fix 1 -- Button Label
-Change the button label text from:
-"See What Options May Fit Your Situation"
-To:
-"Get My Free Summary"
+Label above first field: "First Name"
+Label above second field: "Email Address"
 
-## Fix 2 -- Disabled Button Text
-The disabled button text is too light. Change the text color to
-ELT's primary brand color (dark olive/forest green) at full
-opacity. The border stays at 60% opacity. Only the text changes
-to full opacity.
-
-## Fix 3 -- Enabled State (when checkbox is checked)
-- Background: ELT's primary brand color at full opacity
-- Border: same color, full opacity
-- Text: white
-- Transition: immediate, no animation
-
-## Do Not Change
-Button size, width, border radius, or anything else on the page.
+Style the labels consistently with the phone field label already in place. Do not change the placeholder text -- just add labels above the fields.
+Fix 5 -- Logo size on question pages
+The ELT logo in the header on question pages is still small. Increase it to match the visual weight of the HCA app header logo. Apply consistently across all SNF track pages -- disclosure screen, question pages, and results page.
+Show me each fix in the browser before we move on.

@@ -45,7 +45,7 @@ export const SNF_QUESTIONS: Question[] = [
   {
     id: "SNF_Q02",
     category: "Cognitive Status",
-    format: "slider",
+    format: "list",
     text: "Have you noticed memory problems, confusion, or difficulty with judgment and decision-making?",
     insight:
       "Cognitive changes fundamentally affect what's safe at home. Even moderate memory gaps or confusion create risks around medications, emergency response, and judgment that require oversight beyond what scheduled visits can reliably provide.",
@@ -103,7 +103,7 @@ export const SNF_QUESTIONS: Question[] = [
   {
     id: "SNF_Q06",
     category: "Home Environment",
-    format: "slider",
+    format: "list",
     text: "Is the current home set up — or able to be modified — to support your loved one's care needs?",
     insight:
       "Physical accessibility is frequently underestimated in discharge planning. Stairs, bathroom configuration, and spatial layout can make an otherwise manageable situation unsafe or unsustainable within the first weeks of return.",
@@ -131,7 +131,7 @@ export const SNF_QUESTIONS: Question[] = [
   {
     id: "SNF_Q08",
     category: "Social Connection",
-    format: "slider",
+    format: "list",
     text: "Outside of immediate family, how often does your loved one have meaningful social contact?",
     insight:
       "Social isolation is associated with faster functional decline and higher readmission rates. A care setting that provides peer engagement and structured activity may offer better long-term outcomes than a home environment where meaningful contact is rare.",

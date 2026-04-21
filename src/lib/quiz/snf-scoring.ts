@@ -106,8 +106,9 @@ export function selectSnfPathway(answers: Record<string, number>): SnfPathway {
  * Returns an appended copy string based on Q9 (financial situation), or null
  * for private-pay cases which need no additional context.
  */
-export function getSnfFinancialModifier(answers: Record<string, number>): string | null {
+export function getSnfFinancialModifier(answers: Record<string, number>, pathway?: SnfPathway): string | null {
   const q9 = answers['SNF_Q09'] ?? 0;
+  const isHomeBased = pathway === 'home-hca' || pathway === 'home-family' || pathway === 'complex-medical';
 
   switch (q9) {
     case 1: // Private pay
@@ -115,6 +116,9 @@ export function getSnfFinancialModifier(answers: Record<string, number>): string
     case 2: // Family support
       return 'Family-supported arrangements vary widely — a consultation can help clarify what is realistic long-term.';
     case 3: // Medicaid
+      if (isHomeBased) {
+        return 'Medicaid home care programs may be available — ELT can help identify what applies in your area.';
+      }
       return 'Medicaid-certified options exist — ELT can help identify which communities accept Medicaid in your area.';
     case 4: // Not sure
       return 'Understanding the financial picture early makes a significant difference — we can walk through this together.';

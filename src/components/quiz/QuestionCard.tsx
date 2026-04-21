@@ -140,14 +140,14 @@ export default function QuestionCard({
                   }
                 `}
               >
-                <span className={`text-xl font-serif font-bold w-5 shrink-0 transition-colors ${isSelected ? "text-amber-600" : "text-stone-400 group-hover:text-amber-400"}`}>
-                  {opt.value}
+                <span className={`w-5 h-5 rounded-full border-2 shrink-0 flex items-center justify-center transition-colors ${isSelected ? "border-amber-500 bg-amber-500" : "border-stone-300 group-hover:border-amber-400"}`}>
+                  {isSelected && <span className="w-2 h-2 rounded-full bg-white" />}
                 </span>
-                <span className={`text-[18px] leading-snug transition-colors ${isSelected ? "text-amber-700 font-medium" : "text-stone-600"}`}>
+                <span className={`text-[18px] leading-snug transition-colors ${isSelected ? "text-stone-800 font-semibold" : "text-stone-600"}`}>
                   {opt.label}
                 </span>
                 {isSelected && (
-                  <span className="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-500" />
+                  <span className="absolute top-3 right-3 w-2.5 h-2.5 rounded-full bg-amber-500" />
                 )}
               </button>
             );

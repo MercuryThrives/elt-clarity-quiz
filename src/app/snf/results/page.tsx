@@ -81,7 +81,7 @@ function SnfResultsInner() {
   const pathway = selectSnfPathway(answers);
   const pathwayLabel = PATHWAY_LABELS[pathway] ?? pathway;
   const pathwayDescription = PATHWAY_DESCRIPTIONS[pathway] ?? "";
-  const financialModifier = getSnfFinancialModifier(answers);
+  const financialModifier = getSnfFinancialModifier(answers, pathway);
   const timelineModifier = getSnfTimelineModifier(answers);
 
   const formValid = firstName.trim() && email.trim() && consentChecked;
@@ -154,23 +154,33 @@ function SnfResultsInner() {
                 Get Your Personalized Care Options Report
               </h3>
               <p className="text-[17px] text-stone-600 leading-relaxed mb-3">
-                Your report includes the care settings that align with what you described — and the
+                Your report includes the care options that align with what you described — and the
                 guidance that most families only get after a conversation with someone who knows this
                 landscape well.
               </p>
               <p className="text-[16px] text-stone-600 leading-relaxed mb-4">
                 Elder Life Transitions will prepare your report and reach out to answer any
-                questions. If you decide to explore specific communities, ELT can help you compare
-                options, schedule tours, and navigate the process — at no cost to your family.
+                questions.{" "}
+                {["assisted-living", "memory-care", "independent-living-hca", "residential-care"].includes(pathway)
+                  ? "If you decide to explore specific communities, ELT can help you compare options, schedule tours, and navigate the process — at no cost to your family."
+                  : pathway === "home-hca"
+                  ? "If you decide to explore home care options, ELT can help you identify the right agencies, ask the right questions, and make a confident decision — at no cost to your family."
+                  : pathway === "home-family"
+                  ? "ELT can connect you with local resources and stay available as a trusted advisor as your loved one's situation evolves — at no cost to your family."
+                  : "ELT can help you understand your options, identify the right questions to ask the discharge team, and connect you with the right resources — at no cost to your family."}
               </p>
-              <p className="text-[14px] text-stone-400 italic mb-6">
-                ELT is compensated by care communities for private-pay placements. There is no cost
-                to families.
-              </p>
+              {["assisted-living", "memory-care", "independent-living-hca", "residential-care"].includes(pathway) && (
+                <p className="text-[14px] text-stone-400 italic mb-6">
+                  ELT is compensated by care communities for private-pay placements. There is no cost
+                  to families.
+                </p>
+              )}
 
               <div className="space-y-3 mb-4">
                 <div>
-                  <label htmlFor="snf-first-name" className="sr-only">First name</label>
+                  <label htmlFor="snf-first-name" className="block text-[14px] text-stone-500 mb-1">
+                    First Name
+                  </label>
                   <input
                     id="snf-first-name"
                     type="text"
@@ -182,7 +192,9 @@ function SnfResultsInner() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="snf-email" className="sr-only">Email address</label>
+                  <label htmlFor="snf-email" className="block text-[14px] text-stone-500 mb-1">
+                    Email Address
+                  </label>
                   <input
                     id="snf-email"
                     type="email"
@@ -195,17 +207,20 @@ function SnfResultsInner() {
                   />
                 </div>
                 <div>
-                  <label htmlFor="snf-phone" className="sr-only">Phone number (optional)</label>
+                  <label htmlFor="snf-phone" className="block text-[14px] text-stone-500 mb-1">
+                    Phone Number <span className="text-stone-400 font-normal">(optional)</span>
+                  </label>
                   <input
                     id="snf-phone"
                     type="tel"
-                    placeholder="To receive a personal call from ELT (optional)"
+                    placeholder="Optional — for a personal call from Dave at ELT"
                     inputMode="tel"
                     autoComplete="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full rounded-xl border border-stone-300 bg-white px-4 py-3 text-[17px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
                   />
+                  <p className="mt-1.5 text-[13px] text-stone-400">We will only call if you&rsquo;d like us to.</p>
                 </div>
               </div>
 
@@ -224,7 +239,7 @@ function SnfResultsInner() {
               <button
                 onClick={handleGateSubmit}
                 disabled={!formValid || gateLoading}
-                className="w-full rounded-xl bg-[#C4621D] hover:bg-[#A8521A] disabled:opacity-50 text-white text-[18px] font-medium py-4 px-6 transition-colors cursor-pointer disabled:cursor-not-allowed"
+                className="w-full rounded-xl bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-white text-[18px] font-medium py-4 px-6 transition-colors cursor-pointer disabled:cursor-not-allowed"
               >
                 {gateLoading ? "Saving…" : "Get My Report"}
               </button>
