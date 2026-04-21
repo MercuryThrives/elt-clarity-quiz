@@ -365,6 +365,13 @@ function SnfResultsInner() {
                   ← Retake Assessment
                 </button>
               </div>
+
+              <p className="mt-10 text-[12px] text-stone-300 leading-relaxed text-center">
+                This tool draws on domains from validated frameworks used in post-acute discharge
+                planning, including the Katz Index of Independence in ADLs (Katz et al., 1963),
+                the Lawton Instrumental ADL Scale (Lawton and Brody, 1969), and AHRQ&rsquo;s
+                IDEAL Discharge Planning framework.
+              </p>
             </>
           )}
         </div>

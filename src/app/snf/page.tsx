@@ -2,7 +2,6 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import PartnerHeader from "@/components/quiz/PartnerHeader";
 
 function DisclosureInner() {
   const router = useRouter();
@@ -20,102 +19,133 @@ function DisclosureInner() {
 
   return (
     <main className="min-h-screen bg-[#faf9f7] flex flex-col">
-      <PartnerHeader partnerId={partner} />
 
-      <div className="flex-1 flex flex-col items-center px-4 pt-12 pb-16">
-        <div className="w-full max-w-2xl">
+      {/* ── Brand bar — 5px ELT olive/green ─────────────────────────────── */}
+      <div className="w-full" style={{ height: "5px", backgroundColor: "#4a6741" }} />
 
-          {/* Headline */}
-          <h1 className="text-3xl md:text-4xl font-serif text-stone-800 mb-2 leading-tight">
-            Before We Begin
+      {/* ── Header — centered ELT logo at 120px ─────────────────────────── */}
+      <header className="w-full border-b border-stone-200 bg-[#faf9f7]">
+        <div className="mx-auto flex w-full max-w-5xl items-center justify-center px-6 pt-5 pb-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/elt-logo.png"
+            alt="Elder Life Transitions"
+            style={{ height: "120px" }}
+            className="w-auto object-contain"
+            onError={(e) => {
+              (e.currentTarget as HTMLImageElement).style.display = "none";
+              (e.currentTarget.nextElementSibling as HTMLElement | null)?.removeAttribute("hidden");
+            }}
+          />
+          <span hidden className="font-serif text-stone-800 text-[18px] tracking-tight">
+            Elder Life Transitions
+          </span>
+        </div>
+      </header>
+
+      <div className="flex-1 flex flex-col items-center px-4 pt-4 pb-16">
+        <div className="w-full max-w-[640px]">
+
+          {/* ── Zone 1: Hook — headline, subhead, authority line ─────────── */}
+          <h1 className="font-serif text-[24px] md:text-[28px] leading-snug text-stone-800 mb-4">
+            In five minutes, you&rsquo;ll know more about what your loved one actually needs
+            after rehab than most families figure out in two weeks.
           </h1>
-          <p className="text-[18px] text-stone-500 mb-8 leading-snug">
-            A few things worth knowing about this tool and how it works.
+          <p className="text-[18px] leading-relaxed text-stone-600 mb-3">
+            The discharge planner gave you a folder. The social worker gave you a list. Most
+            families still walk out unsure what is actually going to hold. This tool was built
+            for exactly that moment.
+          </p>
+          {/* Authority line — 12px above (from subhead mb-3), 32px below before bullets */}
+          <p className="text-[16px] text-stone-500 leading-relaxed" style={{ marginBottom: "32px", borderLeft: "3px solid #f59e0b", paddingLeft: "12px" }}>
+            Built by a former Executive Director who ran Assisted Living, Memory Care, and
+            Independent Living communities, and has seen what families face when discharge day
+            arrives without a real plan.
           </p>
 
-          {/* Body */}
-          <div className="bg-white rounded-2xl border border-stone-200 px-6 py-6 mb-6 space-y-5">
-            <p className="text-[17px] text-stone-700 leading-relaxed">
-              This tool was designed to help families navigating care decisions after a skilled
-              nursing stay. It takes about five minutes to complete and produces a personalized
-              summary of care options that may fit your loved one&rsquo;s situation.
-            </p>
+          {/* ── Zone 2: Value + Disclosure — bullets, divider, disclosure ── */}
+          <ul className="space-y-2">
+            <li className="flex items-start gap-2 text-[16px] text-stone-500">
+              <span className="text-amber-500 shrink-0 mt-0.5">&#10003;</span>
+              A clear picture of what your loved one&rsquo;s care needs actually are, based on
+              their specific situation rather than a generic checklist
+            </li>
+            <li className="flex items-start gap-2 text-[16px] text-stone-500">
+              <span className="text-amber-500 shrink-0 mt-0.5">&#10003;</span>
+              The guidance most families wish they had before making their first call
+            </li>
+            <li className="flex items-start gap-2 text-[16px] text-stone-500">
+              <span className="text-amber-500 shrink-0 mt-0.5">&#10003;</span>
+              Five minutes. Free. No sales pitch, just a clearer picture of what comes next.
+            </li>
+          </ul>
 
-            <p className="text-[15px] font-mono tracking-widest uppercase text-stone-400">
-              A few important notes:
-            </p>
-
-            <ul className="space-y-4">
-              <li className="flex gap-3">
-                <span className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <p className="text-[17px] text-stone-600 leading-relaxed">
-                  This is not a clinical assessment and does not replace the advice of a licensed
-                  healthcare professional or your loved one&rsquo;s care team.
-                </p>
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <p className="text-[17px] text-stone-600 leading-relaxed">
-                  This tool draws on domains from validated frameworks used in post-acute discharge
-                  planning, including the Katz Index of Independence in ADLs (Katz et al., 1963),
-                  the Lawton Instrumental ADL Scale (Lawton and Brody, 1969), and AHRQ&rsquo;s
-                  IDEAL Discharge Planning framework.
-                </p>
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <p className="text-[17px] text-stone-600 leading-relaxed">
-                  Contact information requested after the assessment is used only to deliver your
-                  report and follow up with resources. No personally identifying information is
-                  collected during the assessment questions themselves.
-                </p>
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <p className="text-[17px] text-stone-600 leading-relaxed">
-                  Elder Life Transitions (ELT) is a senior living advisory service. ELT is
-                  compensated by care communities for private-pay placements. There is no cost to
-                  families for this tool or for ELT&rsquo;s advisory services.
-                </p>
-              </li>
-              <li className="flex gap-3">
-                <span className="mt-1 shrink-0 w-1.5 h-1.5 rounded-full bg-amber-400" />
-                <p className="text-[17px] text-stone-600 leading-relaxed">
-                  ELT does not recommend specific communities within this tool. Results reflect care
-                  categories that appear to be worth exploring based on your answers — not a clinical
-                  recommendation or a referral to any specific provider.
-                </p>
-              </li>
-            </ul>
+          {/* Divider — 50% wide, centered, 32px above and below */}
+          <div style={{ marginTop: "32px", marginBottom: "32px" }} className="flex justify-center">
+            <hr className="border-stone-200 w-1/2" />
           </div>
 
-          {/* Consent checkbox */}
-          <label className="flex items-start gap-3 cursor-pointer mb-8 group">
+          {/* Disclosure block — label + two paragraphs, 32px below before checkbox */}
+          <div style={{ marginBottom: "32px" }}>
+            <p className="text-[13px] text-stone-400 leading-relaxed mb-3">
+              Before you start:
+            </p>
+            <p className="text-[13px] text-stone-400 leading-relaxed" style={{ marginBottom: "12px" }}>
+              This tool takes about five minutes and produces a personalized summary of care
+              options that may fit your situation. It is not a clinical assessment and does not
+              replace your loved one&rsquo;s care team.
+            </p>
+            <p className="text-[13px] text-stone-400 leading-relaxed">
+              Elder Life Transitions is compensated by care communities for private-pay
+              placements. There is no cost to families for this tool or for ELT&rsquo;s services.
+              Contact information collected after the assessment is used only to deliver your
+              results.
+            </p>
+          </div>
+
+          {/* ── Zone 3: Action — checkbox through below-button line ───────── */}
+          <label className="flex items-start gap-3 cursor-pointer group" style={{ marginBottom: "24px" }}>
             <input
               type="checkbox"
               checked={accepted}
               onChange={(e) => setAccepted(e.target.checked)}
               className="mt-1 w-5 h-5 shrink-0 accent-amber-500 cursor-pointer"
             />
-            <span className="text-[16px] text-stone-600 leading-relaxed group-hover:text-stone-800 transition-colors">
-              I understand that this tool provides general guidance only and does not constitute
-              clinical advice. I also understand that Elder Life Transitions may follow up to offer
-              resources and answer questions based on my results.
+            <span className="text-[16px] text-stone-600 leading-relaxed group-hover:text-stone-800">
+              I understand this tool provides general guidance only, and that Elder Life
+              Transitions may follow up to answer questions based on my results.
             </span>
           </label>
 
-          {/* CTA */}
           <button
             onClick={handleBegin}
             disabled={!accepted}
-            className="w-full rounded-xl bg-amber-500 hover:bg-amber-600 disabled:bg-stone-200 disabled:text-stone-400 text-white text-[18px] font-medium py-4 px-6 transition-colors cursor-pointer disabled:cursor-not-allowed"
+            className="w-full rounded-xl border-2 text-[18px] font-medium py-4 px-6 cursor-pointer disabled:cursor-not-allowed"
+            style={accepted ? {
+              backgroundColor: "#4a6741",
+              borderColor: "#4a6741",
+              color: "white",
+            } : {
+              backgroundColor: "transparent",
+              borderColor: "rgba(74, 103, 65, 0.6)",
+              color: "#4a6741",
+            }}
+            onMouseEnter={(e) => {
+              if (accepted) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#3a5433";
+            }}
+            onMouseLeave={(e) => {
+              if (accepted) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#4a6741";
+            }}
           >
-            Begin the Assessment
+            Get My Free Summary
           </button>
 
-          <p className="text-center text-[13px] text-stone-400 mt-3">
-            Your information is never shared without your permission.
+          <p className="text-[13px] text-stone-400 leading-relaxed" style={{ marginTop: "16px" }}>
+            You&rsquo;ll receive a personalized summary of care options that may fit your loved
+            one&rsquo;s situation. If your results suggest a conversation would help, we&rsquo;ll
+            reach out once. No pressure, no repeated calls.
           </p>
+
         </div>
       </div>
     </main>
