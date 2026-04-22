@@ -2,46 +2,27 @@
 
 import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { normalizePartnerId } from "@/lib/partner";
+import SnfHeader from "@/components/quiz/SnfHeader";
 
 function DisclosureInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const partner = searchParams.get("partner");
+  const partnerId = normalizePartnerId(searchParams.get("partner"));
 
   const [accepted, setAccepted] = useState(false);
 
   function handleBegin() {
     const params = new URLSearchParams();
     params.set("track", "snf");
-    if (partner) params.set("partner", partner);
+    if (partnerId) params.set("partner", partnerId);
     router.push(`/quiz?${params}`);
   }
 
   return (
     <main className="min-h-screen bg-[#faf9f7] flex flex-col">
 
-      {/* ── Brand bar — 5px ELT olive/green ─────────────────────────────── */}
-      <div className="w-full" style={{ height: "5px", backgroundColor: "#4a6741" }} />
-
-      {/* ── Header — centered ELT logo at 120px ─────────────────────────── */}
-      <header className="w-full border-b border-stone-200 bg-[#faf9f7]">
-        <div className="mx-auto flex w-full max-w-5xl items-center justify-center px-6 pt-5 pb-0">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/elt-logo.png"
-            alt="Elder Life Transitions"
-            style={{ height: "120px" }}
-            className="w-auto object-contain"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = "none";
-              (e.currentTarget.nextElementSibling as HTMLElement | null)?.removeAttribute("hidden");
-            }}
-          />
-          <span hidden className="font-serif text-stone-800 text-[18px] tracking-tight">
-            Elder Life Transitions
-          </span>
-        </div>
-      </header>
+      <SnfHeader />
 
       <div className="flex-1 flex flex-col items-center px-4 pt-4 pb-16">
         <div className="w-full max-w-[640px]">

@@ -7,6 +7,7 @@ import Disclaimer from "@/components/quiz/Disclaimer";
 import { useQuiz } from "@/components/quiz/QuizStore";
 import { useRouter, useSearchParams } from "next/navigation";
 import PartnerHeader from "@/components/quiz/PartnerHeader";
+import SnfHeader from "@/components/quiz/SnfHeader";
 import { resolveTrack } from "@/lib/quiz/track";
 
 function QuizPageInner() {
@@ -77,7 +78,7 @@ function QuizPageInner() {
 
   return (
     <main className="min-h-screen bg-[#faf9f7] flex flex-col">
-      <PartnerHeader partnerId={partner} />
+      {track.id === "snf" ? <SnfHeader /> : <PartnerHeader partnerId={partner} />}
       <div className="flex-1 flex flex-col items-center px-4 pt-12 pb-4">
 
         <div className="w-full max-w-2xl">
