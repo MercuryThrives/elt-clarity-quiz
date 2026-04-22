@@ -5,11 +5,16 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useQuiz } from "@/components/quiz/QuizStore";
 import { selectSnfPathway, getSnfFinancialModifier, getSnfTimelineModifier } from "@/lib/quiz/snf-scoring";
 import { normalizePartnerId } from "@/lib/partner";
-import { saveSnfSubmission } from "@/app/actions/snf-submissions";
-import PartnerHeader from "@/components/quiz/PartnerHeader";
+import { saveSnfSubmission, markSnfSubmissionClicked } from "@/app/actions/snf-submissions";
+import SnfHeader from "@/components/quiz/SnfHeader";
+import {
+  SNF_PATHWAY_CONTENT,
+  COMMUNITY_PATHWAYS,
+  CALENDAR_URL,
+} from "@/lib/snf-pathway-content";
 
 // ---------------------------------------------------------------------------
-// Pathway display data
+// Pathway display labels
 // ---------------------------------------------------------------------------
 
 const PATHWAY_LABELS: Record<string, string> = {
@@ -20,23 +25,6 @@ const PATHWAY_LABELS: Record<string, string> = {
   "home-family":            "Home with Family Support",
   "residential-care":       "Residential Care Home",
   "assisted-living":        "Assisted Living",
-};
-
-const PATHWAY_DESCRIPTIONS: Record<string, string> = {
-  "assisted-living":
-    "Assisted living communities provide personal care support in a residential setting with 24-hour staff available.",
-  "memory-care":
-    "Memory care communities are specifically designed for individuals living with cognitive impairment, offering secured environments and specialized staff.",
-  "independent-living-hca":
-    "Independent living paired with a professional home care agency can provide meaningful daily support while preserving independence.",
-  "home-hca":
-    "Professional home care allows your loved one to remain at home while receiving scheduled visits from a trained caregiver.",
-  "home-family":
-    "Returning home with family support may be a realistic option when needs are manageable and a capable caregiver is available.",
-  "residential-care":
-    "Residential care homes are small, licensed settings that provide assisted living-level care in a quieter, more intimate environment.",
-  "complex-medical":
-    "Based on what you shared, your loved one's current needs may require a level of medical oversight beyond most residential care settings.",
 };
 
 // ---------------------------------------------------------------------------
@@ -61,6 +49,7 @@ function SnfResultsInner() {
   // Gate state
   const [gateSubmitted, setGateSubmitted] = useState(false);
   const [gateLoading, setGateLoading] = useState(false);
+  const [submissionId, setSubmissionId] = useState<string | null>(null);
   const submitting = useRef(false);
 
   // Form fields
@@ -80,9 +69,10 @@ function SnfResultsInner() {
 
   const pathway = selectSnfPathway(answers);
   const pathwayLabel = PATHWAY_LABELS[pathway] ?? pathway;
-  const pathwayDescription = PATHWAY_DESCRIPTIONS[pathway] ?? "";
+  const content = SNF_PATHWAY_CONTENT[pathway];
   const financialModifier = getSnfFinancialModifier(answers, pathway);
   const timelineModifier = getSnfTimelineModifier(answers);
+  const isCommunityPathway = COMMUNITY_PATHWAYS.has(pathway);
 
   const formValid = firstName.trim() && email.trim() && consentChecked;
 
@@ -92,13 +82,14 @@ function SnfResultsInner() {
     setGateLoading(true);
 
     try {
-      await saveSnfSubmission({
+      const result = await saveSnfSubmission({
         partnerId,
         answers,
         firstName: firstName.trim(),
         email: email.trim(),
         phone: phone.trim() || undefined,
       });
+      setSubmissionId(result.submissionId);
       setGateSubmitted(true);
     } catch (err) {
       console.error("[SNF] Gate submission error:", err);
@@ -109,9 +100,19 @@ function SnfResultsInner() {
     }
   }
 
+  function handleConsultationClick() {
+    // Track click to suppress the Email 2 follow-up
+    if (submissionId) {
+      markSnfSubmissionClicked(submissionId).catch(err =>
+        console.error("[SNF] markClicked error:", err)
+      );
+    }
+    window.open(CALENDAR_URL, "_blank", "noopener,noreferrer");
+  }
+
   return (
     <main className="min-h-screen bg-[#faf9f7] flex flex-col">
-      <PartnerHeader partnerId={partnerId} />
+      <SnfHeader />
 
       <div className="flex-1 flex flex-col items-center px-4 pt-12 pb-16">
         <div className="w-full max-w-2xl">
@@ -132,7 +133,7 @@ function SnfResultsInner() {
               {pathwayLabel}
             </h2>
             <p className="text-[17px] text-stone-600 leading-relaxed mb-4">
-              {pathwayDescription}
+              {content.fullDescription}
             </p>
             <p className="text-[15px] text-stone-500 italic">
               Based on what you shared, this appears to be worth exploring.
@@ -140,7 +141,7 @@ function SnfResultsInner() {
           </div>
 
           <p className="text-[16px] text-stone-500 leading-relaxed mb-8">
-            Your report includes the care settings that align with what you described — and the
+            Your report includes the care options that align with what you described — and the
             guidance that most families only get after a conversation with someone who knows this
             landscape well.
           </p>
@@ -161,7 +162,7 @@ function SnfResultsInner() {
               <p className="text-[16px] text-stone-600 leading-relaxed mb-4">
                 Elder Life Transitions will prepare your report and reach out to answer any
                 questions.{" "}
-                {["assisted-living", "memory-care", "independent-living-hca", "residential-care"].includes(pathway)
+                {isCommunityPathway
                   ? "If you decide to explore specific communities, ELT can help you compare options, schedule tours, and navigate the process — at no cost to your family."
                   : pathway === "home-hca"
                   ? "If you decide to explore home care options, ELT can help you identify the right agencies, ask the right questions, and make a confident decision — at no cost to your family."
@@ -169,7 +170,7 @@ function SnfResultsInner() {
                   ? "ELT can connect you with local resources and stay available as a trusted advisor as your loved one's situation evolves — at no cost to your family."
                   : "ELT can help you understand your options, identify the right questions to ask the discharge team, and connect you with the right resources — at no cost to your family."}
               </p>
-              {["assisted-living", "memory-care", "independent-living-hca", "residential-care"].includes(pathway) && (
+              {isCommunityPathway && (
                 <p className="text-[14px] text-stone-400 italic mb-6">
                   ELT is compensated by care communities for private-pay placements. There is no cost
                   to families.
@@ -244,11 +245,10 @@ function SnfResultsInner() {
                 {gateLoading ? "Saving…" : "Get My Report"}
               </button>
               <p className="text-center text-[13px] text-stone-400 mt-3">
-                Your information is never shared without your permission.
+                Your report will be in your inbox shortly.
               </p>
             </div>
           ) : (
-            // Confirmation banner shown in place of the form after submission
             <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 mb-2">
               <p className="text-[17px] text-emerald-800 font-medium">
                 Your report is on its way — check your inbox.
@@ -261,66 +261,55 @@ function SnfResultsInner() {
             <>
               <SectionDivider />
 
-              {/* ── Section 4: Post-Gate Content ──────────────────────────── */}
+              {/* ── Section 4: Pathway Content ───────────────────────────── */}
               <div className="space-y-6">
-                {/* Full pathway description — placeholder */}
-                <div className="rounded-xl border border-stone-100 bg-white px-5 py-5">
-                  <p className="text-[13px] font-mono tracking-widest uppercase text-stone-400 mb-2">
-                    About This Care Setting
-                  </p>
-                  <p className="text-[17px] text-stone-400 italic">
-                    [Placeholder — full pathway description will be added in the next prompt.]
-                  </p>
-                </div>
 
-                {/* Why this fits — placeholder */}
-                <div className="rounded-xl border border-stone-100 bg-white px-5 py-5">
-                  <p className="text-[13px] font-mono tracking-widest uppercase text-stone-400 mb-2">
-                    Why This Appears to Fit Your Situation
-                  </p>
-                  <p className="text-[17px] text-stone-400 italic">
-                    [Placeholder — personalized fit explanation will be added in the next prompt.]
-                  </p>
-                </div>
-
-                {/* Anticipation bullets — placeholder */}
+                {/* Why this fits */}
                 <div className="rounded-xl border border-stone-100 bg-white px-5 py-5">
                   <p className="text-[13px] font-mono tracking-widest uppercase text-stone-400 mb-3">
+                    Why This Appears to Fit Your Situation
+                  </p>
+                  <p className="text-[17px] text-stone-700 leading-relaxed">
+                    {content.whyThisFits}
+                  </p>
+                </div>
+
+                {/* What to anticipate */}
+                <div className="rounded-xl border border-stone-100 bg-white px-5 py-5">
+                  <p className="text-[13px] font-mono tracking-widest uppercase text-stone-400 mb-4">
                     What to Anticipate
                   </p>
-                  <ul className="space-y-2">
-                    {[1, 2, 3].map((n) => (
-                      <li key={n} className="flex gap-3">
-                        <span className="mt-2 shrink-0 w-1.5 h-1.5 rounded-full bg-stone-200" />
-                        <p className="text-[17px] text-stone-400 italic">
-                          [Placeholder — anticipation point {n}]
-                        </p>
+                  <ul className="space-y-4">
+                    {content.anticipationBullets.map((bullet, i) => (
+                      <li key={i} className="flex gap-3">
+                        <span className="mt-2 shrink-0 w-1.5 h-1.5 rounded-full bg-amber-400" />
+                        <p className="text-[17px] text-stone-600 leading-relaxed">{bullet}</p>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                {/* What most families don't know — placeholder */}
+                {/* What most families don't know */}
                 <div className="rounded-xl border border-amber-100 bg-amber-50/50 px-5 py-5">
-                  <p className="text-[13px] font-mono tracking-widest uppercase text-amber-600 mb-2">
+                  <p className="text-[13px] font-mono tracking-widest uppercase text-amber-600 mb-3">
                     What Most Families Don&rsquo;t Know
                   </p>
-                  <p className="text-[17px] text-stone-400 italic">
-                    [Placeholder — insight will be added in the next prompt.]
+                  <p className="text-[17px] text-stone-700 leading-relaxed">
+                    {content.whatFamiliesDontKnow}
                   </p>
                 </div>
 
-                {/* Secondary pathway — placeholder */}
+                {/* Secondary pathway */}
                 <div className="rounded-xl border border-stone-100 bg-white px-5 py-5">
-                  <p className="text-[13px] font-mono tracking-widest uppercase text-stone-400 mb-2">
+                  <p className="text-[13px] font-mono tracking-widest uppercase text-stone-400 mb-3">
                     Also Worth Considering
                   </p>
-                  <p className="text-[17px] text-stone-400 italic">
-                    [Placeholder — secondary pathway will be added in the next prompt.]
+                  <p className="text-[17px] text-stone-600 leading-relaxed">
+                    {content.secondaryPathway}
                   </p>
                 </div>
 
-                {/* Financial modifier — live from scoring engine */}
+                {/* Financial modifier */}
                 {financialModifier && (
                   <div className="rounded-xl border border-stone-200 bg-white px-5 py-4">
                     <p className="text-[13px] font-mono tracking-widest uppercase text-stone-400 mb-2">
@@ -336,38 +325,29 @@ function SnfResultsInner() {
               <SectionDivider />
 
               {/* ── Section 5: CTA Block ──────────────────────────────────── */}
-              <div className="text-center space-y-4">
+              <div className="space-y-4">
                 <button
-                  className="w-full rounded-xl bg-[#C4621D] hover:bg-[#A8521A] text-white text-[18px] font-medium py-4 px-6 transition-colors cursor-pointer"
-                  onClick={() => {
-                    // Placeholder — will link to ELT scheduling in a future prompt
-                  }}
+                  className="w-full rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-[18px] font-medium py-4 px-6 transition-colors cursor-pointer"
+                  onClick={handleConsultationClick}
                 >
                   Schedule a Free Consultation with ELT
                 </button>
 
                 <p className="text-[15px] text-stone-500 leading-relaxed">
-                  {timelineModifier}
+                  {content.ctaSubtext ?? timelineModifier}
                 </p>
-
-                <button
-                  className="w-full rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-700 text-[17px] font-medium py-3 px-6 transition-colors cursor-pointer"
-                  onClick={() => {
-                    // Placeholder — will trigger email delivery in a future prompt
-                  }}
-                >
-                  Get Your Full Report by Email
-                </button>
               </div>
 
               <SectionDivider />
 
-              {/* ── Section 6: Compensation Disclosure Footer ─────────────── */}
-              <p className="text-[13px] text-stone-400 text-center leading-relaxed">
-                Elder Life Transitions is compensated by care communities for private-pay
-                placements. Our consultation is free to families. This tool is not a clinical
-                assessment and does not replace advice from a licensed healthcare professional.
-              </p>
+              {/* ── Section 6: Disclosure Footer ──────────────────────────── */}
+              {isCommunityPathway && (
+                <p className="text-[13px] text-stone-400 text-center leading-relaxed">
+                  Elder Life Transitions is compensated by care communities for private-pay
+                  placements. Our consultation is free to families. This tool is not a clinical
+                  assessment and does not replace advice from a licensed healthcare professional.
+                </p>
+              )}
 
               <div className="mt-10 flex flex-col items-center gap-3">
                 <button

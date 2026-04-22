@@ -1,4 +1,13 @@
 import { GUIDE_CONTENT } from './guideContent';
+import {
+  SNF_PATHWAY_CONTENT,
+  COMMUNITY_PATHWAYS,
+  COMMUNITY_REPORT_ADDENDUM,
+  CALENDAR_URL,
+  PATHWAY_LABELS,
+} from './snf-pathway-content';
+import type { SnfPathway } from './quiz/snf-scoring';
+import { SNF_QUESTIONS } from './quiz/snf-config';
 
 export function buildFamilyGuideEmail(
   topCategories: string[],
@@ -255,6 +264,257 @@ export function buildELTNotificationEmail({
               })}
             </td>
           </tr>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SNF email builders
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SNF_SIGNATURE = `
+  <p style="font-size:15px;color:#333333;margin:0;">Dave</p>
+  <p style="font-size:14px;color:#666666;margin:4px 0 0 0;">
+    Elder Life Transitions &nbsp;|&nbsp; 720-258-6001 &nbsp;|&nbsp;
+    <a href="mailto:Dave@ElderLifeTransitions.net" style="color:#666666;">Dave@ElderLifeTransitions.net</a>
+  </p>
+`;
+
+const SNF_FOOTER_DISCLOSURE = `
+  <p style="font-size:12px;color:#999999;margin:0;line-height:1.6;">
+    Elder Life Transitions is compensated by care communities for private-pay placements.
+    Our consultation is free to families. This tool is not a clinical assessment and does
+    not replace advice from a licensed healthcare professional.
+  </p>
+`;
+
+/**
+ * Email 1 — Immediate report delivery to the family.
+ */
+export function buildSnfReportEmail({
+  firstName,
+  pathway,
+  financialModifier,
+}: {
+  firstName: string;
+  pathway: SnfPathway;
+  financialModifier: string | null;
+}): string {
+  const content = SNF_PATHWAY_CONTENT[pathway];
+  const pathwayLabel = PATHWAY_LABELS[pathway];
+  const isCommunity = COMMUNITY_PATHWAYS.has(pathway);
+
+  const communityAddendum = isCommunity
+    ? `<p style="font-size:15px;line-height:1.7;color:#333333;margin-bottom:14px;">
+        ${COMMUNITY_REPORT_ADDENDUM}
+       </p>`
+    : '';
+
+  const financialSection = financialModifier
+    ? `<div style="background:#FDF8F0;border-left:3px solid #f59e0b;padding:14px 18px;margin:24px 0;border-radius:4px;">
+        <p style="font-size:14px;color:#888888;margin:0 0 6px 0;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Financial Consideration</p>
+        <p style="font-size:15px;color:#333333;margin:0;line-height:1.6;">${financialModifier}</p>
+       </div>`
+    : '';
+
+  const bullets = content.anticipationBullets
+    .map(b => `<li style="font-size:15px;color:#333333;line-height:1.7;margin-bottom:10px;">${b}</li>`)
+    .join('');
+
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;background:#ffffff;">
+
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:28px;">
+        Hi ${firstName} — thank you for taking the time to work through these questions.
+        Here is what the information you shared points toward.
+      </p>
+
+      <h2 style="font-size:22px;font-weight:700;color:#1a1a1a;border-bottom:2px solid #f59e0b;padding-bottom:8px;margin-bottom:16px;">
+        ${pathwayLabel}
+      </h2>
+
+      <p style="font-size:15px;line-height:1.7;color:#333333;margin-bottom:20px;">
+        ${content.fullDescription}
+      </p>
+
+      <h3 style="font-size:16px;font-weight:600;color:#4a6741;margin-bottom:8px;">Why This Appears to Fit Your Situation</h3>
+      <p style="font-size:15px;line-height:1.7;color:#333333;margin-bottom:24px;">
+        ${content.whyThisFits}
+      </p>
+
+      <h3 style="font-size:16px;font-weight:600;color:#4a6741;margin-bottom:10px;">What to Anticipate</h3>
+      <ul style="padding-left:20px;margin-bottom:16px;">
+        ${bullets}
+      </ul>
+
+      ${communityAddendum}
+
+      <div style="background:#FFFBEB;border:1px solid #FCD34D;padding:18px 20px;border-radius:6px;margin-bottom:24px;">
+        <p style="font-size:13px;font-weight:600;color:#92400E;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">What Most Families Don't Know</p>
+        <p style="font-size:15px;line-height:1.7;color:#333333;margin:0;">
+          ${content.whatFamiliesDontKnow}
+        </p>
+      </div>
+
+      <h3 style="font-size:15px;font-weight:600;color:#555555;margin-bottom:6px;">Also Worth Considering</h3>
+      <p style="font-size:15px;line-height:1.7;color:#555555;margin-bottom:24px;">
+        ${content.secondaryPathway}
+      </p>
+
+      ${financialSection}
+
+      <div style="background:#F0F5EE;border-left:4px solid #4a6741;padding:20px 24px;margin:32px 0;border-radius:4px;">
+        <p style="font-size:15px;line-height:1.7;color:#333333;margin:0 0 12px 0;">
+          If you would like to talk through these options, I am happy to spend 20 minutes
+          on a call. No pressure — just here if it is useful.
+        </p>
+        <p style="margin:0;">
+          <a href="${CALENDAR_URL}" style="color:#4a6741;font-weight:600;font-size:15px;text-decoration:none;">
+            Schedule a Call With ELT &rarr;
+          </a>
+        </p>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #EEEEEE;margin:28px 0;" />
+      ${SNF_SIGNATURE}
+      <hr style="border:none;border-top:1px solid #EEEEEE;margin:20px 0 12px 0;" />
+      ${SNF_FOOTER_DISCLOSURE}
+    </div>
+  `;
+}
+
+/**
+ * Email 2 — 48–72 hour follow-up, sent only if was_clicked = false.
+ */
+export function buildSnfFollowUpEmail({
+  firstName,
+  pathway,
+}: {
+  firstName: string;
+  pathway: SnfPathway;
+}): string {
+  const pathwayLabel = PATHWAY_LABELS[pathway];
+
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;background:#ffffff;">
+
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">
+        Hi ${firstName} — I reviewed the responses you shared a couple of days ago
+        and wanted to reach out personally.
+      </p>
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">
+        The ${pathwayLabel} pathway that came up in your results is one I see fairly often
+        in situations like yours — and there are a few things about it that are worth knowing
+        before you start making calls or touring communities. Most families I talk with at this
+        stage have questions they did not know to ask until after they had already made a decision.
+      </p>
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:24px;">
+        If a 20-minute conversation would be useful, I am happy to walk through what I am
+        seeing in your specific situation. No pressure — just here if it helps.
+      </p>
+
+      <p style="margin:0;">
+        <a href="${CALENDAR_URL}" style="color:#4a6741;font-weight:600;font-size:16px;text-decoration:none;">
+          Schedule a Call &rarr;
+        </a>
+      </p>
+
+      <hr style="border:none;border-top:1px solid #EEEEEE;margin:28px 0;" />
+      ${SNF_SIGNATURE}
+    </div>
+  `;
+}
+
+/**
+ * Email 3 — Internal notification to ELT on every SNF submission.
+ * Recipient is read from SNF_NOTIFICATION_EMAIL env var.
+ *
+ * NOTE: SNF_NOTIFICATION_EMAIL must be added to Vercel environment variables
+ * before the first SNF facility goes live. If missing, the send is skipped
+ * and a warning is logged.
+ */
+export function buildSnfInternalNotificationEmail({
+  firstName,
+  email,
+  phone,
+  pathway,
+  partnerId,
+  answers,
+  submittedAt,
+}: {
+  firstName: string;
+  email: string;
+  phone: string | null;
+  pathway: SnfPathway;
+  partnerId: string | null;
+  answers: Record<string, number>;
+  submittedAt: Date;
+}): string {
+  const pathwayLabel = PATHWAY_LABELS[pathway];
+
+  const timestamp = submittedAt.toLocaleString('en-US', {
+    timeZone: 'America/Denver',
+    month: 'long', day: 'numeric', year: 'numeric',
+    hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+  });
+
+  const answerRows = SNF_QUESTIONS.map(q => {
+    const val = answers[q.id];
+    const optionLabel = q.options?.find(o => o.value === val)?.label ?? `(score: ${val ?? 'not answered'})`;
+    return `
+      <tr>
+        <td style="padding:8px 12px 8px 0;vertical-align:top;color:#888888;font-size:13px;width:200px;border-bottom:1px solid #f0f0f0;">
+          ${q.category}
+        </td>
+        <td style="padding:8px 0;font-size:13px;color:#333333;border-bottom:1px solid #f0f0f0;">
+          ${optionLabel}
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #EEEEEE;">
+
+      <div style="background:#4a6741;padding:16px 24px;">
+        <p style="font-size:18px;font-weight:700;color:#ffffff;margin:0;">
+          New SNF Lead — ${firstName} — ${pathwayLabel}
+        </p>
+      </div>
+
+      <div style="padding:24px;">
+        <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;width:160px;">Name</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;font-weight:600;">${firstName}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Email</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${email}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Phone</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${phone ?? 'not provided'}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Pathway</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;font-weight:600;">${pathwayLabel}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Partner / Facility</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${partnerId ?? 'direct'}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Submitted</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${timestamp}</td>
+          </tr>
+        </table>
+
+        <p style="font-size:13px;font-weight:600;color:#888888;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">Assessment Answers</p>
+        <table style="width:100%;border-collapse:collapse;">
+          ${answerRows}
         </table>
       </div>
     </div>

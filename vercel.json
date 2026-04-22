@@ -1,0 +1,8 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/snf-followup",
+      "schedule": "0 */6 * * *"
+    }
+  ]
+}
