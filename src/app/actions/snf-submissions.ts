@@ -10,7 +10,7 @@ import {
 } from '@/lib/emailTemplates';
 import { PATHWAY_LABELS } from '@/lib/snf-pathway-content';
 
-const FROM_CARE = 'care@elderlifetransitions.net';
+const FROM_CARE = 'Care Clarity Report <care@elderlifetransitions.net>';
 const FROM_NOTIFICATIONS = 'notifications@elderlifetransitions.net';
 
 // NOTE: SNF_NOTIFICATION_EMAIL must be added to Vercel environment variables
