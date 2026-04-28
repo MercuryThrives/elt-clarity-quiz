@@ -61,30 +61,25 @@ function DisclosureInner() {
             </li>
           </ul>
 
-          {/* Divider — 50% wide, centered, 32px above and below */}
-          <div style={{ marginTop: "32px", marginBottom: "32px" }} className="flex justify-center">
-            <hr className="border-stone-200 w-1/2" />
-          </div>
-
-          {/* Disclosure block — label + two paragraphs, 32px below before checkbox */}
-          <div style={{ marginBottom: "32px" }}>
-            <p className="text-[13px] text-stone-400 leading-relaxed mb-3">
-              Before you start:
-            </p>
-            <p className="text-[13px] text-stone-400 leading-relaxed" style={{ marginBottom: "12px" }}>
-              This tool takes about five minutes and produces a personalized summary of care
-              options that may fit your situation. It is not a clinical assessment and does not
-              replace your loved one&rsquo;s care team.
+          {/* ── Zone 3: How it works + Action ───────────────────────────── */}
+          <div style={{ marginTop: "32px", marginBottom: "24px" }}>
+            <h2 className="font-serif text-[20px] md:text-[22px] leading-snug text-stone-800 mb-3">
+              Here&rsquo;s how it works:
+            </h2>
+            <p className="text-[16px] leading-relaxed text-stone-600 mb-3">
+              Answer eleven questions about your loved one&rsquo;s current situation. You&rsquo;ll
+              get a personalized summary of care options that fit their specific needs &mdash; not a
+              generic list. If what comes back suggests a conversation would help, we&rsquo;ll reach
+              out once to offer it. That&rsquo;s it.
             </p>
             <p className="text-[13px] text-stone-400 leading-relaxed">
-              Elder Life Transitions is compensated by care communities for private-pay
+              This tool is not a clinical assessment and does not replace your loved one&rsquo;s
+              care team. Elder Life Transitions is compensated by care communities for private-pay
               placements. There is no cost to families for this tool or for ELT&rsquo;s services.
-              Contact information collected after the assessment is used only to deliver your
-              results.
+              Contact information is collected only to deliver your results.
             </p>
           </div>
 
-          {/* ── Zone 3: Action — checkbox through below-button line ───────── */}
           <label className="flex items-start gap-3 cursor-pointer group" style={{ marginBottom: "24px" }}>
             <input
               type="checkbox"
@@ -93,8 +88,8 @@ function DisclosureInner() {
               className="mt-1 w-5 h-5 shrink-0 accent-amber-500 cursor-pointer"
             />
             <span className="text-[16px] text-stone-600 leading-relaxed group-hover:text-stone-800">
-              I understand this tool provides general guidance only, and that Elder Life
-              Transitions may follow up to answer questions based on my results.
+              I understand this tool provides general guidance only, and I consent to Elder Life
+              Transitions contacting me once if my results suggest a conversation would help.
             </span>
           </label>
 
@@ -118,13 +113,12 @@ function DisclosureInner() {
               if (accepted) (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#4a6741";
             }}
           >
-            Get My Free Summary
+            Show Me What Fits
           </button>
 
           <p className="text-[13px] text-stone-400 leading-relaxed" style={{ marginTop: "16px" }}>
-            You&rsquo;ll receive a personalized summary of care options that may fit your loved
-            one&rsquo;s situation. If your results suggest a conversation would help, we&rsquo;ll
-            reach out once. No pressure, no repeated calls.
+            Your summary goes to you &mdash; not a list. If a conversation would help, we&rsquo;ll
+            offer one. One reach-out, not a follow-up campaign.
           </p>
 
         </div>
