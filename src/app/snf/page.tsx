@@ -117,8 +117,8 @@ function DisclosureInner() {
           </button>
 
           <p className="text-[13px] text-stone-400 leading-relaxed" style={{ marginTop: "16px" }}>
-            Your summary goes to you &mdash; not a list. If a conversation would help, we&rsquo;ll
-            offer one. One reach-out, not a follow-up campaign.
+            Your summary is personalized to your loved one&rsquo;s situation &mdash; not a generic
+            list. If it raises questions, we&rsquo;re here.
           </p>
 
         </div>
