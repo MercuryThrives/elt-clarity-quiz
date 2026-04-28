@@ -68,9 +68,8 @@ function DisclosureInner() {
             </h2>
             <p className="text-[16px] leading-relaxed text-stone-600 mb-3">
               Answer eleven questions about your loved one&rsquo;s current situation. You&rsquo;ll
-              get a personalized summary of care options that fit their specific needs &mdash; not a
-              generic list. If what comes back suggests a conversation would help, we&rsquo;ll reach
-              out once to offer it. That&rsquo;s it.
+              get a personalized summary of care options delivered to your inbox. We may follow up
+              with additional resources or to answer questions &mdash; you can opt out at any time.
             </p>
             <p className="text-[13px] text-stone-400 leading-relaxed">
               This tool is not a clinical assessment and does not replace your loved one&rsquo;s
@@ -88,8 +87,8 @@ function DisclosureInner() {
               className="mt-1 w-5 h-5 shrink-0 accent-amber-500 cursor-pointer"
             />
             <span className="text-[16px] text-stone-600 leading-relaxed group-hover:text-stone-800">
-              I understand this tool provides general guidance only, and I consent to Elder Life
-              Transitions contacting me once if my results suggest a conversation would help.
+              I understand this tool provides general guidance only, and I agree to receive my
+              results and occasional follow-up from Elder Life Transitions. I can opt out at any time.
             </span>
           </label>
 

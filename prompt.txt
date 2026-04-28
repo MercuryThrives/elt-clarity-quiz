@@ -1,47 +1,23 @@
-# SNF Landing Page -- Bottom Section Copy and Structure Overhaul
+# SNF Landing Page -- Two Copy Corrections
 
 ## Context
-The SNF assessment landing page needs the bottom section restructured to reduce friction at the consent/CTA moment. Do not modify any question logic, scoring, tier thresholds, results content, or the hero section (headline, subhead, authority blockquote, value bullets). Changes are limited to everything below the three value bullets.
+Two copy elements on the SNF landing page still need updating. Do not touch anything else on the page.
 
-## What to Find First
-Locate the SNF landing page component. It is likely at one of these paths:
-- src/app/snf/page.tsx
-- src/app/snf/page.jsx
-- src/components/snf/LandingPage.tsx
+## Change 1 -- "Here's how it works:" body text
+Find the paragraph directly below the "Here's how it works:" heading.
 
-Confirm the file before making changes. Show me the current bottom section (from the divider/rule after the bullets through the end of the page) before editing.
-
-## Change 1 -- Remove the compliance box
-Remove the entire "Before you start:" section including its heading, any card/box/border container, and all paragraph content inside it.
-
-## Change 2 -- Add "Here's how it works:" section
-In place of the removed box, add this section between the value bullets and the checkbox:
-
-Heading (match existing heading style on the page, one step smaller than the hero headline):
-"Here's how it works:"
-
-Body text (match existing body text style):
-"Answer eleven questions about your loved one's current situation. You'll get a personalized summary of care options that fit their specific needs -- not a generic list. If what comes back suggests a conversation would help, we'll reach out once to offer it. That's it."
-
-Below the body text, add two compliance sentences as inline text -- small font, muted color (match the existing muted text style already used on the page), no container, no border, no heading:
-
-"This tool is not a clinical assessment and does not replace your loved one's care team. Elder Life Transitions is compensated by care communities for private-pay placements. There is no cost to families for this tool or for ELT's services. Contact information is collected only to deliver your results."
-
-## Change 3 -- Replace checkbox label
-Current label (approximate): "I understand this tool provides general guidance only, and that Elder Life Transitions may follow up to answer questions based on my results."
+Current text (approximate):
+"Answer eleven questions about your loved one's current situation. You'll get a personalized summary of care options that fit their specific needs — not a generic list. If what comes back suggests a conversation would help, we'll reach out once to offer it. That's it."
 
 Replace with:
-"I understand this is a general guidance tool, and I'm open to a follow-up conversation if my results suggest one would help."
+"Answer eleven questions about your loved one's current situation. You'll get a personalized summary of care options delivered to your inbox. We may follow up with additional resources or to answer questions -- you can opt out at any time."
 
-## Change 4 -- Replace CTA button text
-Current: "Get My Free Summary"
-Replace with: "Show Me What Fits"
-
-## Change 5 -- Replace sub-CTA reassurance text
-Current (approximate): "You'll receive a personalized summary of care options that may fit your loved one's situation. If your results suggest a conversation would help, we'll reach out once. No pressure, no repeated calls."
+## Change 2 -- Checkbox label
+Current text (approximate):
+"I understand this tool provides general guidance only, and I consent to Elder Life Transitions contacting me once if my results suggest a conversation would help."
 
 Replace with:
-"Your summary goes to you -- not a list. If a conversation would help, we'll offer one. One reach-out, not a follow-up campaign."
+"I understand this tool provides general guidance only, and I agree to receive my results and occasional follow-up from Elder Life Transitions. I can opt out at any time."
 
 ## Verification
-After making all changes, show me the updated bottom section in full so I can confirm before pushing to git.
+Show me both updated elements after the changes are made before pushing to git.
