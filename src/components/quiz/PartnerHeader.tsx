@@ -37,25 +37,9 @@ export default function PartnerHeader({ partnerId }: PartnerHeaderProps) {
   return (
     <header className="w-full border-b border-stone-200 bg-[#faf9f7]">
       <div className={`mx-auto flex w-full max-w-5xl items-center gap-6 px-6 py-5 ${showPartner ? "justify-center" : "justify-start"}`}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/elt-logo.png"
-          alt="Elder Life Transitions"
-          className="h-20 w-auto object-contain"
-          onError={(e) => {
-            (e.currentTarget as HTMLImageElement).style.display = "none";
-            (e.currentTarget.nextElementSibling as HTMLElement | null)?.removeAttribute("hidden");
-          }}
-        />
-        <span hidden className="font-serif text-stone-800 text-[15px] tracking-tight">
-          Elder Life Transitions
-        </span>
-
-        {showPartner && (
+        {showPartner ? (
           <>
-            <span className="font-serif italic text-stone-400 text-sm">
-              in partnership with
-            </span>
+            {/* Partner logo — left */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={logoUrl!}
@@ -63,6 +47,40 @@ export default function PartnerHeader({ partnerId }: PartnerHeaderProps) {
               className="h-20 w-auto max-w-[200px] object-contain"
               onError={() => setLogoError(true)}
             />
+            <span className="font-serif italic text-stone-400 text-sm">
+              In partnership with
+            </span>
+            {/* ELT logo — right */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/elt-logo.png"
+              alt="Elder Life Transitions"
+              className="h-24 w-auto object-contain"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).style.display = "none";
+                (e.currentTarget.nextElementSibling as HTMLElement | null)?.removeAttribute("hidden");
+              }}
+            />
+            <span hidden className="font-serif text-stone-800 text-[15px] tracking-tight">
+              Elder Life Transitions
+            </span>
+          </>
+        ) : (
+          <>
+            {/* ELT logo only — left-aligned */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/elt-logo.png"
+              alt="Elder Life Transitions"
+              className="h-24 w-auto object-contain"
+              onError={(e) => {
+                (e.currentTarget as HTMLImageElement).style.display = "none";
+                (e.currentTarget.nextElementSibling as HTMLElement | null)?.removeAttribute("hidden");
+              }}
+            />
+            <span hidden className="font-serif text-stone-800 text-[15px] tracking-tight">
+              Elder Life Transitions
+            </span>
           </>
         )}
       </div>

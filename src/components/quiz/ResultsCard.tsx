@@ -77,8 +77,43 @@ interface PatternCardProps {
 }
 
 function PatternCard({ category, insight, truncate, animate, paragraphs }: PatternCardProps) {
-  const words = insight.split(' ');
-  const preview = words.slice(0, 60).join(' ') + '…';
+  const renderContent = () => {
+    if (!truncate) {
+      // Fully revealed
+      if (paragraphs) {
+        return (
+          <div className="mt-2 space-y-4">
+            {paragraphs.map((p, i) => (
+              <p key={i} className="text-[18px] text-stone-600 leading-relaxed">{p}</p>
+            ))}
+          </div>
+        );
+      }
+      return <p className="text-[18px] text-stone-600 leading-relaxed mt-2">{insight}</p>;
+    }
+
+    // Truncated: paragraph 1 fully + start of paragraph 2 fading
+    if (paragraphs && paragraphs.length > 0) {
+      const secondPreview = paragraphs[1]
+        ? paragraphs[1].split(' ').slice(0, 30).join(' ') + '…'
+        : null;
+      return (
+        <div className="mt-2 space-y-4">
+          <p className="text-[18px] text-stone-600 leading-relaxed">{paragraphs[0]}</p>
+          {secondPreview && (
+            <p className="text-[18px] text-stone-600 leading-relaxed">{secondPreview}</p>
+          )}
+        </div>
+      );
+    }
+
+    // Fallback: no paragraphs, truncate raw insight
+    return (
+      <p className="text-[18px] text-stone-600 leading-relaxed mt-2">
+        {insight.split(' ').slice(0, 60).join(' ') + '…'}
+      </p>
+    );
+  };
 
   return (
     <div className={`relative rounded-xl border border-stone-100 bg-white px-5 py-4${animate ? ' animate-fadeIn' : ''}`}>
@@ -86,33 +121,10 @@ function PatternCard({ category, insight, truncate, animate, paragraphs }: Patte
         {category}
       </span>
       <div className="relative">
-        {paragraphs && !truncate ? (
-          <div className="mt-2 space-y-4">
-            {paragraphs.map((p, i) => (
-              <p key={i} className="text-[18px] text-stone-600 leading-relaxed">{p}</p>
-            ))}
-          </div>
-        ) : (
-          <p className="text-[18px] text-stone-600 leading-relaxed mt-2">
-            {truncate ? preview : insight}
-          </p>
-        )}
+        {renderContent()}
         {truncate && (
-          <div className="absolute bottom-0 left-0 right-0 h-12 bg-gradient-to-t from-white to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-white to-transparent" />
         )}
-      </div>
-    </div>
-  );
-}
-
-function PatternCardLocked({ category }: { category: string }) {
-  return (
-    <div className="rounded-xl border border-stone-100 bg-white px-5 py-4 opacity-60">
-      <span className="inline-block bg-amber-100 text-amber-800 text-[18px] font-mono tracking-widest px-3 py-1 rounded uppercase mb-3">
-        {category}
-      </span>
-      <div className="h-16 rounded bg-stone-100 flex items-center justify-center">
-        <span className="text-[14px] text-stone-400">Included in your guide</span>
       </div>
     </div>
   );
@@ -228,44 +240,16 @@ export default function ResultsCard({
               </h3>
 
               <div className="space-y-4">
-                {filteredInsights.map(({ category, insight }, index) => {
-                  if (index === 0) {
-                    return (
-                      <PatternCard
-                        key={category}
-                        category={category}
-                        insight={insight}
-                        truncate={false}
-                        paragraphs={guideContent[category]?.paragraphs}
-                      />
-                    );
-                  }
-
-                  if (!tier2Submitted) {
-                    if (index === 1) {
-                      return (
-                        <PatternCard
-                          key={category}
-                          category={category}
-                          insight={insight}
-                          truncate={true}
-                        />
-                      );
-                    }
-                    return <PatternCardLocked key={category} category={category} />;
-                  }
-
-                  return (
-                    <PatternCard
-                      key={category}
-                      category={category}
-                      insight={insight}
-                      truncate={false}
-                      animate={true}
-                      paragraphs={guideContent[category]?.paragraphs}
-                    />
-                  );
-                })}
+                {filteredInsights.map(({ category, insight }) => (
+                  <PatternCard
+                    key={category}
+                    category={category}
+                    insight={insight}
+                    truncate={!tier2Submitted}
+                    animate={tier2Submitted}
+                    paragraphs={guideContent[category]?.paragraphs}
+                  />
+                ))}
               </div>
 
               {/* Email capture form */}

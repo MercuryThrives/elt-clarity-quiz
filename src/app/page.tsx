@@ -2,10 +2,10 @@
 'use client';
 
 import Link from 'next/link';
-import { Suspense, useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { normalizePartnerId } from '@/lib/partner';
-import { supabaseBrowser } from '@/lib/supabase/browser';
+import PartnerHeader from '@/components/quiz/PartnerHeader';
 
 function getPartnerFromCookie(): string | null {
   if (typeof document === 'undefined') return null;
@@ -21,12 +21,6 @@ function writePartnerCookie(partnerId: string) {
     'SameSite=Lax',
   ].join('; ');
 }
-
-type PublicPartner = {
-  id: string;
-  agency_name: string;
-  logo_url: string | null;
-};
 
 function IntroPageInner() {
   const sp = useSearchParams();
@@ -44,98 +38,19 @@ function IntroPageInner() {
 
   const partnerId = useMemo(() => normalizePartnerId(sp.get('partner')) ?? getPartnerFromCookie(), [sp]);
 
-  const [partner, setPartner] = useState<PublicPartner | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [partnerLogoError, setPartnerLogoError] = useState(false);
-
+  // Write cookie when partner comes from URL param
   useEffect(() => {
-    let cancelled = false;
-
-    async function run() {
-      if (!partnerId) {
-        setPartner(null);
-        return;
-      }
-
-      setIsLoading(true);
-
-      const { data, error } = await supabaseBrowser
-        .from('public_partners')
-        .select('id, agency_name, logo_url')
-        .eq('id', partnerId)
-        .limit(1);
-
-      if (cancelled) return;
-
-      if (error || !data || data.length === 0) {
-        setPartner(null);
-        setIsLoading(false);
-        return;
-      }
-
-      setPartner(data[0] as PublicPartner);
-      setIsLoading(false);
-
-      // Write cookie only when partner came from URL param (not cookie fallback)
-      if (sp.get('partner')) {
-        writePartnerCookie(partnerId!);
-      }
+    if (partnerId && sp.get('partner')) {
+      writePartnerCookie(partnerId);
     }
-
-    run();
-    return () => {
-      cancelled = true;
-    };
   }, [partnerId, sp]);
 
-  // Reset logo error state when partner changes
-  useEffect(() => {
-    setPartnerLogoError(false);
-  }, [partnerId]);
-
   const beginHref = partnerId ? `/quiz?partner=${encodeURIComponent(partnerId)}` : '/quiz';
-
-  const partnerLogoSrc = partner?.logo_url ?? null;
-  const showPartnerSection = !!partnerLogoSrc && !partnerLogoError;
 
   return (
     <main className="min-h-screen bg-[#faf9f7] text-stone-800">
 
-      {/* Full-width header bar */}
-      <header className="w-full border-b border-stone-200 bg-[#faf9f7]">
-        <div className={`mx-auto flex w-full max-w-5xl items-center gap-6 px-6 py-5 ${showPartnerSection ? 'justify-center' : 'justify-start'}`}>
-          {/* ELT logo */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/elt-logo.png"
-            alt="Elder Life Transitions"
-            className="h-20 w-auto object-contain"
-            onError={(e) => {
-              (e.currentTarget as HTMLImageElement).style.display = 'none';
-              (e.currentTarget.nextElementSibling as HTMLElement | null)?.removeAttribute('hidden');
-            }}
-          />
-          <span hidden className="font-serif text-stone-800 text-[18px] tracking-tight">
-            Elder Life Transitions
-          </span>
-
-          {/* Partner branding — centered between logos when present */}
-          {showPartnerSection && (
-            <>
-              <span className="font-serif italic text-stone-400 text-sm">
-                in partnership with
-              </span>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={partnerLogoSrc!}
-                alt={partner?.agency_name ?? '[Partner Agency]'}
-                className="h-20 w-auto max-w-[200px] object-contain"
-                onError={() => setPartnerLogoError(true)}
-              />
-            </>
-          )}
-        </div>
-      </header>
+      <PartnerHeader partnerId={partnerId} />
 
       {/* Page body */}
       <div className="mx-auto w-full max-w-2xl px-5 py-10">
@@ -177,10 +92,6 @@ function IntroPageInner() {
             >
               Begin
             </Link>
-
-            {isLoading && (
-              <span className="text-[14px] text-stone-400 font-mono">Loading…</span>
-            )}
           </div>
         </div>
 
