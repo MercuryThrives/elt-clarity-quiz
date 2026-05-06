@@ -12,6 +12,13 @@ export function middleware(req: NextRequest) {
     }
   }
 
+  if (host === 'rm.elderlifetransitions.net') {
+    const { pathname } = req.nextUrl;
+    if (pathname === '/') {
+      return NextResponse.rewrite(new URL('/funding/reverse-mortgage', req.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
