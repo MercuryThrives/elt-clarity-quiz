@@ -93,6 +93,15 @@ function IntroPageInner() {
               Begin
             </Link>
           </div>
+
+          <div className="mt-4">
+            <Link
+              href="/funding/reverse-mortgage"
+              className="text-[14px] text-stone-400 hover:text-stone-600 underline-offset-2 hover:underline transition-colors"
+            >
+              Wondering how to fund care costs? →
+            </Link>
+          </div>
         </div>
 
         {/* Footer note */}

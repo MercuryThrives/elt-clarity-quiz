@@ -1,266 +1,167 @@
-You are adding a Reverse Mortgage qualifier track to the ELT Clarity Quiz app.
+# Prompt 5 — Email Templates, Navigation & QA
 
-## Task
-Create two new data files in src/lib/. Do not modify any existing files.
-
----
-
-## File 1: src/lib/funding-rm-questions.ts
-
-Study src/lib/quiz/ to find the exact Question type definition and ANSWER_OPTIONS
-pattern before writing anything. Match it exactly.
-
-Define 6 questions with these IDs, categories, and answer options:
-
-Q1 — id: "rm_age", category: "Age"
-text: "How old is the homeowner?"
-Options:
-  value 0 = "Under 62"
-  value 1 = "62 to 69"
-  value 2 = "70 to 79"
-  value 3 = "80 or older"
-
-Q2 — id: "rm_residence", category: "Residency"
-text: "Is this home the person's primary residence — where they currently live?"
-Options:
-  value 0 = "No — they live somewhere else"
-  value 1 = "Temporarily away (rehab, hospital, or staying with family)"
-  value 2 = "Yes — they live there now"
-
-Q3 — id: "rm_equity", category: "Equity"
-text: "Does the person own their home, and roughly how much is still owed on it?"
-Options:
-  value 0 = "Renting, or does not own"
-  value 1 = "Significant balance remaining — more than 30% of home's value"
-  value 2 = "Small balance remaining — less than 30% of home's value"
-  value 3 = "Own it free and clear — no mortgage"
-
-Q4 — id: "rm_property", category: "Property"
-text: "What type of home is it?"
-Options:
-  value 0 = "Other — not sure it qualifies"
-  value 1 = "Manufactured or mobile home"
-  value 2 = "Townhome or condo"
-  value 3 = "Single-family home or 1–4 unit property"
-
-Q5 — id: "rm_medicaid", category: "Medicaid"
-text: "Is this person currently receiving Medicaid, or actively applying for it?"
-Options:
-  value 0 = "Yes — currently on Medicaid"
-  value 1 = "Currently applying or planning to apply soon"
-  value 2 = "Not sure"
-  value 3 = "No"
-
-Q6 — id: "rm_goal", category: "Goal"
-text: "What is the family hoping a reverse mortgage might help with?"
-Mark this question with modifier: true (excluded from scoring — routing signal only).
-Options (all value 1):
-  "Paying for home care or in-home support"
-  "Covering assisted living or memory care costs"
-  "Supplementing monthly income at home"
-  "Not sure — just exploring options"
-
-Export as: FUNDING_RM_QUESTIONS
+## Context
+You are completing the Reverse Mortgage qualifier track for the ELT Clarity Quiz app.
+All prior files are created and the quiz engine is wired.
 
 ---
 
-## File 2: src/lib/funding-rm-content.ts
+## Part A — Email Templates
 
-Model structure exactly on src/lib/snf-pathway-content.ts.
+Study `src/lib/emailTemplates.ts` to understand the existing template pattern.
+Add funding-rm templates following the same structure. Do not modify existing templates.
 
-Export type: FundingRmPathway =
-  'likely-fit' | 'explore-with-caveats' | 'medicaid-flag' | 'not-a-fit'
-
-Each pathway object includes:
-  headline: string
-  body: string
-  anticipationBullets: [string, string, string]
-  whatFamiliesDontKnow: string
-  ctaType: 'specialist' | 'elder-law' | 'elt-direct' | 'dead-end'
-  ctaSubtext: string
-  equityIllustration: EquityBand[] — age-banded equity ranges (see below)
+Create one template per pathway (four total).
 
 ---
 
-### Equity Illustration Data Structure
+### Subject Lines
 
-Export type EquityBand = {
-  ageLabel: string      // e.g. "Age 62–69"
-  homeValue: string     // e.g. "$400,000 home"
-  rangeLabel: string    // e.g. "$180,000 – $220,000"
-  note: string          // brief plain-language explanation
-}
-
-These are illustrative ranges based on published HUD Principal Limit Factors —
-NOT personalized estimates. Include this disclaimer field on the type:
-  illustrationDisclaimer: string
-
-For the 'likely-fit' and 'explore-with-caveats' pathways, populate 3 equity bands:
-
-Band 1:
-  ageLabel: "Age 62–69"
-  homeValue: "$500,000 home, no existing mortgage"
-  rangeLabel: "$185,000 – $240,000"
-  note: "Younger borrowers access a smaller percentage of equity — proceeds
-         grow significantly with age."
-
-Band 2:
-  ageLabel: "Age 70–79"
-  homeValue: "$500,000 home, no existing mortgage"
-  rangeLabel: "$255,000 – $320,000"
-  note: "The mid-range sweet spot — meaningful proceeds with significant
-         remaining life expectancy."
-
-Band 3:
-  ageLabel: "Age 80 or older"
-  homeValue: "$500,000 home, no existing mortgage"
-  rangeLabel: "$330,000 – $390,000"
-  note: "Older borrowers access the highest percentage of equity — often
-         the most financially compelling scenario."
-
-illustrationDisclaimer: "These are general illustrative ranges based on published
-HUD Principal Limit Factors as of 2026, using a $500,000 home value and no
-existing mortgage for comparison purposes. Actual proceeds depend on age,
-current home value, existing mortgage balance, interest rates, and lender
-fees. This is not a quote, pre-qualification, or loan estimate."
-
-For 'medicaid-flag' and 'not-a-fit' pathways, set equityIllustration: []
-and illustrationDisclaimer: "" — no equity ranges shown for these pathways.
+| Pathway | Subject |
+|---|---|
+| `likely-fit` | "Your reverse mortgage summary, [firstName]" |
+| `explore-with-caveats` | "Your reverse mortgage summary, [firstName]" |
+| `medicaid-flag` | "Important: read this before any reverse mortgage conversation" |
+| `not-a-fit` | "Your funding options summary, [firstName]" |
 
 ---
 
-### Pathway Content
+### Email Body Structure — `likely-fit` and `explore-with-caveats`
 
-LIKELY-FIT:
-headline: "A reverse mortgage may be worth a real conversation."
-body: "Based on what you shared, your loved one appears to meet the core eligibility
-criteria for a Home Equity Conversion Mortgage — the federally insured reverse
-mortgage program. That does not mean it is the right choice. It means the conversation
-is worth having with someone who can run the actual numbers for your specific situation."
-anticipationBullets:
-- "Proceeds can be structured as a lump sum, monthly payments, or a line of credit.
-   For families funding home care or assisted living, the line of credit option is
-   often the most flexible — draw only what you need, when you need it."
-- "A HUD-approved counseling session is required before any HECM can be finalized.
-   This is a consumer protection, not a sales step — most families find it genuinely
-   useful. Dave will help you understand what to expect before you get there."
-- "If there is an existing mortgage, the reverse mortgage proceeds pay it off first.
-   Net available funds depend on remaining equity after that payoff — a specialist
-   can calculate this in one conversation."
-whatFamiliesDontKnow: "Most families assume a reverse mortgage means giving up the
-home. It does not. The homeowner keeps the title and continues to own the property.
-The loan is repaid when the home is eventually sold — typically after the owner
-passes away or moves permanently into a care community. Any equity remaining after
-repayment belongs to the estate. There is no scenario where a lender simply takes
-the home because the balance has grown."
-ctaType: 'specialist'
-ctaSubtext: "Dave will personally connect you with a Colorado-based reverse mortgage
-specialist he trusts — someone who works exclusively with older homeowners and will
-tell you honestly if it does not make sense for your situation."
+**1. Opening (personal, from Dave — not from a system):**
+> "[firstName] — I reviewed your results and wanted to make sure you have the
+> full picture before any conversations happen."
 
-EXPLORE-WITH-CAVEATS:
-headline: "There are factors worth exploring before ruling this out."
-body: "Based on what you shared, a reverse mortgage may still be possible — but one
-or more factors could affect how much is available or how the process works. The only
-way to know for certain is a brief conversation with a specialist who can look at the
-actual numbers."
-anticipationBullets:
-- "If there is a significant existing mortgage balance, the reverse mortgage proceeds
-   must pay it off first. What remains depends on current home value and the outstanding
-   balance — something a specialist calculates in a single conversation."
-- "Condominiums and manufactured homes can qualify, but carry additional requirements.
-   The property type does not automatically disqualify — it requires a closer look at
-   the specific structure or community."
-- "A temporary absence for rehab or a hospital stay does not immediately affect
-   eligibility. HECM rules allow up to 12 months away for medical reasons — a
-   specialist can clarify how this applies to your situation."
-whatFamiliesDontKnow: "Families often assume one complicating factor means a reverse
-mortgage is off the table. In practice, specialists work through these situations
-regularly. The conversation is free, takes 20 to 30 minutes, and produces a clear
-answer — either it works and here is what is available, or it does not and here is
-why. Either outcome is more useful than not knowing."
-ctaType: 'specialist'
-ctaSubtext: "Dave will personally connect you with a Colorado-based reverse mortgage
-specialist he trusts — no obligation, no pressure, and no lender trying to push you
-toward a product that does not fit."
+**2. Pathway result** — 2–3 sentences from `content.body` for their pathway
 
-MEDICAID-FLAG:
-headline: "A reverse mortgage may affect Medicaid eligibility — talk to an elder
-law attorney first."
-body: "Based on what you shared, Medicaid is already part of this picture. A reverse
-mortgage can interact with Medicaid in ways that are not always obvious and that vary
-by state. Getting the sequencing right requires an elder law attorney before any
-reverse mortgage conversation happens — and ELT can help you find the right one."
-anticipationBullets:
-- "Reverse mortgage proceeds are not counted as income for Medicaid purposes. However,
-   any funds not spent in the month they are received can count toward the Medicaid
-   asset limit — $2,000 in most states. How and when funds are drawn matters
-   significantly."
-- "A line-of-credit structure is generally the most Medicaid-compatible option —
-   drawing only what is needed and spending it within the same month. An elder law
-   attorney and a reverse mortgage specialist need to coordinate this approach together."
-- "Colorado Medicaid estate recovery rules may affect what happens to the home after
-   the borrower passes away. An elder law attorney familiar with Colorado rules is
-   essential before any decisions are made."
-whatFamiliesDontKnow: "It is possible for a reverse mortgage and Medicaid eligibility
-to coexist — but only if the approach is structured correctly from the start. Families
-who move forward without legal guidance first sometimes create a Medicaid eligibility
-problem they did not have before. ELT can connect you with an elder law attorney in
-the Boulder and Broomfield area who works regularly with exactly these situations."
-ctaType: 'elder-law'
-ctaSubtext: "ELT can connect you with an elder law attorney in the Boulder and
-Broomfield area who works regularly with Medicaid and reverse mortgage situations.
-Dave will make that introduction personally."
+**3. Equity illustration section**
+Heading: "What this could look like"
 
-NOT-A-FIT:
-headline: "A reverse mortgage is likely not the right tool here — but other options
-may be."
-body: "Based on what you shared, the core eligibility requirements for a federally
-insured reverse mortgage do not appear to be in place. That is not a dead end —
-it means this particular tool is not the right one, and there may be others worth
-exploring."
-anticipationBullets:
-- "The HECM program requires the borrower to be at least 62 years old and to own and
-   live in the home as their primary residence. If either condition is not met, a
-   standard reverse mortgage is not available."
-- "Veterans and surviving spouses may qualify for VA Aid and Attendance benefits —
-   a meaningful monthly benefit that applies regardless of home ownership. ELT can
-   help determine whether this applies and connect families with the right specialist."
-- "ELT works with families across a range of financial situations and can help identify
-   which funding options are actually available based on the full picture — not just
-   the ones that are most commonly discussed."
-whatFamiliesDontKnow: "Most families in this situation have not yet explored VA Aid
-and Attendance benefits, which can provide $1,200 to $2,200 per month for eligible
-veterans and surviving spouses — with no requirement to own a home. ELT can help
-determine whether this applies and make the right introduction."
-ctaType: 'elt-direct'
-ctaSubtext: "Dave is happy to have a direct conversation about what funding options
-may actually be available for your family's situation — no agenda, just clarity."
+Show all three age bands as a formatted list or simple table.
+Flag their specific band with a note:
+> "(based on the age range you indicated)"
+
+Include `illustrationDisclaimer` below the bands.
+
+**4. Three things to know before any conversation**
+Render `content.anticipationBullets` as a numbered list.
+
+**5. What most families don't know**
+Render `content.whatFamiliesDontKnow` as a blockquote or indented paragraph.
+
+**6. Next step** by `ctaType`:
+- `specialist`:
+  > "I'll reach out personally within one business day to discuss whether an
+  > introduction to a Colorado specialist makes sense for your situation.
+  > If you'd prefer to reach me directly:
+  > Dave@ElderLifeTransitions.net | 720-258-6001"
+- `elder-law`:
+  > Same structure but references elder law attorney introduction.
+- `elt-direct`:
+  > Same structure but references direct conversation with Dave.
+
+**7. Compliance footer:**
+Full `FUNDING_RM_DISCLAIMER` text in small/muted styling.
+
+ELT contact block:
+`Dave@ElderLifeTransitions.net | elderlifetransitions.net | 720-258-6001`
 
 ---
 
-## Required compliance exports
+### Email Body Structure — `medicaid-flag`
 
-export const FUNDING_RM_DISCLAIMER =
-  "This tool is for educational purposes only and does not constitute financial,
-  legal, or mortgage advice. Elder Life Transitions is not a mortgage lender or
-  broker. Results are not a pre-qualification or loan estimate. ELT does not receive
-  compensation for reverse mortgage referrals. If Medicaid is involved, consult an
-  elder law attorney before pursuing a reverse mortgage. A HUD-approved counseling
-  session is required before any HECM reverse mortgage can be finalized."
-
-export const FUNDING_RM_LABELS: Record<FundingRmPathway, string> = {
-  'likely-fit': 'Likely a Good Fit',
-  'explore-with-caveats': 'Worth Exploring',
-  'medicaid-flag': 'Medicaid Review Needed',
-  'not-a-fit': 'Not the Right Tool Here',
-}
+- Omit equity illustration entirely
+- Lead with the Medicaid interaction explanation (warm but direct)
+- Emphasize: elder law attorney first, ELT as coordinator
+- This family needs to slow down before proceeding — the tone should reflect that
+- Include full compliance footer
 
 ---
 
-## Verification
-- Confirm Question type import path matches existing question files exactly
-- Confirm modifier: true pattern matches existing non-scored questions
-- Run: npx tsc --noEmit
-- Fix all type errors before finishing
-- Do not modify any existing files
+### Email Body Structure — `not-a-fit`
+
+- Omit equity illustration entirely
+- Lead with validation — this is not a dead end
+- Introduce VA Aid and Attendance as the most likely alternative:
+  > "Veterans and surviving spouses may qualify for $1,200 to $2,200 per month
+  > through the VA Aid and Attendance benefit — regardless of home ownership.
+  > Dave can help determine whether this applies."
+- Offer Dave's direct conversation
+- Include full compliance footer
+
+---
+
+## Part B — Navigation
+
+Read `src/app/page.tsx` (HCA landing page).
+
+Add ONE subtle secondary link below the Begin button, above the footer note:
+
+**Text:** "Wondering how to fund care costs? →"
+**Link:** `/funding/reverse-mortgage`
+**Style:** `text-[14px] text-stone-400 hover:text-stone-600 underline-offset-2 hover:underline transition-colors`
+
+Use Next.js `Link` component — not a button element.
+Do not disrupt the existing HCA flow or button hierarchy.
+If the layout makes this feel cluttered, add it as a footer note instead
+and document the decision in the handoff record.
+
+---
+
+## Part C — Mobile QA Checklist
+
+Test at 390px viewport (iPhone 14 equivalent). Fix any issues found.
+
+**Landing page `/funding/reverse-mortgage`:**
+- [ ] Headline readable without horizontal scroll
+- [ ] Subhead line length comfortable on mobile
+- [ ] Flaw admission line not clipped
+- [ ] Checkbox and consent text readable and not clipped
+- [ ] "Show Me What's Possible" button full width
+- [ ] Disclosure text readable at `text-[13px]`
+
+**Quiz questions (funding-rm track):**
+- [ ] QuestionCard answer options not clipped
+- [ ] Progress bar visible
+- [ ] All six questions render correctly
+
+**Results page:**
+- [ ] Pathway badge renders correctly
+- [ ] Equity illustration cards stack cleanly on mobile
+- [ ] Highlighted band visually distinct on small screen
+- [ ] Anticipation bullet cards not clipped
+- [ ] Contact form inputs full width
+- [ ] Submit button full width
+- [ ] Confirmation state renders cleanly
+- [ ] Compliance disclaimer visible at bottom
+
+---
+
+## Part D — Final TypeScript and Test Pass
+
+- Run: `npx tsc --noEmit` — zero errors required
+- Run: `npx vitest run` — zero regressions required
+
+**Functional verification:**
+- [ ] `/funding/reverse-mortgage` loads and renders correctly
+- [ ] Completing qualifier with likely-fit answers submits to Supabase and
+      shows correct result with equity illustration, correct band highlighted
+- [ ] Medicaid-flag pathway shows elder-law CTA, no equity illustration
+- [ ] Under-62 answer routes directly to not-a-fit result
+- [ ] Email template fires on submission with correct pathway content
+- [ ] SNF and HCA tracks completely unchanged
+
+---
+
+## Part E — Handoff Record
+
+Output a complete list of every file created or modified across all five prompts,
+with one line describing what changed per file. This is the build record.
+
+---
+
+## Constraints
+- Minimal footprint — do not refactor existing code unless required for integration
+- Do not create new Supabase tables
+- Do not modify existing email templates
+- Clean seams throughout

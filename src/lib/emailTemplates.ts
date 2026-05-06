@@ -520,3 +520,231 @@ export function buildSnfInternalNotificationEmail({
     </div>
   `;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Funding — Reverse Mortgage email builders
+// ─────────────────────────────────────────────────────────────────────────────
+
+import {
+  FUNDING_RM_CONTENT,
+  FUNDING_RM_DISCLAIMER,
+  type FundingRmPathway,
+} from './funding-rm-content';
+
+const RM_SIGNATURE = `
+  <p style="font-size:15px;color:#333333;margin:0;">Dave</p>
+  <p style="font-size:14px;color:#666666;margin:4px 0 0 0;">
+    Elder Life Transitions &nbsp;|&nbsp; 720-258-6001 &nbsp;|&nbsp;
+    <a href="mailto:Dave@ElderLifeTransitions.net" style="color:#C4621D;">Dave@ElderLifeTransitions.net</a>
+    &nbsp;|&nbsp;
+    <a href="https://elderlifetransitions.net" style="color:#C4621D;">elderlifetransitions.net</a>
+  </p>
+`;
+
+const RM_FOOTER_DISCLAIMER = `
+  <p style="font-size:12px;color:#999999;margin:0;line-height:1.6;">
+    ${FUNDING_RM_DISCLAIMER}
+  </p>
+`;
+
+const RM_NEXT_STEP: Record<string, string> = {
+  'specialist':
+    "I'll reach out personally within one business day to discuss whether an introduction to a Colorado specialist makes sense for your situation. If you'd prefer to reach me directly: Dave@ElderLifeTransitions.net | 720-258-6001",
+  'elder-law':
+    "I'll reach out personally within one business day to discuss whether an introduction to an elder law attorney makes sense for your situation. If you'd prefer to reach me directly: Dave@ElderLifeTransitions.net | 720-258-6001",
+  'elt-direct':
+    "I'm happy to have a direct conversation about what funding options may actually be available for your family's situation. Reach me at Dave@ElderLifeTransitions.net | 720-258-6001",
+  'dead-end':
+    "I'll follow up personally with information on other funding options that may apply. Reach me at Dave@ElderLifeTransitions.net | 720-258-6001",
+};
+
+/**
+ * Family-facing result email for the Reverse Mortgage qualifier track.
+ * ageBand: 1 = 62–69, 2 = 70–79, 3 = 80+, 0 = under 62 (no illustration)
+ */
+export function buildFundingRmFamilyEmail({
+  firstName,
+  pathway,
+  ageBand,
+}: {
+  firstName: string;
+  pathway: FundingRmPathway;
+  ageBand: 0 | 1 | 2 | 3;
+}): string {
+  const content = FUNDING_RM_CONTENT[pathway];
+  const showEquity = content.equityIllustration.length > 0;
+  const highlightIndex = ageBand === 1 ? 0 : ageBand === 2 ? 1 : ageBand === 3 ? 2 : null;
+
+  const equitySection = showEquity ? `
+    <h3 style="font-size:14px;font-weight:600;color:#92400E;margin:24px 0 10px 0;text-transform:uppercase;letter-spacing:0.05em;">
+      What this could look like
+    </h3>
+    ${content.equityIllustration.map((band, i) => {
+      const isHighlighted = i === highlightIndex;
+      const bg = isHighlighted ? '#FFFBEB' : '#FAFAFA';
+      const borderStyle = isHighlighted ? 'border:2px solid #F59E0B' : 'border:1px solid #EEEEEE';
+      const flag = isHighlighted ? ' <em style="color:#92400E;font-style:italic;">(based on the age range you indicated)</em>' : '';
+      return `
+        <div style="padding:12px 16px;background:${bg};${borderStyle};border-radius:6px;margin-bottom:8px;">
+          <p style="font-size:12px;font-weight:600;color:#92400E;margin:0 0 2px 0;text-transform:uppercase;letter-spacing:0.05em;">${band.ageLabel}${flag}</p>
+          <p style="font-size:13px;color:#666666;margin:0 0 2px 0;">${band.homeValue}</p>
+          <p style="font-size:20px;font-weight:700;color:#1a1a1a;margin:0 0 2px 0;">${band.rangeLabel}</p>
+          <p style="font-size:13px;color:#555555;margin:0;font-style:italic;">${band.note}</p>
+        </div>
+      `;
+    }).join('')}
+    <p style="font-size:11px;color:#AAAAAA;line-height:1.6;margin:8px 0 24px 0;">${content.illustrationDisclaimer}</p>
+  ` : '';
+
+  const bulletsHtml = content.anticipationBullets
+    .map((b, i) => `<li style="font-size:15px;color:#333333;line-height:1.7;margin-bottom:10px;"><strong>${i + 1}.</strong> ${b}</li>`)
+    .join('');
+
+  const opening = pathway === 'medicaid-flag'
+    ? `<p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">
+        ${firstName} — I reviewed your results and wanted to reach out directly, because Medicaid
+        being part of this picture changes the sequence of steps significantly.
+       </p>
+       <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">${content.body}</p>
+       <div style="background:#FFF1F2;border-left:4px solid #F43F5E;padding:16px 20px;border-radius:4px;margin-bottom:24px;">
+         <p style="font-size:15px;color:#333333;margin:0;line-height:1.7;">
+           <strong>The right sequence:</strong> Elder law attorney first. Reverse mortgage specialist
+           second. Getting this backwards can create a Medicaid eligibility problem that did not
+           exist before. I can help you get the right people in the right order.
+         </p>
+       </div>`
+    : pathway === 'not-a-fit'
+    ? `<p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">
+        ${firstName} — I reviewed your results. Based on what you shared, a standard reverse mortgage
+        does not appear to be available in this situation — but this is not a dead end.
+       </p>
+       <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">${content.body}</p>
+       <div style="background:#FFFBEB;border-left:4px solid #F59E0B;padding:16px 20px;border-radius:4px;margin-bottom:24px;">
+         <p style="font-size:15px;color:#333333;margin:0;line-height:1.7;">
+           <strong>One option most families haven't explored:</strong> Veterans and surviving spouses
+           may qualify for $1,200 to $2,200 per month through the VA Aid and Attendance benefit —
+           regardless of home ownership. Dave can help determine whether this applies and make the
+           right introduction.
+         </p>
+       </div>`
+    : `<p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">
+        ${firstName} — I reviewed your results and wanted to make sure you have the full picture
+        before any conversations happen.
+       </p>
+       <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">${content.body}</p>`;
+
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;background:#ffffff;">
+
+      ${opening}
+      ${equitySection}
+
+      <h3 style="font-size:14px;font-weight:600;color:#555555;margin:0 0 10px 0;">
+        ${pathway === 'medicaid-flag' ? 'Three things to understand before any conversation' : 'Three things to know before any conversation'}
+      </h3>
+      <ul style="padding-left:0;list-style:none;margin-bottom:24px;">
+        ${bulletsHtml}
+      </ul>
+
+      <div style="background:#FFFBEB;border:1px solid #FCD34D;padding:18px 20px;border-radius:6px;margin-bottom:24px;">
+        <p style="font-size:13px;font-weight:600;color:#92400E;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">What most families don't know</p>
+        <p style="font-size:15px;line-height:1.7;color:#333333;margin:0;">${content.whatFamiliesDontKnow}</p>
+      </div>
+
+      <div style="background:#F0F5EE;border-left:4px solid #4a6741;padding:20px 24px;margin:32px 0;border-radius:4px;">
+        <p style="font-size:15px;line-height:1.7;color:#333333;margin:0;">
+          ${RM_NEXT_STEP[content.ctaType] ?? RM_NEXT_STEP['elt-direct']}
+        </p>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #EEEEEE;margin:28px 0;" />
+      ${RM_SIGNATURE}
+      <hr style="border:none;border-top:1px solid #EEEEEE;margin:20px 0 12px 0;" />
+      ${RM_FOOTER_DISCLAIMER}
+    </div>
+  `;
+}
+
+/**
+ * Internal notification to ELT on every RM form submission.
+ */
+export function buildFundingRmInternalNotificationEmail({
+  firstName,
+  email,
+  phone,
+  pathway,
+  score,
+  ageBand,
+  partnerId,
+  submittedAt,
+}: {
+  firstName: string;
+  email: string;
+  phone: string | null;
+  pathway: FundingRmPathway;
+  score: number;
+  ageBand: 0 | 1 | 2 | 3;
+  partnerId: string | null;
+  submittedAt: Date;
+}): string {
+  const content = FUNDING_RM_CONTENT[pathway];
+  const ageBandLabel = ageBand === 1 ? '62–69' : ageBand === 2 ? '70–79' : ageBand === 3 ? '80+' : 'Under 62';
+
+  const timestamp = submittedAt.toLocaleString('en-US', {
+    timeZone: 'America/Denver',
+    month: 'long', day: 'numeric', year: 'numeric',
+    hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+  });
+
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #EEEEEE;">
+
+      <div style="background:#92400E;padding:16px 24px;">
+        <p style="font-size:18px;font-weight:700;color:#ffffff;margin:0;">
+          New RM Lead — ${firstName} — ${pathway}
+        </p>
+      </div>
+
+      <div style="padding:24px;">
+        <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;width:160px;">Name</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;font-weight:600;">${firstName}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Email</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${email}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Phone</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${phone ?? 'not provided'}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Pathway</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;font-weight:600;">${pathway}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">CTA type</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${content.ctaType}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Score</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${score}/11</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Age band</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${ageBandLabel}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Partner</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${partnerId ?? 'direct'}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Submitted</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${timestamp}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  `;
+}
