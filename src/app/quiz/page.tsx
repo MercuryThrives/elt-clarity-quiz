@@ -35,6 +35,9 @@ function QuizPageInner() {
       if (track.id === "snf") {
         // SNF has its own dedicated results page.
         router.push(partner ? `/snf/results?partner=${encodeURIComponent(partner)}` : "/snf/results");
+      } else if (track.id === "funding-rm") {
+        // Reverse mortgage track has its own dedicated results page.
+        router.push(partner ? `/funding/reverse-mortgage/results?partner=${encodeURIComponent(partner)}` : "/funding/reverse-mortgage/results");
       } else {
         router.push(partner ? `/quiz/results?partner=${encodeURIComponent(partner)}` : "/quiz/results");
       }

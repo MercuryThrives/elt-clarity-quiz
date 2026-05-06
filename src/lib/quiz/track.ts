@@ -17,10 +17,12 @@ import {
   calculateSnfScore,
 } from "./snf-config";
 
-import type { Question } from "./questions";
-import type { TierResult } from "./scoring";
+import { FUNDING_RM_QUESTIONS } from "../funding-rm-questions";
 
-export type TrackId = "hca" | "snf";
+import type { Question } from "./questions";
+import type { TierResult, Tier } from "./scoring";
+
+export type TrackId = "hca" | "snf" | "funding-rm";
 
 export interface TrackConfig {
   id: TrackId;
@@ -61,11 +63,23 @@ const SNF_TRACK: TrackConfig = {
   calculateScore: calculateSnfScore,
 };
 
+const FUNDING_RM_TRACK: TrackConfig = {
+  id: "funding-rm",
+  questions: FUNDING_RM_QUESTIONS,
+  answerOptions: [],
+  guideContent: {},
+  // Stubs — funding-rm uses its own results page and never calls these.
+  buildTierResult: () => ({ tier: 1 as Tier, score: 0, headline: '', body: '', cta: { type: 'none' as const } }),
+  calculateTier: () => 1 as Tier,
+  calculateScore: () => 0,
+};
+
 /**
  * Resolve the track config from a raw search-param value.
  * Any unrecognised value falls back to HCA.
  */
 export function resolveTrack(trackParam: string | null | undefined): TrackConfig {
   if (trackParam === "snf") return SNF_TRACK;
+  if (trackParam === "funding-rm") return FUNDING_RM_TRACK;
   return HCA_TRACK;
 }
