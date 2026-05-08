@@ -32,21 +32,28 @@ export default function PartnerHeader({ partnerId }: PartnerHeaderProps) {
       });
   }, [partnerId]);
 
-  const showPartner = !!logoUrl && logoUrl.startsWith("http") && !logoError;
+  const showPartner = !!agencyName;
+  const showLogo = showPartner && !!logoUrl && logoUrl.startsWith("http") && !logoError;
 
   return (
     <header className="w-full border-b border-stone-200 bg-[#faf9f7]">
       <div className={`mx-auto flex w-full max-w-5xl items-center gap-6 px-6 py-5 ${showPartner ? "justify-center" : "justify-start"}`}>
         {showPartner ? (
           <>
-            {/* Partner logo — left */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={logoUrl!}
-              alt={agencyName ?? "Partner Agency"}
-              className="h-20 w-auto max-w-[200px] object-contain"
-              onError={() => setLogoError(true)}
-            />
+            {/* Partner — left: logo when available, agency name as fallback */}
+            {showLogo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={logoUrl!}
+                alt={agencyName}
+                className="h-20 w-auto max-w-[200px] object-contain"
+                onError={() => setLogoError(true)}
+              />
+            ) : (
+              <span className="font-serif text-stone-700 text-[15px] tracking-tight">
+                {agencyName}
+              </span>
+            )}
             <span className="font-serif italic text-stone-400 text-sm">
               In partnership with
             </span>
