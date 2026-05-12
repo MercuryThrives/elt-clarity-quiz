@@ -28,7 +28,7 @@ function FundingRmResultsInner() {
 
   return (
     <main className="min-h-screen bg-[#faf9f7] flex flex-col">
-      <PartnerHeader partnerId={partnerId} />
+      <PartnerHeader partnerId={partnerId} centered />
       <div className="flex-1 flex flex-col items-center px-4 pt-12 pb-16">
         <FundingRmResultsCard
           result={result}

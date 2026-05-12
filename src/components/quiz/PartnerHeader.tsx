@@ -5,9 +5,10 @@ import { supabaseBrowser } from "@/lib/supabase/browser";
 
 interface PartnerHeaderProps {
   partnerId: string | null;
+  centered?: boolean;
 }
 
-export default function PartnerHeader({ partnerId }: PartnerHeaderProps) {
+export default function PartnerHeader({ partnerId, centered }: PartnerHeaderProps) {
   const [logoUrl, setLogoUrl] = useState<string | null>(null);
   const [agencyName, setAgencyName] = useState<string | null>(null);
   const [logoError, setLogoError] = useState(false);
@@ -37,7 +38,7 @@ export default function PartnerHeader({ partnerId }: PartnerHeaderProps) {
 
   return (
     <header className="w-full border-b border-stone-200 bg-[#faf9f7]">
-      <div className={`mx-auto flex w-full max-w-5xl items-center gap-6 px-6 py-5 ${showPartner ? "justify-center" : "justify-start"}`}>
+      <div className={`mx-auto flex w-full max-w-5xl items-center gap-6 px-6 py-5 ${showPartner || centered ? "justify-center" : "justify-start"}`}>
         {showPartner ? (
           <>
             {/* Partner — left: logo when available, agency name as fallback */}
@@ -74,12 +75,12 @@ export default function PartnerHeader({ partnerId }: PartnerHeaderProps) {
           </>
         ) : (
           <>
-            {/* ELT logo only — left-aligned */}
+            {/* ELT logo only */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/elt-logo.png"
               alt="Elder Life Transitions"
-              className="h-24 w-auto object-contain"
+              className={`${centered ? "h-28" : "h-24"} w-auto object-contain`}
               onError={(e) => {
                 (e.currentTarget as HTMLImageElement).style.display = "none";
                 (e.currentTarget.nextElementSibling as HTMLElement | null)?.removeAttribute("hidden");

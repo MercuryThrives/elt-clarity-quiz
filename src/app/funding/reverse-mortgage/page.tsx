@@ -22,7 +22,7 @@ function ReverseMortgageInner() {
   return (
     <main className="min-h-screen bg-[#faf9f7] flex flex-col">
 
-      <PartnerHeader partnerId={partnerId} />
+      <PartnerHeader partnerId={partnerId} centered />
 
       <div className="flex-1 flex flex-col items-center px-4 pt-4 pb-16">
         <div className="w-full max-w-[640px]">
