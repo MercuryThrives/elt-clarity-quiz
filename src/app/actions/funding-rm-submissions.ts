@@ -43,6 +43,7 @@ export async function saveFundingRmSubmission(payload: {
       first_name: firstName,
       email,
       phone: phone || null,
+      age_band: ageBand,
       answers: { ageBand },
     })
     .select('id, created_at')
@@ -101,4 +102,19 @@ export async function saveFundingRmSubmission(payload: {
   await Promise.allSettled(emailPromises);
 
   return { submissionId };
+}
+
+export async function updateFundingRmPhone(
+  submissionId: string,
+  phone: string
+): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from('submissions')
+    .update({ phone })
+    .eq('id', submissionId);
+
+  if (error) {
+    console.error('[funding-rm] updateFundingRmPhone error:', error);
+    throw new Error('Failed to update phone');
+  }
 }

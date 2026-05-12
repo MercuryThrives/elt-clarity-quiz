@@ -1,167 +1,549 @@
-# Prompt 5 — Email Templates, Navigation & QA
+# Results Page Correction Prompt — FundingRmResultsCard.tsx
+
+## CRITICAL CONSTRAINT
+You are only permitted to modify these two files:
+1. `src/components/quiz/FundingRmResultsCard.tsx`
+2. `src/app/actions/funding-rm-submissions.ts`
+
+Do not open, read, or modify any other file except to import
+`updateFundingRmPhone` into `FundingRmResultsCard.tsx`.
+If you believe another file needs changing to make this work,
+STOP and explain why before making any changes.
+
+---
 
 ## Context
-You are completing the Reverse Mortgage qualifier track for the ELT Clarity Quiz app.
-All prior files are created and the quiz engine is wired.
+The current results page has two critical problems:
+1. No gate mechanic — all content is visible immediately, giving the family
+   everything before they submit anything
+2. The pre-gate body paragraph resolves the question instead of creating
+   tension toward the gate
+
+This prompt fixes both problems AND updates copy throughout to match the
+Hormozi Value Equation and ELT voice standards.
+
+Read `src/components/quiz/FundingRmResultsCard.tsx` carefully before
+making any changes. Then rebuild it completely following this spec.
+Do not modify any other file.
 
 ---
 
-## Part A — Email Templates
+## State Variables
 
-Study `src/lib/emailTemplates.ts` to understand the existing template pattern.
-Add funding-rm templates following the same structure. Do not modify existing templates.
-
-Create one template per pathway (four total).
-
----
-
-### Subject Lines
-
-| Pathway | Subject |
-|---|---|
-| `likely-fit` | "Your reverse mortgage summary, [firstName]" |
-| `explore-with-caveats` | "Your reverse mortgage summary, [firstName]" |
-| `medicaid-flag` | "Important: read this before any reverse mortgage conversation" |
-| `not-a-fit` | "Your funding options summary, [firstName]" |
+```typescript
+const [isSubmitted, setIsSubmitted] = useState(false)
+const [isPhoneSubmitted, setIsPhoneSubmitted] = useState(false)
+const [submittedRowId, setSubmittedRowId] = useState<string | null>(null)
+const [firstName, setFirstName] = useState('')
+const [email, setEmail] = useState('')
+const [phone, setPhone] = useState('')
+const [phoneInput, setPhoneInput] = useState('')
+const [isSubmitting, setIsSubmitting] = useState(false)
+```
 
 ---
 
-### Email Body Structure — `likely-fit` and `explore-with-caveats`
+## PAGE STRUCTURE OVERVIEW
 
-**1. Opening (personal, from Dave — not from a system):**
-> "[firstName] — I reviewed your results and wanted to make sure you have the
-> full picture before any conversations happen."
+The page has two states separated by a gate:
 
-**2. Pathway result** — 2–3 sentences from `content.body` for their pathway
-
-**3. Equity illustration section**
-Heading: "What this could look like"
-
-Show all three age bands as a formatted list or simple table.
-Flag their specific band with a note:
-> "(based on the age range you indicated)"
-
-Include `illustrationDisclaimer` below the bands.
-
-**4. Three things to know before any conversation**
-Render `content.anticipationBullets` as a numbered list.
-
-**5. What most families don't know**
-Render `content.whatFamiliesDontKnow` as a blockquote or indented paragraph.
-
-**6. Next step** by `ctaType`:
-- `specialist`:
-  > "I'll reach out personally within one business day to discuss whether an
-  > introduction to a Colorado specialist makes sense for your situation.
-  > If you'd prefer to reach me directly:
-  > Dave@ElderLifeTransitions.net | 720-258-6001"
-- `elder-law`:
-  > Same structure but references elder law attorney introduction.
-- `elt-direct`:
-  > Same structure but references direct conversation with Dave.
-
-**7. Compliance footer:**
-Full `FUNDING_RM_DISCLAIMER` text in small/muted styling.
-
-ELT contact block:
-`Dave@ElderLifeTransitions.net | elderlifetransitions.net | 720-258-6001`
+**BEFORE SUBMISSION:** Badge + tension paragraph + blurred equity teaser + gate form
+**AFTER SUBMISSION:** Badge + confirmation card + full content reveal + secondary phone ask
 
 ---
 
-### Email Body Structure — `medicaid-flag`
+## ═══════════════════════════════════════
+## BEFORE SUBMISSION STATE
+## ═══════════════════════════════════════
 
-- Omit equity illustration entirely
-- Lead with the Medicaid interaction explanation (warm but direct)
-- Emphasize: elder law attorney first, ELT as coordinator
-- This family needs to slow down before proceeding — the tone should reflect that
-- Include full compliance footer
+### Zone A1 — Pathway Badge + Tension Paragraph
 
----
+**Badge** — same pattern as existing tier badge:
+`inline-flex items-center px-3 py-1 rounded-full font-mono tracking-widest
+uppercase text-[12px] font-medium mb-6`
 
-### Email Body Structure — `not-a-fit`
+Colors by pathway:
+- `likely-fit`: `bg-emerald-100 text-emerald-700`
+- `explore-with-caveats`: `bg-amber-100 text-amber-700`
+- `medicaid-flag`: `bg-rose-100 text-rose-700`
+- `not-a-fit`: `bg-stone-100 text-stone-600`
 
-- Omit equity illustration entirely
-- Lead with validation — this is not a dead end
-- Introduce VA Aid and Attendance as the most likely alternative:
-  > "Veterans and surviving spouses may qualify for $1,200 to $2,200 per month
-  > through the VA Aid and Attendance benefit — regardless of home ownership.
-  > Dave can help determine whether this applies."
-- Offer Dave's direct conversation
-- Include full compliance footer
+Badge labels from FUNDING_RM_LABELS — import and use.
 
----
+**Headline** — render `content.headline`:
+`font-serif text-[26px] sm:text-[30px] text-stone-800 text-center
+leading-snug mb-4 max-w-2xl mx-auto`
 
-## Part B — Navigation
+**Tension paragraph** — DO NOT render `content.body` here.
+Instead render a SHORT tension line that varies by pathway.
+This creates forward pull toward the gate WITHOUT resolving the question.
 
-Read `src/app/page.tsx` (HCA landing page).
+Use this exact copy by pathway:
 
-Add ONE subtle secondary link below the Begin button, above the footer note:
+- `likely-fit`:
+  "Based on what you shared, there are a few things worth knowing before
+  any conversations happen -- starting with what the numbers could actually
+  look like for your family's situation."
 
-**Text:** "Wondering how to fund care costs? →"
-**Link:** `/funding/reverse-mortgage`
-**Style:** `text-[14px] text-stone-400 hover:text-stone-600 underline-offset-2 hover:underline transition-colors`
+- `explore-with-caveats`:
+  "Based on what you shared, there are factors in this situation worth
+  understanding before any conversations happen -- and at least one of them
+  may matter less than you think."
 
-Use Next.js `Link` component — not a button element.
-Do not disrupt the existing HCA flow or button hierarchy.
-If the layout makes this feel cluttered, add it as a footer note instead
-and document the decision in the handoff record.
+- `medicaid-flag`:
+  "Based on what you shared, there is something important to get right before
+  any reverse mortgage conversation happens. Getting the sequence wrong here
+  can create problems that didn't exist before."
 
----
+- `not-a-fit`:
+  "Based on what you shared, a standard reverse mortgage may not be the right
+  tool here -- but the funding question isn't closed. There are other options
+  most families never think to look at."
 
-## Part C — Mobile QA Checklist
-
-Test at 390px viewport (iPhone 14 equivalent). Fix any issues found.
-
-**Landing page `/funding/reverse-mortgage`:**
-- [ ] Headline readable without horizontal scroll
-- [ ] Subhead line length comfortable on mobile
-- [ ] Flaw admission line not clipped
-- [ ] Checkbox and consent text readable and not clipped
-- [ ] "Show Me What's Possible" button full width
-- [ ] Disclosure text readable at `text-[13px]`
-
-**Quiz questions (funding-rm track):**
-- [ ] QuestionCard answer options not clipped
-- [ ] Progress bar visible
-- [ ] All six questions render correctly
-
-**Results page:**
-- [ ] Pathway badge renders correctly
-- [ ] Equity illustration cards stack cleanly on mobile
-- [ ] Highlighted band visually distinct on small screen
-- [ ] Anticipation bullet cards not clipped
-- [ ] Contact form inputs full width
-- [ ] Submit button full width
-- [ ] Confirmation state renders cleanly
-- [ ] Compliance disclaimer visible at bottom
+Style: `text-[17px] text-stone-600 text-center max-w-xl mx-auto leading-relaxed mb-8`
 
 ---
 
-## Part D — Final TypeScript and Test Pass
+### Zone A2 — Equity Teaser (blurred numbers)
 
-- Run: `npx tsc --noEmit` — zero errors required
-- Run: `npx vitest run` — zero regressions required
+Only render if `content.equityIllustration.length > 0`
 
-**Functional verification:**
-- [ ] `/funding/reverse-mortgage` loads and renders correctly
-- [ ] Completing qualifier with likely-fit answers submits to Supabase and
-      shows correct result with equity illustration, correct band highlighted
-- [ ] Medicaid-flag pathway shows elder-law CTA, no equity illustration
-- [ ] Under-62 answer routes directly to not-a-fit result
-- [ ] Email template fires on submission with correct pathway content
-- [ ] SNF and HCA tracks completely unchanged
+**Section heading:**
+`font-mono tracking-widest uppercase text-stone-400 text-[12px]
+letter-spacing-widest mb-5 mt-2`
+Text: "WHAT THIS COULD LOOK LIKE"
+
+**Three equity band cards — vertical stack, `flex flex-col gap-3`:**
+
+Each card: `rounded-xl border border-stone-100 bg-white px-5 py-4`
+
+Inside each card:
+- `ageLabel`: `font-mono uppercase text-[12px] text-amber-600 mb-1 font-medium`
+- `homeValue`: `text-[14px] text-stone-400 mb-3`
+- `rangeLabel` wrapper div: `mb-2`
+  Apply blur to rangeLabel: `text-[30px] font-serif font-bold text-stone-800
+  blur-sm select-none pointer-events-none`
+- `note`: `text-[13px] text-stone-400 italic leading-relaxed`
+
+**Below the three blurred cards:**
+```
+text-[14px] text-stone-500 text-center mt-5 italic leading-relaxed
+```
+Text: "Enter your email below to see the full breakdown for your situation
+-- we'll send it to your inbox so you have it on hand."
 
 ---
 
-## Part E — Handoff Record
+### The Gate — Contact Capture Form
 
-Output a complete list of every file created or modified across all five prompts,
-with one line describing what changed per file. This is the build record.
+Container:
+`bg-white rounded-2xl border border-stone-200 shadow-sm px-6 py-8
+mt-8 max-w-lg mx-auto`
+
+**Heading:**
+`font-serif text-[22px] text-stone-800 mb-2 leading-snug`
+Text: "Where should we send your funding summary?"
+
+**Subtext:**
+`text-[15px] text-stone-500 mb-6 leading-relaxed`
+Text: "Takes 10 seconds. We'll send your personalized result to your inbox
+-- and Dave will follow up personally if a specialist conversation makes sense."
+
+**Form fields — stacked, `flex flex-col gap-3`:**
+- First name (required):
+  `placeholder="First name"`
+  `type="text"`
+- Email (required):
+  `placeholder="Email address"`
+  `type="email"`
+- All inputs:
+  `w-full rounded-xl border border-stone-200 px-4 py-3 text-[16px]
+  text-stone-800 placeholder:text-stone-400 focus:outline-none
+  focus:ring-2 focus:ring-amber-400 focus:border-transparent
+  bg-stone-50`
+
+**Submit button:**
+`w-full bg-[#C4621D] hover:bg-[#A8521A] active:bg-[#8C4416]
+text-white font-semibold rounded-xl px-6 py-4 text-[17px] mt-2
+transition-colors duration-150 disabled:opacity-60
+disabled:cursor-not-allowed`
+
+Disabled state: when `isSubmitting === true` or required fields empty.
+Loading text: "Sending..." when `isSubmitting === true`
+Default text: "Send Me My Summary"
+
+**Below button:**
+`text-[13px] text-stone-400 text-center mt-3 leading-relaxed`
+Text: "No loan application. No lender contact. Dave reads every submission
+personally -- and if a different path makes more sense for your situation,
+he'll tell you that too."
 
 ---
 
-## Constraints
-- Minimal footprint — do not refactor existing code unless required for integration
-- Do not create new Supabase tables
-- Do not modify existing email templates
-- Clean seams throughout
+## ═══════════════════════════════════════
+## AFTER SUBMISSION STATE (isSubmitted === true)
+## ═══════════════════════════════════════
+
+When isSubmitted becomes true:
+- Keep Zone A1 (badge + headline + tension paragraph) visible above
+- Replace gate form with confirmation card
+- Render full content reveal below confirmation card
+
+---
+
+### Confirmation Card
+
+`bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-5 mb-10
+max-w-lg mx-auto`
+
+Heading:
+`font-serif text-[20px] text-emerald-800 mb-1`
+Text: "Your summary is on its way -- check your inbox."
+
+Body:
+`text-[15px] text-stone-600 leading-relaxed`
+Text: "Dave will follow up personally within one business day."
+
+---
+
+### Zone B1 — Full Equity Illustration (unblurred)
+
+Section heading: same style as Zone A2 heading.
+Text: "WHAT THIS COULD LOOK LIKE"
+
+Three cards, same structure as Zone A2 BUT:
+- rangeLabel: NO blur -- `text-[30px] font-serif font-bold text-stone-800`
+  (remove blur-sm, remove select-none, remove pointer-events-none)
+- Highlight the card matching result.ageBand:
+  - ageBand 1 (62-69) → highlight index 0
+  - ageBand 2 (70-79) → highlight index 1
+  - ageBand 3 (80+) → highlight index 2
+  - Highlighted card: `border-amber-400 bg-amber-50/60`
+  - Non-highlighted: `border-stone-100 bg-white`
+
+Below three cards, render `content.illustrationDisclaimer`:
+`text-[12px] text-stone-400 leading-relaxed mt-4 max-w-prose mx-auto`
+
+---
+
+### Zone B2 — Full Body Content
+
+Render `content.body` here -- after the gate, this is where the full
+pathway explanation belongs.
+
+`text-[17px] text-stone-600 max-w-prose mx-auto leading-relaxed
+mt-10 mb-2`
+
+---
+
+### Zone B3 — Anticipation Bullets
+
+Section heading:
+`font-mono tracking-widest uppercase text-stone-400 text-[12px] mb-5 mt-10`
+Text: "WHAT TO KNOW BEFORE ANY CONVERSATION"
+
+Three bullet cards — `flex flex-col gap-3 max-w-prose mx-auto`:
+Each card:
+`rounded-xl bg-stone-50 border border-stone-100 px-5 py-4
+text-[16px] text-stone-700 leading-relaxed`
+
+Render each string from `content.anticipationBullets` array as card text.
+
+---
+
+### Zone B4 — What Families Don't Know
+
+Section heading:
+`font-mono tracking-widest uppercase text-stone-400 text-[12px] mb-4 mt-10`
+Text: "WHAT MOST FAMILIES DON'T KNOW"
+
+Blockquote card:
+`border-l-4 border-amber-400 bg-amber-50/30 rounded-r-xl px-6 py-5
+max-w-prose mx-auto mt-2`
+
+Text: `text-[17px] text-stone-700 leading-relaxed italic`
+Render `content.whatFamiliesDontKnow`
+
+---
+
+### Zone B5 — Salty Pretzel (Placement Seed)
+
+This plants the ELT placement relationship without selling it.
+Render this only for `likely-fit` and `explore-with-caveats` pathways.
+
+`text-[15px] text-stone-500 text-center max-w-prose mx-auto mt-10
+leading-relaxed border-t border-stone-100 pt-8`
+
+Text: "Most families who look at the home equity question are also in
+the early stages of figuring out what kind of care actually fits their
+loved one's situation. That's a separate conversation -- and one Dave
+is glad to have whenever you're ready."
+
+---
+
+### Zone B6 — Secondary Phone Ask
+
+Container:
+`bg-white rounded-2xl border border-stone-200 shadow-sm px-6 py-8
+mt-10 max-w-lg mx-auto`
+
+Heading:
+`text-[18px] font-semibold text-stone-700 mb-2`
+Text: "Want Dave to reach out directly?"
+
+Subtext:
+`text-[15px] text-stone-500 mb-5 leading-relaxed`
+Render `content.ctaSubtext`
+
+**If isPhoneSubmitted === false:**
+
+Phone input:
+`w-full rounded-xl border border-stone-200 px-4 py-3 text-[16px]
+text-stone-800 placeholder:text-stone-400 focus:outline-none
+focus:ring-2 focus:ring-amber-400 bg-stone-50`
+`placeholder="Your phone number (optional)"`
+`type="tel"`
+
+Button:
+`w-full bg-stone-800 hover:bg-stone-700 active:bg-stone-900
+text-white font-semibold rounded-xl px-6 py-4 text-[17px] mt-3
+transition-colors duration-150`
+Text: "Yes -- have Dave call me"
+
+Below button:
+`text-[13px] text-stone-400 text-center mt-2`
+Text: "This goes directly to Dave -- not a call center."
+
+**If isPhoneSubmitted === true:**
+`text-[15px] text-emerald-700 font-medium text-center py-6`
+Text: "Got it -- Dave will be in touch."
+
+---
+
+### Zone B7 — Compliance Disclaimer
+
+`text-[12px] text-stone-400 leading-relaxed max-w-prose mx-auto
+mt-10 mb-8 text-center`
+
+Render `FUNDING_RM_DISCLAIMER` in full. Do not truncate or omit.
+
+---
+
+## SUPABASE SUBMISSION
+
+**Initial form submit:**
+Follow the exact same async submit pattern used in the SNF track.
+
+Fields to insert:
+```typescript
+{
+  first_name: firstName,
+  email: email,
+  pathway: result.pathway,
+  total_score: result.score,
+  age_band: result.ageBand,
+  partner_id: partnerId ?? null,
+  answers: answers, // full answers map from quiz
+  track: 'funding-rm',
+  partner_type: 'funding-rm',
+}
+```
+
+On success:
+- Store returned row `id` in `submittedRowId` state
+- Set `isSubmitted = true`
+- Trigger email notification (same pattern as SNF track)
+
+On error: show inline error message below button, do not crash.
+
+**Phone submit:**
+Update existing row only -- do not insert a new row.
+
+```typescript
+await supabase
+  .from('submissions')
+  .update({ phone: phoneInput })
+  .eq('id', submittedRowId)
+```
+
+On success: set `isPhoneSubmitted = true`
+On error: show inline error, do not crash.
+
+---
+
+## IMPORTANT CONSTRAINTS
+
+- Do not modify `content.body` or any content strings from
+  `funding-rm-content.ts` -- the tension paragraph uses hardcoded
+  strings in the component (not content.body) for pre-gate display.
+  `content.body` renders post-gate in Zone B2.
+- Do not modify any other file except `FundingRmResultsCard.tsx`
+- Keep the `RETAKE ASSESSMENT` link at the very bottom (already exists
+  in current implementation -- preserve it below Zone B7)
+- Preserve all existing imports -- add new ones as needed
+
+---
+
+## VERIFICATION
+
+- Run: `npx tsc --noEmit` -- zero errors required
+- Visually confirm at desktop width:
+  [ ] Equity numbers are blurred before submission
+  [ ] Gate form appears mid-page, not at bottom
+  [ ] Full content reveals immediately after submit
+  [ ] Correct age band card highlighted post-reveal
+  [ ] Phone ask appears post-submit
+  [ ] Phone submit updates existing row, not creates new row
+  [ ] Compliance disclaimer visible at bottom
+  [ ] Retake Assessment link preserved
+
+- Visually confirm at 390px mobile width:
+  [ ] All text readable without horizontal scroll
+  [ ] Blurred cards readable on small screen
+  [ ] Gate form inputs full width
+  [ ] Submit button full width
+  [ ] Post-reveal cards not clipped
+
+- Confirm SNF and HCA tracks completely unchanged
+
+---
+
+## ADDITIONAL REQUIREMENTS (added after code review)
+
+### Remove phone from initial form
+The current component collects phone in the initial form alongside name
+and email. Remove it entirely from the initial form state and fields.
+Phone is ONLY collected in Zone B6 (secondary ask, post-submit).
+
+Remove from initial state:
+```typescript
+// REMOVE THIS:
+const [phone, setPhone] = useState('')
+```
+
+Remove the phone input field from the gate form entirely.
+The initial Supabase insert does NOT include phone.
+
+---
+
+### Add companion server action for phone update
+
+The current `saveFundingRmSubmission` in
+`src/app/actions/funding-rm-submissions.ts` handles the initial insert.
+
+Read that file to understand its pattern, then add a NEW exported
+function to the SAME file:
+
+```typescript
+export async function updateFundingRmPhone(
+  submissionId: string,
+  phone: string
+): Promise<void>
+```
+
+This function should:
+- Import the Supabase server client (same pattern as existing action)
+- Update the submissions row where id === submissionId
+- Set the phone field only
+- Throw on error
+
+Use this function in Zone B6's phone submit handler:
+```typescript
+async function handlePhoneSubmit() {
+  if (!phoneInput.trim() || !submittedRowId) return
+  try {
+    await updateFundingRmPhone(submittedRowId, phoneInput.trim())
+    setIsPhoneSubmitted(true)
+  } catch (err) {
+    console.error('[funding-rm] phone update error:', err)
+    setIsPhoneSubmitted(true) // don't block user on error
+  }
+}
+```
+
+---
+
+### Verify age_band column insert
+
+In `saveFundingRmSubmission`, confirm the insert includes:
+```typescript
+age_band: ageBand,
+```
+
+If it is missing, add it. The Supabase column was added manually
+via SQL: `ALTER TABLE submissions ADD COLUMN age_band integer;`
+
+---
+
+### Verify results page passes ageBand
+
+Check `src/app/funding/reverse-mortgage/results/page.tsx`.
+Confirm it passes `result.ageBand` through to `FundingRmResultsCard`.
+If the results page exists and passes `result` as a whole object,
+no change is needed -- ageBand is on the result object already.
+If the results page does not exist, flag it and do not proceed.
+
+---
+
+## FIXES TO src/app/actions/funding-rm-submissions.ts
+
+Read `src/app/actions/funding-rm-submissions.ts` carefully.
+
+### Fix 1 — Populate age_band column
+
+In the `supabaseAdmin.from('submissions').insert({...})` call,
+the current code stores ageBand only inside the answers jsonb:
+```typescript
+answers: { ageBand },
+```
+
+Change this to also populate the dedicated age_band column:
+```typescript
+age_band: ageBand,
+answers: { ageBand },
+```
+
+This is required for the equity band highlighting to work correctly
+in Supabase reporting and for the email template to reference it.
+
+### Fix 2 — Add updateFundingRmPhone function
+
+Add this new exported function to the SAME file, after
+`saveFundingRmSubmission`:
+
+```typescript
+export async function updateFundingRmPhone(
+  submissionId: string,
+  phone: string
+): Promise<void> {
+  const { error } = await supabaseAdmin
+    .from('submissions')
+    .update({ phone })
+    .eq('id', submissionId);
+
+  if (error) {
+    console.error('[funding-rm] updateFundingRmPhone error:', error);
+    throw new Error('Failed to update phone');
+  }
+}
+```
+
+Import this function in `FundingRmResultsCard.tsx` alongside
+the existing `saveFundingRmSubmission` import.
+
+---
+
+## PRE-LAUNCH CHECKLIST ITEM (not a code change)
+
+Before the first real submission goes through, add this environment
+variable to Vercel:
+
+  Name:  RM_NOTIFICATION_EMAIL
+  Value: Dave@ElderLifeTransitions.net
+
+Without it, the internal notification email that alerts Dave of new
+leads is silently skipped. The family email still sends -- but Dave
+won't be notified.
+
+This is separate from ELT_NOTIFICATION_EMAIL (HCA track) and
+SNF_NOTIFICATION_EMAIL (SNF track).

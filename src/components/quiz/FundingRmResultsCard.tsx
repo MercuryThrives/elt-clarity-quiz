@@ -7,7 +7,10 @@ import {
   type FundingRmPathway,
 } from "@/lib/funding-rm-content";
 import type { FundingRmResult } from "@/lib/quiz/funding-rm-scoring";
-import { saveFundingRmSubmission } from "@/app/actions/funding-rm-submissions";
+import {
+  saveFundingRmSubmission,
+  updateFundingRmPhone,
+} from "@/app/actions/funding-rm-submissions";
 
 interface FundingRmResultsCardProps {
   result: FundingRmResult;
@@ -29,28 +32,17 @@ const BADGE_LABEL: Record<FundingRmPathway, string> = {
   "not-a-fit":            "Not the Right Tool Here",
 };
 
-const CTA_HEADING: Record<string, string> = {
-  "specialist":  "Want Dave to make the introduction?",
-  "elder-law":   "Want Dave to connect you with an elder law attorney?",
-  "elt-direct":  "Want to talk through what options are actually available?",
-  "dead-end":    "Have questions about other funding options?",
+const TENSION_PARAGRAPH: Record<FundingRmPathway, string> = {
+  "likely-fit":
+    "Based on what you shared, there are a few things worth knowing before any conversations happen -- starting with what the numbers could actually look like for your family's situation.",
+  "explore-with-caveats":
+    "Based on what you shared, there are factors in this situation worth understanding before any conversations happen -- and at least one of them may matter less than you think.",
+  "medicaid-flag":
+    "Based on what you shared, there is something important to get right before any reverse mortgage conversation happens. Getting the sequence wrong here can create problems that didn't exist before.",
+  "not-a-fit":
+    "Based on what you shared, a standard reverse mortgage may not be the right tool here -- but the funding question isn't closed. There are other options most families never think to look at.",
 };
 
-const CTA_BUTTON_TEXT: Record<string, string> = {
-  "specialist":  "Yes — connect me with the specialist",
-  "elder-law":   "Yes — connect me with an attorney",
-  "elt-direct":  "Talk to Dave directly",
-  "dead-end":    "Explore other options",
-};
-
-const CONFIRM_BODY: Record<string, string> = {
-  "specialist":  "Your personalized funding summary is on its way. Dave will reach out personally to discuss next steps and make the introduction when the time is right.",
-  "elder-law":   "Dave will reach out personally to discuss your situation and connect you with an elder law attorney who works regularly with these cases.",
-  "elt-direct":  "Dave will reach out personally — no agenda, just a useful conversation about what options may be available.",
-  "dead-end":    "Dave will follow up with information on other funding options that may apply to your family's situation.",
-};
-
-// ageBand → equity band card index to highlight
 function highlightIndex(ageBand: 0 | 1 | 2 | 3): number | null {
   if (ageBand === 1) return 0;
   if (ageBand === 2) return 1;
@@ -60,131 +52,115 @@ function highlightIndex(ageBand: 0 | 1 | 2 | 3): number | null {
 
 export default function FundingRmResultsCard({
   result,
-  submissionId,
+  submissionId: _submissionId,
   partnerId,
 }: FundingRmResultsCardProps) {
   const content = FUNDING_RM_CONTENT[result.pathway];
-
-  const [firstName, setFirstName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const formValid = firstName.trim() && email.trim();
   const highlighted = highlightIndex(result.ageBand);
 
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isPhoneSubmitted, setIsPhoneSubmitted] = useState(false);
+  const [submittedRowId, setSubmittedRowId] = useState<string | null>(null);
+  const [firstName, setFirstName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phoneInput, setPhoneInput] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const formValid = firstName.trim() !== "" && email.trim() !== "";
+
   async function handleSubmit() {
-    if (!formValid || loading) return;
-    setLoading(true);
+    if (!formValid || isSubmitting) return;
+    setIsSubmitting(true);
+    setSubmitError(null);
     try {
-      await saveFundingRmSubmission({
+      const { submissionId: rowId } = await saveFundingRmSubmission({
         firstName: firstName.trim(),
         email: email.trim(),
-        phone: phone.trim() || null,
         pathway: result.pathway,
         score: result.score,
         ageBand: result.ageBand,
-        submissionId,
+        submissionId: null,
         partnerId: partnerId ?? null,
       });
-      setSubmitted(true);
+      setSubmittedRowId(rowId);
+      setIsSubmitted(true);
     } catch (err) {
       console.error("[funding-rm] submission error:", err);
-      setSubmitted(true); // don't block the user on error
+      setSubmitError("Something went wrong -- please try again.");
     } finally {
-      setLoading(false);
+      setIsSubmitting(false);
+    }
+  }
+
+  async function handlePhoneSubmit() {
+    if (!phoneInput.trim() || !submittedRowId) return;
+    try {
+      await updateFundingRmPhone(submittedRowId, phoneInput.trim());
+      setIsPhoneSubmitted(true);
+    } catch (err) {
+      console.error("[funding-rm] phone update error:", err);
+      setIsPhoneSubmitted(true);
     }
   }
 
   return (
-    <div className="w-full max-w-2xl mx-auto space-y-8">
+    <div className="w-full max-w-2xl mx-auto">
 
-      {/* ── Zone 1: Badge + Headline + Body ────────────────────────────── */}
+      {/* Zone A1 — Badge + Headline + Tension Paragraph (always visible) */}
       <div className="text-center">
-        <span className={`inline-block font-mono tracking-widest uppercase rounded-full px-3 py-1 text-[15px] mb-4 ${BADGE_STYLE[result.pathway]}`}>
+        <span
+          className={`inline-flex items-center px-3 py-1 rounded-full font-mono tracking-widest uppercase text-[12px] font-medium mb-6 ${BADGE_STYLE[result.pathway]}`}
+        >
           {BADGE_LABEL[result.pathway]}
         </span>
-        <h1 className="font-serif text-[24px] text-stone-800 leading-snug mb-4">
+        <h1 className="font-serif text-[26px] sm:text-[30px] text-stone-800 text-center leading-snug mb-4 max-w-2xl mx-auto">
           {content.headline}
         </h1>
-        <p className="text-[18px] text-stone-600 leading-relaxed max-w-prose mx-auto">
-          {content.body}
+        <p className="text-[17px] text-stone-600 text-center max-w-xl mx-auto leading-relaxed mb-8">
+          {TENSION_PARAGRAPH[result.pathway]}
         </p>
       </div>
 
-      {/* ── Zone 2: Equity Illustration ─────────────────────────────────── */}
-      {content.equityIllustration.length > 0 && (
-        <div>
-          <h2 className="font-mono tracking-widest uppercase text-stone-600 text-[18px] mb-4">
-            What this could look like
-          </h2>
-          <div className="space-y-3">
-            {content.equityIllustration.map((band, i) => {
-              const isHighlighted = i === highlighted;
-              return (
-                <div
-                  key={i}
-                  className={`rounded-xl border px-5 py-4 ${isHighlighted ? "border-amber-400 bg-amber-50" : "border-stone-100 bg-white"}`}
-                >
-                  <p className="font-mono uppercase text-[14px] text-amber-700 mb-1">
-                    {band.ageLabel}
-                  </p>
-                  <p className="text-[16px] text-stone-500 mb-1">{band.homeValue}</p>
-                  <p className="font-serif font-bold text-[28px] text-stone-800 mb-1">
-                    {band.rangeLabel}
-                  </p>
-                  <p className="text-[15px] text-stone-500 italic">{band.note}</p>
-                </div>
-              );
-            })}
-          </div>
-          <p className="text-[12px] text-stone-400 leading-relaxed mt-3">
-            {content.illustrationDisclaimer}
-          </p>
-        </div>
-      )}
-
-      {/* ── Zone 3: Anticipation Bullets ────────────────────────────────── */}
-      <div>
-        <h2 className="font-mono tracking-widest uppercase text-stone-600 text-[18px] mb-4">
-          What to know before any conversation
-        </h2>
-        <div className="space-y-4">
-          {content.anticipationBullets.map((bullet, i) => (
-            <div key={i} className="rounded-xl border border-stone-100 bg-white px-5 py-4">
-              <p className="text-[18px] text-stone-600 leading-relaxed">{bullet}</p>
+      {!isSubmitted ? (
+        <>
+          {/* Zone A2 — Blurred equity teaser */}
+          {content.equityIllustration.length > 0 && (
+            <div className="mb-8">
+              <p className="font-mono tracking-widest uppercase text-stone-400 text-[12px] mb-5 mt-2">
+                WHAT THIS COULD LOOK LIKE
+              </p>
+              <div className="flex flex-col gap-3">
+                {content.equityIllustration.map((band, i) => (
+                  <div key={i} className="rounded-xl border border-stone-100 bg-white px-5 py-4">
+                    <p className="font-mono uppercase text-[12px] text-amber-600 mb-1 font-medium">
+                      {band.ageLabel}
+                    </p>
+                    <p className="text-[14px] text-stone-400 mb-3">{band.homeValue}</p>
+                    <div className="mb-2">
+                      <span className="text-[30px] font-serif font-bold text-stone-800 blur-sm select-none pointer-events-none">
+                        {band.rangeLabel}
+                      </span>
+                    </div>
+                    <p className="text-[13px] text-stone-400 italic leading-relaxed">{band.note}</p>
+                  </div>
+                ))}
+              </div>
+              <p className="text-[14px] text-stone-500 text-center mt-5 italic leading-relaxed">
+                Enter your email below to see the full breakdown for your situation -- we&rsquo;ll send it to your inbox so you have it on hand.
+              </p>
             </div>
-          ))}
-        </div>
-      </div>
+          )}
 
-      {/* ── Zone 4: What Families Don't Know ────────────────────────────── */}
-      <div>
-        <h2 className="font-mono tracking-widest uppercase text-stone-600 text-[18px] mb-4">
-          What most families don&rsquo;t know
-        </h2>
-        <div
-          className="rounded-xl bg-amber-50/40 px-5 py-4"
-          style={{ borderLeft: "3px solid #fbbf24" }}
-        >
-          <p className="text-[18px] text-stone-700 leading-relaxed">
-            {content.whatFamiliesDontKnow}
-          </p>
-        </div>
-      </div>
-
-      {/* ── Zone 5: Contact Capture ──────────────────────────────────────── */}
-      <div className="rounded-xl border border-stone-200 bg-white px-6 py-6">
-        {!submitted ? (
-          <>
-            <h2 className="font-serif text-[22px] text-stone-800 mb-2">
-              {CTA_HEADING[content.ctaType]}
+          {/* Gate form */}
+          <div className="bg-white rounded-2xl border border-stone-200 shadow-sm px-6 py-8 mt-8 max-w-lg mx-auto">
+            <h2 className="font-serif text-[22px] text-stone-800 mb-2 leading-snug">
+              Where should we send your funding summary?
             </h2>
-            <p className="text-[17px] text-stone-600 mb-4 leading-relaxed">
-              {content.ctaSubtext}
+            <p className="text-[15px] text-stone-500 mb-6 leading-relaxed">
+              Takes 10 seconds. We&rsquo;ll send your personalized result to your inbox -- and Dave will follow up personally if a specialist conversation makes sense.
             </p>
-            <div className="space-y-3 mb-4">
+            <div className="flex flex-col gap-3">
               <label htmlFor="rm-first-name" className="sr-only">First name</label>
               <input
                 id="rm-first-name"
@@ -193,7 +169,7 @@ export default function FundingRmResultsCard({
                 autoComplete="given-name"
                 value={firstName}
                 onChange={(e) => setFirstName(e.target.value)}
-                className="w-full rounded-xl border border-stone-300 px-4 py-3 text-[18px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full rounded-xl border border-stone-200 px-4 py-3 text-[16px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-stone-50"
               />
               <label htmlFor="rm-email" className="sr-only">Email address</label>
               <input
@@ -204,47 +180,158 @@ export default function FundingRmResultsCard({
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl border border-stone-300 px-4 py-3 text-[18px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
-              />
-              <label htmlFor="rm-phone" className="sr-only">Phone</label>
-              <input
-                id="rm-phone"
-                type="tel"
-                placeholder="Phone (optional)"
-                inputMode="tel"
-                autoComplete="tel"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                className="w-full rounded-xl border border-stone-300 px-4 py-3 text-[18px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400"
+                className="w-full rounded-xl border border-stone-200 px-4 py-3 text-[16px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400 focus:border-transparent bg-stone-50"
               />
             </div>
             <button
               onClick={handleSubmit}
-              disabled={!formValid || loading}
-              className="w-full rounded-xl bg-[#C4621D] hover:bg-[#A8521A] disabled:opacity-50 text-white text-[18px] font-medium py-4 px-6 transition-colors cursor-pointer disabled:cursor-not-allowed"
+              disabled={!formValid || isSubmitting}
+              className="w-full bg-[#C4621D] hover:bg-[#A8521A] active:bg-[#8C4416] text-white font-semibold rounded-xl px-6 py-4 text-[17px] mt-2 transition-colors duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading ? "Sending…" : CTA_BUTTON_TEXT[content.ctaType]}
+              {isSubmitting ? "Sending..." : "Send Me My Summary"}
             </button>
-            <p className="text-[13px] text-stone-400 mt-3 text-center">
-              Dave reads every submission personally and follows up within one business day.
+            <p className="text-[13px] text-stone-400 text-center mt-3 leading-relaxed">
+              No loan application. No lender contact. Dave reads every submission personally -- and if a different path makes more sense for your situation, he&rsquo;ll tell you that too.
             </p>
-          </>
-        ) : (
-          <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4">
-            <p className="text-[18px] text-emerald-800 font-medium mb-2">
-              You&rsquo;re all set — check your inbox.
+            {submitError && (
+              <p className="text-[13px] text-rose-500 text-center mt-2">{submitError}</p>
+            )}
+          </div>
+        </>
+      ) : (
+        <>
+          {/* Confirmation card */}
+          <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-5 py-5 mb-10 max-w-lg mx-auto">
+            <p className="font-serif text-[20px] text-emerald-800 mb-1">
+              Your summary is on its way -- check your inbox.
             </p>
-            <p className="text-[16px] text-emerald-700 leading-relaxed">
-              {CONFIRM_BODY[content.ctaType]}
+            <p className="text-[15px] text-stone-600 leading-relaxed">
+              Dave will follow up personally within one business day.
             </p>
           </div>
-        )}
-      </div>
 
-      {/* ── Zone 6: Compliance Disclaimer ───────────────────────────────── */}
-      <p className="text-[12px] text-stone-400 leading-relaxed">
-        {FUNDING_RM_DISCLAIMER}
-      </p>
+          {/* Zone B1 — Full equity illustration (unblurred, age band highlighted) */}
+          {content.equityIllustration.length > 0 && (
+            <div className="mb-8">
+              <p className="font-mono tracking-widest uppercase text-stone-400 text-[12px] mb-5 mt-2">
+                WHAT THIS COULD LOOK LIKE
+              </p>
+              <div className="flex flex-col gap-3">
+                {content.equityIllustration.map((band, i) => {
+                  const isHighlighted = i === highlighted;
+                  return (
+                    <div
+                      key={i}
+                      className={`rounded-xl border px-5 py-4 ${
+                        isHighlighted
+                          ? "border-amber-400 bg-amber-50/60"
+                          : "border-stone-100 bg-white"
+                      }`}
+                    >
+                      <p className="font-mono uppercase text-[12px] text-amber-600 mb-1 font-medium">
+                        {band.ageLabel}
+                      </p>
+                      <p className="text-[14px] text-stone-400 mb-3">{band.homeValue}</p>
+                      <div className="mb-2">
+                        <span className="text-[30px] font-serif font-bold text-stone-800">
+                          {band.rangeLabel}
+                        </span>
+                      </div>
+                      <p className="text-[13px] text-stone-400 italic leading-relaxed">{band.note}</p>
+                    </div>
+                  );
+                })}
+              </div>
+              <p className="text-[12px] text-stone-400 leading-relaxed mt-4 max-w-prose mx-auto">
+                {content.illustrationDisclaimer}
+              </p>
+            </div>
+          )}
+
+          {/* Zone B2 — Full body content */}
+          <p className="text-[17px] text-stone-600 max-w-prose mx-auto leading-relaxed mt-10 mb-2">
+            {content.body}
+          </p>
+
+          {/* Zone B3 — Anticipation bullets */}
+          <div>
+            <p className="font-mono tracking-widest uppercase text-stone-400 text-[12px] mb-5 mt-10">
+              WHAT TO KNOW BEFORE ANY CONVERSATION
+            </p>
+            <div className="flex flex-col gap-3 max-w-prose mx-auto">
+              {content.anticipationBullets.map((bullet, i) => (
+                <div
+                  key={i}
+                  className="rounded-xl bg-stone-50 border border-stone-100 px-5 py-4 text-[16px] text-stone-700 leading-relaxed"
+                >
+                  {bullet}
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Zone B4 — What families don't know */}
+          <div>
+            <p className="font-mono tracking-widest uppercase text-stone-400 text-[12px] mb-4 mt-10">
+              WHAT MOST FAMILIES DON&rsquo;T KNOW
+            </p>
+            <div className="border-l-4 border-amber-400 bg-amber-50/30 rounded-r-xl px-6 py-5 max-w-prose mx-auto mt-2">
+              <p className="text-[17px] text-stone-700 leading-relaxed italic">
+                {content.whatFamiliesDontKnow}
+              </p>
+            </div>
+          </div>
+
+          {/* Zone B5 — Salty pretzel (placement seed, likely-fit and explore-with-caveats only) */}
+          {(result.pathway === "likely-fit" ||
+            result.pathway === "explore-with-caveats") && (
+            <p className="text-[15px] text-stone-500 text-center max-w-prose mx-auto mt-10 leading-relaxed border-t border-stone-100 pt-8">
+              Most families who look at the home equity question are also in the early stages of figuring out what kind of care actually fits their loved one&rsquo;s situation. That&rsquo;s a separate conversation -- and one Dave is glad to have whenever you&rsquo;re ready.
+            </p>
+          )}
+
+          {/* Zone B6 — Secondary phone ask */}
+          <div className="bg-white rounded-2xl border border-stone-200 shadow-sm px-6 py-8 mt-10 max-w-lg mx-auto">
+            <p className="text-[18px] font-semibold text-stone-700 mb-2">
+              Want Dave to reach out directly?
+            </p>
+            <p className="text-[15px] text-stone-500 mb-5 leading-relaxed">
+              {content.ctaSubtext}
+            </p>
+            {!isPhoneSubmitted ? (
+              <>
+                <label htmlFor="rm-phone" className="sr-only">Your phone number</label>
+                <input
+                  id="rm-phone"
+                  type="tel"
+                  placeholder="Your phone number (optional)"
+                  value={phoneInput}
+                  onChange={(e) => setPhoneInput(e.target.value)}
+                  className="w-full rounded-xl border border-stone-200 px-4 py-3 text-[16px] text-stone-800 placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-amber-400 bg-stone-50"
+                />
+                <button
+                  onClick={handlePhoneSubmit}
+                  className="w-full bg-stone-800 hover:bg-stone-700 active:bg-stone-900 text-white font-semibold rounded-xl px-6 py-4 text-[17px] mt-3 transition-colors duration-150"
+                >
+                  Yes -- have Dave call me
+                </button>
+                <p className="text-[13px] text-stone-400 text-center mt-2">
+                  This goes directly to Dave -- not a call center.
+                </p>
+              </>
+            ) : (
+              <p className="text-[15px] text-emerald-700 font-medium text-center py-6">
+                Got it -- Dave will be in touch.
+              </p>
+            )}
+          </div>
+
+          {/* Zone B7 — Compliance disclaimer */}
+          <p className="text-[12px] text-stone-400 leading-relaxed max-w-prose mx-auto mt-10 mb-8 text-center">
+            {FUNDING_RM_DISCLAIMER}
+          </p>
+        </>
+      )}
 
     </div>
   );
