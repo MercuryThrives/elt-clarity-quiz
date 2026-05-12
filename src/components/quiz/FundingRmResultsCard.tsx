@@ -32,15 +32,22 @@ const BADGE_LABEL: Record<FundingRmPathway, string> = {
   "not-a-fit":            "Not the Right Tool Here",
 };
 
+const PRE_GATE_HEADLINE: Record<FundingRmPathway, string> = {
+  "likely-fit":           "There may be real money here. Here's what to know first.",
+  "explore-with-caveats": "There may still be real money here. Here's what to know first.",
+  "medicaid-flag":        "Before any reverse mortgage conversation happens, read this.",
+  "not-a-fit":            "A standard reverse mortgage may not fit -- but the funding question isn't closed.",
+};
+
 const TENSION_PARAGRAPH: Record<FundingRmPathway, string> = {
   "likely-fit":
-    "Based on what you shared, there are a few things worth knowing before any conversations happen -- starting with what the numbers could actually look like for your family's situation.",
+    "Based on what you shared, the numbers may be more meaningful than your family expects. Enter your email to see what they could look like.",
   "explore-with-caveats":
-    "Based on what you shared, there are factors in this situation worth understanding before any conversations happen -- and at least one of them may matter less than you think.",
+    "Based on what you shared, there are factors worth understanding here. At least one of them may matter less than you think. Enter your email to see the full picture.",
   "medicaid-flag":
-    "Based on what you shared, there is something important to get right before any reverse mortgage conversation happens. Getting the sequence wrong here can create problems that didn't exist before.",
+    "Based on what you shared, Medicaid is part of this picture. Getting the sequence right matters -- and getting it wrong can create problems that didn't exist before.",
   "not-a-fit":
-    "Based on what you shared, a standard reverse mortgage may not be the right tool here -- but the funding question isn't closed. There are other options most families never think to look at.",
+    "Based on what you shared, a standard reverse mortgage may not be the right tool. But there are other options most families never think to look at.",
 };
 
 function highlightIndex(ageBand: 0 | 1 | 2 | 3): number | null {
@@ -115,7 +122,7 @@ export default function FundingRmResultsCard({
           {BADGE_LABEL[result.pathway]}
         </span>
         <h1 className="font-serif text-[26px] sm:text-[30px] text-stone-800 text-center leading-snug mb-4 max-w-2xl mx-auto">
-          {content.headline}
+          {PRE_GATE_HEADLINE[result.pathway]}
         </h1>
         <p className="text-[17px] text-stone-600 text-center max-w-xl mx-auto leading-relaxed mb-8">
           {TENSION_PARAGRAPH[result.pathway]}
@@ -150,6 +157,12 @@ export default function FundingRmResultsCard({
                 Enter your email below to see the full breakdown for your situation -- we&rsquo;ll send it to your inbox so you have it on hand.
               </p>
             </div>
+          )}
+
+          {(result.pathway === "likely-fit" || result.pathway === "explore-with-caveats") && (
+            <p className="text-[14px] text-stone-500 text-center mt-3 mb-6 leading-relaxed">
+              Every month without a funding answer is a month of care costs paid from the wrong pocket.
+            </p>
           )}
 
           {/* Gate form */}
@@ -282,11 +295,10 @@ export default function FundingRmResultsCard({
             </div>
           </div>
 
-          {/* Zone B5 — Salty pretzel (placement seed, likely-fit and explore-with-caveats only) */}
-          {(result.pathway === "likely-fit" ||
-            result.pathway === "explore-with-caveats") && (
+          {/* Zone B5 — Salty pretzel */}
+          {(result.pathway === "likely-fit" || result.pathway === "explore-with-caveats") && (
             <p className="text-[15px] text-stone-500 text-center max-w-prose mx-auto mt-10 leading-relaxed border-t border-stone-100 pt-8">
-              Most families who look at the home equity question are also in the early stages of figuring out what kind of care actually fits their loved one&rsquo;s situation. That&rsquo;s a separate conversation -- and one Dave is glad to have whenever you&rsquo;re ready.
+              Most families who look at the home equity question are also in the early stages of figuring out what kind of care actually fits their loved one&rsquo;s situation. That is a separate conversation -- and one Dave is glad to have whenever you are ready.
             </p>
           )}
 
