@@ -127,48 +127,49 @@ function SnfResultsInner() {
           {/* ── Section 2: Primary Pathway Preview ───────────────────────── */}
           <div className="rounded-2xl border-2 border-amber-200 bg-amber-50 px-6 py-6 mb-8">
             <p className="text-[13px] font-mono tracking-widest uppercase text-amber-600 mb-2">
-              Primary Care Setting
+              Your Care Assessment
             </p>
             <h2 className="text-2xl md:text-3xl font-serif font-bold text-stone-800 mb-3 leading-tight">
-              {pathwayLabel}
+              Your answers point in a clear direction.
             </h2>
             <p className="text-[17px] text-stone-600 leading-relaxed mb-4">
-              {content.fullDescription}
+              Your report covers three things most families don&rsquo;t know going in:
             </p>
+            <ul className="space-y-3 mb-4">
+              {content.anticipationBullets.map((bullet, i) => (
+                <li key={i} className="flex gap-3">
+                  <span className="mt-2 shrink-0 w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  <p className="text-[17px] text-stone-600 leading-relaxed">{bullet}</p>
+                </li>
+              ))}
+            </ul>
             <p className="text-[15px] text-stone-500 italic">
-              Based on what you shared, this appears to be worth exploring.
+              Discharge timelines move fast. The sooner you have this, the more options you have.
             </p>
           </div>
 
-          <p className="text-[16px] text-stone-500 leading-relaxed mb-8">
-            Your report includes the care options that align with what you described — and the
-            guidance that most families only get after a conversation with someone who knows this
-            landscape well.
-          </p>
-
           <SectionDivider />
+
+          <p className="text-[16px] text-stone-500 leading-relaxed italic mb-8">
+            A daughter called me after we talked. She said it was the first time in weeks she felt like she actually knew what she was walking into.
+          </p>
 
           {/* ── Section 3: Email Capture Gate ────────────────────────────── */}
           {!gateSubmitted ? (
             <div className="rounded-2xl border border-stone-200 bg-white px-6 py-6">
               <h3 className="text-xl font-serif text-stone-800 mb-2">
-                Get Your Personalized Care Options Report
+                Your answers point to a clear path. Here is what comes next.
               </h3>
               <p className="text-[17px] text-stone-600 leading-relaxed mb-3">
-                Your report includes the care options that align with what you described — and the
-                guidance that most families only get after a conversation with someone who knows this
-                landscape well.
+                I ran senior living communities for years, including Assisted Living/Memory Care and
+                Independent Living, before I started helping families find the right fit. I&rsquo;ve
+                seen this from both sides, and I built this report around what I wish every family
+                knew going in.
               </p>
               <p className="text-[16px] text-stone-600 leading-relaxed mb-4">
                 Elder Life Transitions will prepare your report and reach out to answer any
-                questions.{" "}
-                {isCommunityPathway
-                  ? "If you decide to explore specific communities, ELT can help you compare options, schedule tours, and navigate the process — at no cost to your family."
-                  : pathway === "home-hca"
-                  ? "If you decide to explore home care options, ELT can help you identify the right agencies, ask the right questions, and make a confident decision — at no cost to your family."
-                  : pathway === "home-family"
-                  ? "ELT can connect you with local resources and stay available as a trusted advisor as your loved one's situation evolves — at no cost to your family."
-                  : "ELT can help you understand your options, identify the right questions to ask the discharge team, and connect you with the right resources — at no cost to your family."}
+                questions. If you decide to explore your options further, ELT can help you ask the
+                right questions and make a confident decision -- at no cost to your family.
               </p>
               {isCommunityPathway && (
                 <p className="text-[14px] text-stone-400 italic mb-6">
@@ -251,7 +252,7 @@ function SnfResultsInner() {
           ) : (
             <div className="rounded-xl border border-emerald-200 bg-emerald-50 px-5 py-4 mb-2">
               <p className="text-[17px] text-emerald-800 font-medium">
-                Your report is on its way — check your inbox.
+                Your report is on its way -- check your inbox.
               </p>
             </div>
           )}
