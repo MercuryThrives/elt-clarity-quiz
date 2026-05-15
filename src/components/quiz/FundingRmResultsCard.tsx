@@ -169,7 +169,7 @@ export default function FundingRmResultsCard({
           )}
 
           <p className="text-[14px] text-stone-500 text-center max-w-prose mx-auto mb-4 leading-relaxed">
-            Dave spent a decade as an Executive Director running Assisted Living and Memory Care communities in Colorado. He has helped hundreds of families work through exactly this question.
+            Dave spent years as an Executive Director running an Assisted Living/Memory Care community and an Indepdendent Living Community in Colorado. He has helped families work through exactly this question.
           </p>
 
           {/* Gate form */}

@@ -1,162 +1,106 @@
-# Correction Run 3 — Equity Card + Copy Improvements
+CHANGE 0 -- SCOPE RESTRICTION
 
-## CRITICAL CONSTRAINT
-Only modify `src/components/quiz/FundingRmResultsCard.tsx`.
-Do not modify any other file.
-Do not change any logic, state variables, or Supabase submission code.
-Do not touch SNF or HCA tracks.
+Before making any changes, confirm you are working only in:
+src/app/snf/results/page.tsx
 
----
+Do not modify any files outside of this path. Specifically, do not touch:
+- src/app/quiz/results/page.tsx
+- src/components/quiz/ResultsCard.tsx
+- Any shared components, hooks, utilities, or config files
 
-## Read First
-Read `src/components/quiz/FundingRmResultsCard.tsx` completely before
-making any changes.
-
----
-
-## Change 1 — Show Only the Relevant Age Band Card
-
-The current component renders all three equity band cards pre-gate.
-Replace this with a single card showing only the band matching
-`result.ageBand`.
-
-Band index mapping:
-- ageBand 1 → equityIllustration[0] (Age 62-69)
-- ageBand 2 → equityIllustration[1] (Age 70-79)
-- ageBand 3 → equityIllustration[2] (Age 80 or older)
-
-If ageBand is 0 (not-a-fit) or equityIllustration is empty,
-do not render this section at all.
-
-The single card uses the same styling as the existing cards:
-`rounded-xl border border-stone-100 bg-white px-5 py-4`
+If any of the changes below would require modifying a shared component that
+is also used by the HCA quiz track, stop and tell me before proceeding.
+We will handle that case separately rather than risk impacting the HCA track.
 
 ---
 
-## Change 2 — Add Personalizer Line Above the Card
+I need you to update the SNF results page. The file is at:
+src/app/snf/results/page.tsx
 
-Directly above the single equity card, add:
+Please read the full file before making any changes.
 
-```tsx
-<p className="text-[14px] text-stone-500 mb-3">
-  Based on the age range you indicated:
-</p>
-```
-
----
-
-## Change 3 — Add Label Above the Blurred Number
-
-Inside the equity card, directly above the rangeLabel element, add:
-
-```tsx
-<p className="text-[13px] font-mono uppercase tracking-widest
-  text-stone-400 mb-1">
-  Estimated equity available:
-</p>
-```
-
-This label must appear BOTH in the pre-gate blurred state AND the
-post-gate unblurred state. Do not gate this label.
+This is a copy-and-structure update only. Do not change any scoring logic,
+routing logic, Supabase wiring, email triggers, or form submission behavior.
+Change only what is explicitly listed below.
 
 ---
 
-## Change 4 — Add Care-Months Reframe Below the Card
+CHANGE 1 -- REMOVE THE PATHWAY NAME AND DESCRIPTION FROM THE PRE-GATE CARD
 
-Directly below the single equity card (outside the card container),
-add this line. It must be visible BOTH pre-gate and post-gate.
-Do not blur or hide it.
+Currently the pre-gate section shows the pathway name as a headline and a
+full descriptive paragraph explaining what that care type is.
 
-Only render when `content.equityIllustration.length > 0` and
-`result.ageBand !== 0`.
+Remove both. Replace them with the following structure:
 
-```tsx
-<p className="text-[15px] text-stone-600 text-center leading-relaxed
-  mt-4 max-w-prose mx-auto">
-  This amount may cover 3 to 5 years of assisted living costs in
-  Colorado -- without selling the property or touching savings.
-</p>
-```
+Label (small caps, same styling as current "PRIMARY CARE SETTING" label):
+YOUR CARE ASSESSMENT
 
----
+Headline:
+Your answers point in a clear direction.
 
-## Change 5 — Add Proof Statement Above Gate Form
+Body text (paragraph):
+Your report covers three things most families don't know going in:
 
-Directly above the gate form container, add:
+Bullets (use the existing anticipationBullets array from SNF_PATHWAY_CONTENT
+for the active pathway -- these are already in the content file and should
+already be accessible):
+- [anticipationBullets[0]]
+- [anticipationBullets[1]]
+- [anticipationBullets[2]]
 
-```tsx
-<p className="text-[14px] text-stone-500 text-center max-w-prose
-  mx-auto mb-4 leading-relaxed">
-  Dave spent a decade as an Executive Director running Assisted Living
-  and Memory Care communities in Colorado. He has helped hundreds of
-  families work through exactly this question.
-</p>
-```
+Italicized line below bullets:
+Discharge timelines move fast. The sooner you have this, the more options
+you have.
+
+Do not show the pathway name or fullDescription anywhere in the pre-gate
+section. The pathway name and fullDescription are revealed post-gate only.
 
 ---
 
-## Change 6 — Simplify Gate Form Subtext
+CHANGE 2 -- ADD SOCIAL PROOF BLOCK BETWEEN PRE-GATE CARD AND GATE CARD
 
-Find the gate form subtext. Replace its current text with:
+Between the pre-gate card and the gate card, add a single paragraph in a
+simple, unboxed treatment. Centered or left-aligned matching the existing
+page layout. Italic or regular weight -- whichever fits the existing type
+hierarchy better.
 
-"Takes 10 seconds. Your personalized funding summary goes straight
-to your inbox."
-
-Remove the mention of Dave's follow-up from this line entirely.
-The P.S. line below the button already handles that.
-
----
-
-## Change 7 — Add Status Line Post-Gate
-
-In the post-gate render, find Zone B5 (salty pretzel section).
-Add this paragraph AFTER the salty pretzel line and BEFORE Zone B6
-(secondary phone ask):
-
-```tsx
-<p className="text-[15px] text-stone-500 text-center max-w-prose
-  mx-auto mt-6 leading-relaxed">
-  Families who understand the funding picture before they start
-  placement conversations consistently make better decisions -- and
-  feel better about them afterward. You have already done something
-  most families skip entirely.
-</p>
-```
-
-Only render for `likely-fit` and `explore-with-caveats` pathways.
-Do not render for `medicaid-flag` or `not-a-fit`.
+Copy (use exactly):
+A daughter called me after we talked. She said it was the first time in
+weeks she felt like she actually knew what she was walking into.
 
 ---
 
-## Post-Gate Equity Cards — Show All Three, Highlight Theirs
+CHANGE 3 -- UPDATE THE GATE CARD
 
-In the post-gate state (Zone B1), keep showing all three equity cards
-as currently implemented -- highlighted band prominent, others visible.
-Only the pre-gate state shows a single card.
+The gate card currently has a headline and two paragraphs above the form
+fields. Replace them with the following. Do not change the form fields,
+checkbox, button, or any submission logic.
 
-This gives context after submission (they can see how their situation
-compares) while keeping the pre-gate experience focused and personal.
+Headline (replace current headline):
+Your answers point to a clear path. Here is what comes next.
+
+Paragraph 1 (replace current first paragraph):
+I ran senior living communities for years, including Assisted Living/Memory
+Care and Independent Living, before I started helping families find the right
+fit. I've seen this from both sides, and I built this report around what I
+wish every family knew going in.
+
+Paragraph 2 (replace current second paragraph):
+Elder Life Transitions will prepare your report and reach out to answer any
+questions. If you decide to explore your options further, ELT can help you
+ask the right questions and make a confident decision -- at no cost to
+your family.
 
 ---
 
-## Verification
-- Run: `npx tsc --noEmit` -- zero errors required
+CHANGE 4 -- EM-DASH AUDIT
 
-Pre-gate checks:
-- [ ] Only one equity card visible (matching result.ageBand)
-- [ ] "Based on the age range you indicated:" appears above card
-- [ ] "Estimated equity available:" label appears above blurred number
-- [ ] Care-months reframe line visible below card
-- [ ] Proof statement visible above gate form
-- [ ] Gate form subtext is the simplified single-promise version
+After completing the above changes, scan the entire file for any em-dash
+characters (—) in user-facing string content and replace each one with a
+double hyphen surrounded by spaces ( -- ). Do not change em-dashes inside
+code comments.
 
-Post-gate checks:
-- [ ] All three equity cards visible with ageBand highlighted
-- [ ] "Estimated equity available:" label appears in each card
-- [ ] Care-months reframe line still visible
-- [ ] Status line renders for likely-fit and explore-with-caveats
-- [ ] Status line does NOT render for medicaid-flag or not-a-fit
+---
 
-Track isolation:
-- [ ] SNF track completely unchanged
-- [ ] HCA track completely unchanged
+After completing all four changes, show me a summary of every line changed
+before writing the file.

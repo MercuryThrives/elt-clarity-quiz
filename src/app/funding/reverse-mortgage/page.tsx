@@ -39,8 +39,8 @@ function ReverseMortgageInner() {
             worth a conversation.
           </p>
           <p className="text-[16px] text-stone-500 leading-relaxed" style={{ marginBottom: "32px", borderLeft: "3px solid #f59e0b", paddingLeft: "12px" }}>
-            Built by a former Assisted Living and Memory Care Executive Director who has
-            helped hundreds of Colorado families understand their real options &mdash; not just
+            Built by a former Assisted Living/Memory Care and Independent Living Executive Director who has
+            helped Colorado families understand their real options &mdash; not just
             the ones that are easiest to sell.
           </p>
 
