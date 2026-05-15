@@ -9,6 +9,7 @@ import {
 import type { SnfPathway } from './quiz/snf-scoring';
 import { SNF_QUESTIONS } from './quiz/snf-config';
 import type { SCPathway } from './sc/scScoring';
+import { SC_PATHWAY_LABELS, SC_PATHWAY_CONTENT } from './sc/scPathwayContent';
 
 export function buildFamilyGuideEmail(
   topCategories: string[],
@@ -750,16 +751,6 @@ export function buildFundingRmInternalNotificationEmail({
   `;
 }
 
-const SC_PATHWAY_LABELS: Record<SCPathway, string> = {
-  'home-family-support':     'Home with Family Support',
-  'home-professional-hca':   'Home with Professional Care',
-  'independent-living':      'Independent Living',
-  'assisted-living':         'Assisted Living',
-  'memory-care':             'Memory Care',
-  'residential-care-home':   'Residential Care Home',
-  'complex-medical-consult': 'Complex Medical Consultation',
-};
-
 export function buildSCInternalNotificationEmail({
   firstName,
   email,
@@ -820,6 +811,130 @@ export function buildSCInternalNotificationEmail({
           </tr>
         </table>
       </div>
+    </div>
+  `;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SC (Senior Care Clarity) email builders
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SC_SIGNATURE = `
+  <p style="font-size:15px;color:#333333;margin:0;">-- David Johnstone</p>
+  <p style="font-size:14px;color:#666666;margin:4px 0 0 0;">
+    Elder Life Transitions &nbsp;|&nbsp; 720-258-6001 &nbsp;|&nbsp;
+    <a href="mailto:Dave@ElderLifeTransitions.net" style="color:#666666;">Dave@ElderLifeTransitions.net</a>
+  </p>
+`;
+
+/**
+ * Email 1 -- Immediate report delivery sent on gate form submission.
+ */
+export function buildSCReportEmail({
+  firstName,
+  pathway,
+}: {
+  firstName: string;
+  pathway: SCPathway;
+}): string {
+  const label = SC_PATHWAY_LABELS[pathway];
+  const content = SC_PATHWAY_CONTENT[pathway];
+
+  const anticipateBullets = content.anticipate
+    .map(b => `<li style="font-size:15px;color:#333333;line-height:1.7;margin-bottom:10px;">${b}</li>`)
+    .join('');
+
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;background:#ffffff;">
+
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">
+        ${firstName},
+      </p>
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:24px;">
+        Thank you for taking the time to complete the assessment.
+      </p>
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:28px;">
+        Based on what you shared, <strong>${label}</strong> looks like the most relevant starting
+        point for your situation. Your full report is below.
+      </p>
+
+      <h2 style="font-size:22px;font-weight:700;color:#1a1a1a;border-bottom:2px solid #f59e0b;padding-bottom:8px;margin-bottom:16px;">
+        ${label}
+      </h2>
+
+      <h3 style="font-size:15px;font-weight:600;color:#4a6741;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.04em;">About This Care Setting</h3>
+      <p style="font-size:15px;line-height:1.7;color:#333333;margin-bottom:24px;">${content.about}</p>
+
+      <h3 style="font-size:15px;font-weight:600;color:#4a6741;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.04em;">Why This Fits Your Situation</h3>
+      <p style="font-size:15px;line-height:1.7;color:#333333;margin-bottom:24px;">${content.whyFits}</p>
+
+      <h3 style="font-size:15px;font-weight:600;color:#4a6741;margin:0 0 10px 0;text-transform:uppercase;letter-spacing:0.04em;">What to Anticipate</h3>
+      <ul style="padding-left:20px;margin-bottom:24px;">
+        ${anticipateBullets}
+      </ul>
+
+      <div style="background:#FFFBEB;border:1px solid #FCD34D;padding:18px 20px;border-radius:6px;margin-bottom:24px;">
+        <p style="font-size:13px;font-weight:600;color:#92400E;margin:0 0 8px 0;text-transform:uppercase;letter-spacing:0.05em;">What Most Families Don't Know</p>
+        <p style="font-size:15px;line-height:1.7;color:#333333;margin:0;">${content.whatFamiliesDontKnow}</p>
+      </div>
+
+      <h3 style="font-size:15px;font-weight:600;color:#555555;margin:0 0 6px 0;">Also Worth Considering</h3>
+      <p style="font-size:15px;line-height:1.7;color:#555555;margin-bottom:32px;">${content.alsoConsidering}</p>
+
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:20px;">
+        If you have questions or want to talk through what this means for your specific situation,
+        I am happy to help. There is no cost and no obligation.
+      </p>
+
+      <div style="background:#F0F5EE;border-left:4px solid #4a6741;padding:20px 24px;margin:0 0 32px 0;border-radius:4px;">
+        <p style="margin:0;">
+          <a href="${CALENDAR_URL}" style="color:#4a6741;font-weight:600;font-size:16px;text-decoration:none;">
+            Schedule a Free Conversation with David &rarr;
+          </a>
+        </p>
+      </div>
+
+      <hr style="border:none;border-top:1px solid #EEEEEE;margin:28px 0;" />
+      ${SC_SIGNATURE}
+    </div>
+  `;
+}
+
+/**
+ * Email 2 -- 48-hour follow-up, sent only if sc_followup_sent = false.
+ */
+export function buildSCFollowUpEmail({
+  firstName,
+}: {
+  firstName: string;
+}): string {
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;padding:40px 24px;background:#ffffff;">
+
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">
+        ${firstName},
+      </p>
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">
+        I wanted to follow up on the report I sent a couple of days ago.
+      </p>
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:16px;">
+        Most families find that once they have a clearer picture of the care direction, the next
+        question is: what does this actually look like in practice -- and how do we get started?
+      </p>
+      <p style="font-size:16px;line-height:1.7;color:#333333;margin-bottom:24px;">
+        That is exactly the kind of conversation I have with families every week. If it would be
+        helpful, I am glad to spend 20 minutes walking through what your options look like
+        specifically -- no cost, no pressure.
+      </p>
+
+      <p style="margin:0;">
+        <a href="${CALENDAR_URL}" style="color:#4a6741;font-weight:600;font-size:16px;text-decoration:none;">
+          Schedule a Free Conversation &rarr;
+        </a>
+      </p>
+
+      <hr style="border:none;border-top:1px solid #EEEEEE;margin:28px 0;" />
+      ${SC_SIGNATURE}
     </div>
   `;
 }

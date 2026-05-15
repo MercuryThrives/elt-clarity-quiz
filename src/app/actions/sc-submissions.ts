@@ -3,8 +3,12 @@
 import { Resend } from 'resend';
 import { supabaseAdmin } from '@/lib/supabase/admin';
 import type { SCResult } from '@/lib/sc/scScoring';
-import { buildSCInternalNotificationEmail } from '@/lib/emailTemplates';
+import {
+  buildSCReportEmail,
+  buildSCInternalNotificationEmail,
+} from '@/lib/emailTemplates';
 
+const FROM_CARE = 'Care Clarity Report <care@elderlifetransitions.net>';
 const FROM_NOTIFICATIONS = 'notifications@elderlifetransitions.net';
 const SC_NOTIFICATION_EMAIL = process.env.SC_NOTIFICATION_EMAIL;
 
@@ -43,24 +47,43 @@ export async function saveSCSubmission(payload: {
   }
 
   const submittedAt = new Date(data.created_at as string);
+  const resend = new Resend(process.env.RESEND_API_KEY);
+  const emailPromises: Promise<unknown>[] = [];
 
+  // Email 1 -- Report delivery to family
+  emailPromises.push(
+    resend.emails.send({
+      from: FROM_CARE,
+      to: email,
+      subject: 'Your care options report is ready',
+      html: buildSCReportEmail({ firstName, pathway: result.pathway }),
+    }).then(({ error: err }) => {
+      if (err) console.error('[SC] Email 1 (report) error:', err);
+    })
+  );
+
+  // Internal notification to ELT
   if (SC_NOTIFICATION_EMAIL) {
-    const resend = new Resend(process.env.RESEND_API_KEY);
-    const { error: emailErr } = await resend.emails.send({
-      from: FROM_NOTIFICATIONS,
-      to: SC_NOTIFICATION_EMAIL,
-      subject: `New Senior Care Clarity Submission -- ${result.pathway}`,
-      html: buildSCInternalNotificationEmail({
-        firstName,
-        email,
-        phone: phone || null,
-        pathway: result.pathway,
-        partnerId,
-        submittedAt,
-      }),
-    });
-    if (emailErr) console.error('[SC] notification email error:', emailErr);
+    emailPromises.push(
+      resend.emails.send({
+        from: FROM_NOTIFICATIONS,
+        to: SC_NOTIFICATION_EMAIL,
+        subject: `New Senior Care Clarity Submission -- ${result.pathway}`,
+        html: buildSCInternalNotificationEmail({
+          firstName,
+          email,
+          phone: phone || null,
+          pathway: result.pathway,
+          partnerId,
+          submittedAt,
+        }),
+      }).then(({ error: err }) => {
+        if (err) console.error('[SC] notification email error:', err);
+      })
+    );
   } else {
     console.warn('[SC] SC_NOTIFICATION_EMAIL is not set -- internal notification skipped.');
   }
+
+  await Promise.allSettled(emailPromises);
 }
