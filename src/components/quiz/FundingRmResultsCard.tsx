@@ -64,6 +64,7 @@ export default function FundingRmResultsCard({
 }: FundingRmResultsCardProps) {
   const content = FUNDING_RM_CONTENT[result.pathway];
   const highlighted = highlightIndex(result.ageBand);
+  const relevantBand = result.ageBand !== 0 ? (content.equityIllustration[result.ageBand - 1] ?? null) : null;
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isPhoneSubmitted, setIsPhoneSubmitted] = useState(false);
@@ -131,30 +132,32 @@ export default function FundingRmResultsCard({
 
       {!isSubmitted ? (
         <>
-          {/* Zone A2 — Blurred equity teaser */}
-          {content.equityIllustration.length > 0 && (
+          {/* Zone A2 — Blurred equity teaser (single band) */}
+          {relevantBand && (
             <div className="mb-8">
               <p className="font-mono tracking-widest uppercase text-stone-400 text-[12px] mb-5 mt-2">
                 WHAT THIS COULD LOOK LIKE
               </p>
-              <div className="flex flex-col gap-3">
-                {content.equityIllustration.map((band, i) => (
-                  <div key={i} className="rounded-xl border border-stone-100 bg-white px-5 py-4">
-                    <p className="font-mono uppercase text-[12px] text-amber-600 mb-1 font-medium">
-                      {band.ageLabel}
-                    </p>
-                    <p className="text-[14px] text-stone-400 mb-3">{band.homeValue}</p>
-                    <div className="mb-2">
-                      <span className="text-[30px] font-serif font-bold text-stone-800 blur-sm select-none pointer-events-none">
-                        {band.rangeLabel}
-                      </span>
-                    </div>
-                    <p className="text-[13px] text-stone-400 italic leading-relaxed">{band.note}</p>
-                  </div>
-                ))}
+              <p className="text-[14px] text-stone-500 mb-3">
+                Based on the age range you indicated:
+              </p>
+              <div className="rounded-xl border border-stone-100 bg-white px-5 py-4">
+                <p className="font-mono uppercase text-[12px] text-amber-600 mb-1 font-medium">
+                  {relevantBand.ageLabel}
+                </p>
+                <p className="text-[14px] text-stone-400 mb-3">{relevantBand.homeValue}</p>
+                <p className="text-[13px] font-mono uppercase tracking-widest text-stone-400 mb-1">
+                  Estimated equity available:
+                </p>
+                <div className="mb-2">
+                  <span className="text-[30px] font-serif font-bold text-stone-800 blur-sm select-none pointer-events-none">
+                    {relevantBand.rangeLabel}
+                  </span>
+                </div>
+                <p className="text-[13px] text-stone-400 italic leading-relaxed">{relevantBand.note}</p>
               </div>
-              <p className="text-[14px] text-stone-500 text-center mt-5 italic leading-relaxed">
-                Enter your email below to see the full breakdown for your situation -- we&rsquo;ll send it to your inbox so you have it on hand.
+              <p className="text-[15px] text-stone-600 text-center leading-relaxed mt-4 max-w-prose mx-auto">
+                This amount may cover 3 to 5 years of assisted living costs in Colorado -- without selling the property or touching savings.
               </p>
             </div>
           )}
@@ -165,13 +168,17 @@ export default function FundingRmResultsCard({
             </p>
           )}
 
+          <p className="text-[14px] text-stone-500 text-center max-w-prose mx-auto mb-4 leading-relaxed">
+            Dave spent a decade as an Executive Director running Assisted Living and Memory Care communities in Colorado. He has helped hundreds of families work through exactly this question.
+          </p>
+
           {/* Gate form */}
           <div className="bg-white rounded-2xl border border-stone-200 shadow-sm px-6 py-8 mt-8 max-w-lg mx-auto">
             <h2 className="font-serif text-[22px] text-stone-800 mb-2 leading-snug">
               Where should we send your funding summary?
             </h2>
             <p className="text-[15px] text-stone-500 mb-6 leading-relaxed">
-              Takes 10 seconds. We&rsquo;ll send your personalized result to your inbox -- and Dave will follow up personally if a specialist conversation makes sense.
+              Takes 10 seconds. Your personalized funding summary goes straight to your inbox.
             </p>
             <div className="flex flex-col gap-3">
               <label htmlFor="rm-first-name" className="sr-only">First name</label>
@@ -245,6 +252,9 @@ export default function FundingRmResultsCard({
                         {band.ageLabel}
                       </p>
                       <p className="text-[14px] text-stone-400 mb-3">{band.homeValue}</p>
+                      <p className="text-[13px] font-mono uppercase tracking-widest text-stone-400 mb-1">
+                        Estimated equity available:
+                      </p>
                       <div className="mb-2">
                         <span className="text-[30px] font-serif font-bold text-stone-800">
                           {band.rangeLabel}
@@ -259,6 +269,12 @@ export default function FundingRmResultsCard({
                 {content.illustrationDisclaimer}
               </p>
             </div>
+          )}
+
+          {content.equityIllustration.length > 0 && result.ageBand !== 0 && (
+            <p className="text-[15px] text-stone-600 text-center leading-relaxed mt-4 max-w-prose mx-auto">
+              This amount may cover 3 to 5 years of assisted living costs in Colorado -- without selling the property or touching savings.
+            </p>
           )}
 
           {/* Zone B2 — Full body content */}
@@ -299,6 +315,12 @@ export default function FundingRmResultsCard({
           {(result.pathway === "likely-fit" || result.pathway === "explore-with-caveats") && (
             <p className="text-[15px] text-stone-500 text-center max-w-prose mx-auto mt-10 leading-relaxed border-t border-stone-100 pt-8">
               Most families who look at the home equity question are also in the early stages of figuring out what kind of care actually fits their loved one&rsquo;s situation. That is a separate conversation -- and one Dave is glad to have whenever you are ready.
+            </p>
+          )}
+
+          {(result.pathway === "likely-fit" || result.pathway === "explore-with-caveats") && (
+            <p className="text-[15px] text-stone-500 text-center max-w-prose mx-auto mt-6 leading-relaxed">
+              Families who understand the funding picture before they start placement conversations consistently make better decisions -- and feel better about them afterward. You have already done something most families skip entirely.
             </p>
           )}
 
