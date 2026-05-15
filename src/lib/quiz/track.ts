@@ -22,10 +22,13 @@ import { FUNDING_RM_QUESTIONS } from "../funding-rm-questions";
 import type { Question } from "./questions";
 import type { TierResult, Tier } from "./scoring";
 
-export type TrackId = "hca" | "snf" | "funding-rm";
+export type TrackId = "hca" | "snf" | "funding-rm" | "senior_care";
 
 export interface TrackConfig {
   id: TrackId;
+  label?: string;
+  notificationEmailEnv?: string;
+  partnerType?: string;
   questions: Question[];
   /** Default answer options used for grid-format questions that have no explicit options array. */
   answerOptions: { value: number; label: string }[];
@@ -74,6 +77,20 @@ const FUNDING_RM_TRACK: TrackConfig = {
   calculateScore: () => 0,
 };
 
+const SENIOR_CARE_TRACK: TrackConfig = {
+  id: "senior_care",
+  label: "Senior Care Clarity",
+  notificationEmailEnv: "SC_NOTIFICATION_EMAIL",
+  partnerType: "senior_care",
+  questions: [],
+  answerOptions: [],
+  guideContent: {},
+  // Stubs — senior_care questions, scoring, and UI are not yet wired.
+  buildTierResult: () => ({ tier: 1 as Tier, score: 0, headline: '', body: '', cta: { type: 'none' as const } }),
+  calculateTier: () => 1 as Tier,
+  calculateScore: () => 0,
+};
+
 /**
  * Resolve the track config from a raw search-param value.
  * Any unrecognised value falls back to HCA.
@@ -81,5 +98,6 @@ const FUNDING_RM_TRACK: TrackConfig = {
 export function resolveTrack(trackParam: string | null | undefined): TrackConfig {
   if (trackParam === "snf") return SNF_TRACK;
   if (trackParam === "funding-rm") return FUNDING_RM_TRACK;
+  if (trackParam === "senior_care") return SENIOR_CARE_TRACK;
   return HCA_TRACK;
 }
