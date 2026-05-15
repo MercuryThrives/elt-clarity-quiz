@@ -40,7 +40,9 @@ const PRONOUN_MAP: Record<string, SCPronouns> = {
 };
 
 function interpolate(template: string, p: SCPronouns): string {
+  const verbHaveCap = p.verbHave.charAt(0).toUpperCase() + p.verbHave.slice(1);
   return template
+    .replace(/\[Has\/Have\]/g, verbHaveCap)
     .replace(/\[he\/she\/they\]/g, p.subject)
     .replace(/\[He\/She\/They\]/g, p.subjectCap)
     .replace(/\[his\/her\/their\]/g, p.possessive)
