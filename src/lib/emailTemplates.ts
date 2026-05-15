@@ -8,6 +8,7 @@ import {
 } from './snf-pathway-content';
 import type { SnfPathway } from './quiz/snf-scoring';
 import { SNF_QUESTIONS } from './quiz/snf-config';
+import type { SCPathway } from './sc/scScoring';
 
 export function buildFamilyGuideEmail(
   topCategories: string[],
@@ -734,6 +735,80 @@ export function buildFundingRmInternalNotificationEmail({
           <tr>
             <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Age band</td>
             <td style="padding:8px 0;color:#333333;font-size:14px;">${ageBandLabel}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Partner</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${partnerId ?? 'direct'}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Submitted</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${timestamp}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  `;
+}
+
+const SC_PATHWAY_LABELS: Record<SCPathway, string> = {
+  'home-family-support':     'Home with Family Support',
+  'home-professional-hca':   'Home with Professional Care',
+  'independent-living':      'Independent Living',
+  'assisted-living':         'Assisted Living',
+  'memory-care':             'Memory Care',
+  'residential-care-home':   'Residential Care Home',
+  'complex-medical-consult': 'Complex Medical Consultation',
+};
+
+export function buildSCInternalNotificationEmail({
+  firstName,
+  email,
+  phone,
+  pathway,
+  partnerId,
+  submittedAt,
+}: {
+  firstName: string;
+  email: string;
+  phone: string | null;
+  pathway: SCPathway;
+  partnerId: string | null;
+  submittedAt: Date;
+}): string {
+  const pathwayLabel = SC_PATHWAY_LABELS[pathway];
+
+  const timestamp = submittedAt.toLocaleString('en-US', {
+    timeZone: 'America/Denver',
+    month: 'long', day: 'numeric', year: 'numeric',
+    hour: 'numeric', minute: '2-digit', timeZoneName: 'short',
+  });
+
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:640px;margin:0 auto;background:#ffffff;border-radius:8px;overflow:hidden;border:1px solid #EEEEEE;">
+
+      <div style="background:#4a6741;padding:16px 24px;">
+        <p style="font-size:18px;font-weight:700;color:#ffffff;margin:0;">
+          New Senior Care Clarity Submission -- ${firstName} -- ${pathwayLabel}
+        </p>
+      </div>
+
+      <div style="padding:24px;">
+        <table style="width:100%;border-collapse:collapse;margin-bottom:24px;">
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;width:160px;">Name</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;font-weight:600;">${firstName}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Email</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${email}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Phone</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;">${phone ?? 'not provided'}</td>
+          </tr>
+          <tr>
+            <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Pathway</td>
+            <td style="padding:8px 0;color:#333333;font-size:14px;font-weight:600;">${pathwayLabel}</td>
           </tr>
           <tr>
             <td style="padding:8px 12px 8px 0;color:#888888;font-size:14px;">Partner</td>
