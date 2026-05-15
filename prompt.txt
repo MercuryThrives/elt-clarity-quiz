@@ -1,106 +1,72 @@
-CHANGE 0 -- SCOPE RESTRICTION
+## SENIOR CARE CLARITY TRACK -- FIX PROMPT A
+## Task: Wire SC quiz route + fix header layout on all SC track pages
 
-Before making any changes, confirm you are working only in:
-src/app/snf/results/page.tsx
-
-Do not modify any files outside of this path. Specifically, do not touch:
-- src/app/quiz/results/page.tsx
-- src/components/quiz/ResultsCard.tsx
-- Any shared components, hooks, utilities, or config files
-
-If any of the changes below would require modifying a shared component that
-is also used by the HCA quiz track, stop and tell me before proceeding.
-We will handle that case separately rather than risk impacting the HCA track.
+CRITICAL -- DO NOT CHANGE:
+- Any existing HCA track pages, headers, or routing
+- Any existing SNF track pages, headers, or routing
+- Any existing RM track pages, headers, or routing
+- Any existing scoring logic, Supabase wiring, or email routes
 
 ---
 
-I need you to update the SNF results page. The file is at:
-src/app/snf/results/page.tsx
+ISSUE 1 -- Missing quiz route
+The SC homepage CTA navigates to /sc/quiz but this route does not exist,
+resulting in a 404. Wire the SC quiz route so that clicking "Start the
+Assessment" on the SC homepage loads the SC question set (SCQuestions.tsx
+built in Prompt 2).
 
-Please read the full file before making any changes.
+Create: src/app/sc/quiz/page.tsx
+- Renders SCQuestions.tsx
+- Preserves ?partner= URL parameter through the quiz flow
+- On quiz completion, routes to /sc/results passing answers, score,
+  and pathway as state or query params
+- Match the visual style of the SC homepage (warm cream background)
 
-This is a copy-and-structure update only. Do not change any scoring logic,
-routing logic, Supabase wiring, email triggers, or form submission behavior.
-Change only what is explicitly listed below.
-
----
-
-CHANGE 1 -- REMOVE THE PATHWAY NAME AND DESCRIPTION FROM THE PRE-GATE CARD
-
-Currently the pre-gate section shows the pathway name as a headline and a
-full descriptive paragraph explaining what that care type is.
-
-Remove both. Replace them with the following structure:
-
-Label (small caps, same styling as current "PRIMARY CARE SETTING" label):
-YOUR CARE ASSESSMENT
-
-Headline:
-Your answers point in a clear direction.
-
-Body text (paragraph):
-Your report covers three things most families don't know going in:
-
-Bullets (use the existing anticipationBullets array from SNF_PATHWAY_CONTENT
-for the active pathway -- these are already in the content file and should
-already be accessible):
-- [anticipationBullets[0]]
-- [anticipationBullets[1]]
-- [anticipationBullets[2]]
-
-Italicized line below bullets:
-Discharge timelines move fast. The sooner you have this, the more options
-you have.
-
-Do not show the pathway name or fullDescription anywhere in the pre-gate
-section. The pathway name and fullDescription are revealed post-gate only.
+DO NOT modify the HCA or SNF quiz routes.
 
 ---
 
-CHANGE 2 -- ADD SOCIAL PROOF BLOCK BETWEEN PRE-GATE CARD AND GATE CARD
+ISSUE 2 -- Header layout: no partner present
 
-Between the pre-gate card and the gate card, add a single paragraph in a
-simple, unboxed treatment. Centered or left-aligned matching the existing
-page layout. Italic or regular weight -- whichever fits the existing type
-hierarchy better.
+Current behavior: ELT logo is left-aligned.
+Required behavior: ELT logo is centered horizontally in the header.
+No partner name, no partner logo, no "In partnership with" text.
 
-Copy (use exactly):
-A daughter called me after we talked. She said it was the first time in
-weeks she felt like she actually knew what she was walking into.
-
----
-
-CHANGE 3 -- UPDATE THE GATE CARD
-
-The gate card currently has a headline and two paragraphs above the form
-fields. Replace them with the following. Do not change the form fields,
-checkbox, button, or any submission logic.
-
-Headline (replace current headline):
-Your answers point to a clear path. Here is what comes next.
-
-Paragraph 1 (replace current first paragraph):
-I ran senior living communities for years, including Assisted Living/Memory
-Care and Independent Living, before I started helping families find the right
-fit. I've seen this from both sides, and I built this report around what I
-wish every family knew going in.
-
-Paragraph 2 (replace current second paragraph):
-Elder Life Transitions will prepare your report and reach out to answer any
-questions. If you decide to explore your options further, ELT can help you
-ask the right questions and make a confident decision -- at no cost to
-your family.
+Apply this to ALL SC track pages:
+- src/app/sc/page.tsx (homepage)
+- src/app/sc/quiz/page.tsx (quiz)
+- SCDisclosure.tsx
+- SCResults.tsx
 
 ---
 
-CHANGE 4 -- EM-DASH AUDIT
+ISSUE 3 -- Header layout: partner present
 
-After completing the above changes, scan the entire file for any em-dash
-characters (—) in user-facing string content and replace each one with a
-double hyphen surrounded by spaces ( -- ). Do not change em-dashes inside
-code comments.
+Current behavior: ELT logo left, partner name far right, isolated.
+Required behavior: All header content centered as a single inline group:
+
+  [ELT logo] [In partnership with] [Partner Name]
+
+Specific requirements:
+- The entire group is centered horizontally in the header as one unit
+- "In partnership with" is plain text, same line as logo and partner name
+- Partner name follows immediately after "In partnership with"
+- No partner logo image (even if logo_url exists -- text only for now)
+- If no partner slug present: centered ELT logo only (Issue 2 state)
+- Graceful fallback if partner slug is invalid: centered ELT logo only
+
+Apply this to ALL SC track pages:
+- src/app/sc/page.tsx (homepage)
+- src/app/sc/quiz/page.tsx (quiz)
+- SCDisclosure.tsx
+- SCResults.tsx
 
 ---
 
-After completing all four changes, show me a summary of every line changed
-before writing the file.
+After completing, confirm:
+1. /sc/quiz route exists and loads SCQuestions.tsx
+2. Header renders centered ELT logo only when no partner slug present
+3. Header renders centered [ELT logo] [In partnership with] [Partner Name]
+   when ?partner=sc-demo is in the URL
+4. Both header states apply consistently across all four SC track pages
+5. HCA, SNF, and RM track headers were not modified
