@@ -23,6 +23,7 @@ export default function SCDisclosure({ partnerId, onBegin }: SCDisclosureProps) 
       .from("public_partners")
       .select("agency_name, logo_url")
       .eq("id", partnerId)
+      .eq("partner_type", "senior_care")
       .limit(1)
       .then(({ data }) => {
         if (data && data.length > 0) {

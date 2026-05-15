@@ -23,6 +23,7 @@ function SCHeader({ partnerId }: { partnerId: string | null }) {
       .from("public_partners")
       .select("agency_name, logo_url")
       .eq("id", partnerId)
+      .eq("partner_type", "senior_care")
       .limit(1)
       .then(({ data }) => {
         if (data && data.length > 0) {
