@@ -19,6 +19,13 @@ export function middleware(req: NextRequest) {
     }
   }
 
+  if (host === 'sc.elderlifetransitions.net') {
+    const { pathname } = req.nextUrl;
+    if (pathname === '/') {
+      return NextResponse.rewrite(new URL('/sc', req.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
