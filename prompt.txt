@@ -1,72 +1,41 @@
-## SENIOR CARE CLARITY TRACK -- FIX PROMPT A
-## Task: Wire SC quiz route + fix header layout on all SC track pages
+## SC TRACK -- FIX PROMPT B
+## Task: Fix pronoun/verb interpolation on Q5 and any similar questions
 
 CRITICAL -- DO NOT CHANGE:
-- Any existing HCA track pages, headers, or routing
-- Any existing SNF track pages, headers, or routing
-- Any existing RM track pages, headers, or routing
-- Any existing scoring logic, Supabase wiring, or email routes
+- HCA, SNF, or RM track question components
+- SC scoring engine or test suite
+- Any Supabase wiring or email routes
 
 ---
 
-ISSUE 1 -- Missing quiz route
-The SC homepage CTA navigates to /sc/quiz but this route does not exist,
-resulting in a 404. Wire the SC quiz route so that clicking "Start the
-Assessment" on the SC homepage loads the SC question set (SCQuestions.tsx
-built in Prompt 2).
+PROBLEM:
+Q5 is rendering "[Has/Have] she had any falls..." -- the verb form
+[Has/Have] is not being resolved by the interpolate() function.
+The pronoun "she" is resolving correctly but verb conjugation
+is not handled.
 
-Create: src/app/sc/quiz/page.tsx
-- Renders SCQuestions.tsx
-- Preserves ?partner= URL parameter through the quiz flow
-- On quiz completion, routes to /sc/results passing answers, score,
-  and pathway as state or query params
-- Match the visual style of the SC homepage (warm cream background)
+FIX:
+1. Read the current interpolate() function and pronoun map in
+   the SC question component.
 
-DO NOT modify the HCA or SNF quiz routes.
+2. Add verb conjugation support to the interpolation map for
+   each pronoun set established in Q1:
 
----
+   "Myself" → Has (singular, second person treated as third)
+   "My mother" / she → Has
+   "My father" / he → Has
+   "My spouse or partner" / they → Have
+   "Another family member" / they → Have
 
-ISSUE 2 -- Header layout: no partner present
+3. Update Q5 question text so [Has/Have] resolves correctly
+   based on Q1 answer.
 
-Current behavior: ELT logo is left-aligned.
-Required behavior: ELT logo is centered horizontally in the header.
-No partner name, no partner logo, no "In partnership with" text.
+4. Scan all 11 questions for any other unresolved interpolation
+   tokens in the same [X/Y] format and fix them all in the
+   same pass.
 
-Apply this to ALL SC track pages:
-- src/app/sc/page.tsx (homepage)
-- src/app/sc/quiz/page.tsx (quiz)
-- SCDisclosure.tsx
-- SCResults.tsx
+5. Confirm the fix by listing every question that contained
+   an interpolation token and showing the resolved output
+   for "My mother" as the Q1 answer.
 
----
-
-ISSUE 3 -- Header layout: partner present
-
-Current behavior: ELT logo left, partner name far right, isolated.
-Required behavior: All header content centered as a single inline group:
-
-  [ELT logo] [In partnership with] [Partner Name]
-
-Specific requirements:
-- The entire group is centered horizontally in the header as one unit
-- "In partnership with" is plain text, same line as logo and partner name
-- Partner name follows immediately after "In partnership with"
-- No partner logo image (even if logo_url exists -- text only for now)
-- If no partner slug present: centered ELT logo only (Issue 2 state)
-- Graceful fallback if partner slug is invalid: centered ELT logo only
-
-Apply this to ALL SC track pages:
-- src/app/sc/page.tsx (homepage)
-- src/app/sc/quiz/page.tsx (quiz)
-- SCDisclosure.tsx
-- SCResults.tsx
-
----
-
-After completing, confirm:
-1. /sc/quiz route exists and loads SCQuestions.tsx
-2. Header renders centered ELT logo only when no partner slug present
-3. Header renders centered [ELT logo] [In partnership with] [Partner Name]
-   when ?partner=sc-demo is in the URL
-4. Both header states apply consistently across all four SC track pages
-5. HCA, SNF, and RM track headers were not modified
+DO NOT modify HCA, SNF, or RM question components.
