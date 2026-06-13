@@ -264,18 +264,18 @@ function RunwayCalculatorInner() {
   return (
     <div style={{ background: '#EDE8DC', minHeight: '100vh', fontFamily: "'Open Sans', sans-serif" }}>
       {/* Header */}
-      <header style={{ background: '#6B6B4A', padding: '14px 24px', borderBottom: '3px solid #C49A2A' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+      <header style={{ background: '#6B6B4A', padding: '16px 24px', borderBottom: '3px solid #C49A2A' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <img
             src="/elt-logo.png"
             alt="Elder Life Transitions"
-            style={{ width: 48, height: 48, borderRadius: '50%', flexShrink: 0 }}
+            style={{ width: 72, height: 72, borderRadius: '50%', flexShrink: 0 }}
           />
           <div>
-            <div style={{ fontSize: 10, fontWeight: 600, color: 'rgba(255,255,255,0.6)', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 3 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 4 }}>
               Elder Life Transitions
             </div>
-            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 20, fontWeight: 700, color: '#fff' }}>
+            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 24, fontWeight: 700, color: '#fff' }}>
               Care Cost Runway Calculator
             </div>
           </div>
