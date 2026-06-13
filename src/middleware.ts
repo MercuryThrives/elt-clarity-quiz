@@ -26,6 +26,13 @@ export function middleware(req: NextRequest) {
     }
   }
 
+  if (host === 'runway.elderlifetransitions.net') {
+    const { pathname } = req.nextUrl;
+    if (pathname === '/') {
+      return NextResponse.rewrite(new URL('/runway', req.url));
+    }
+  }
+
   return NextResponse.next();
 }
 
