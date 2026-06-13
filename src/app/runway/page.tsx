@@ -264,18 +264,19 @@ function RunwayCalculatorInner() {
   return (
     <div style={{ background: '#EDE8DC', minHeight: '100vh', fontFamily: "'Open Sans', sans-serif" }}>
       {/* Header */}
-      <header style={{ background: '#6B6B4A', padding: '16px 24px', borderBottom: '3px solid #C49A2A' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+      <div style={{ height: 5, background: '#4a6741' }} />
+      <header style={{ background: '#6B6B4A', padding: '18px 24px 18px', borderBottom: '3px solid #C49A2A' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18 }}>
           <img
             src="/elt-logo.png"
             alt="Elder Life Transitions"
-            style={{ width: 72, height: 72, borderRadius: '50%', flexShrink: 0 }}
+            style={{ height: 96, width: 'auto', flexShrink: 0 }}
           />
           <div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.7)', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 4 }}>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'rgba(255,255,255,0.65)', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: 5 }}>
               Elder Life Transitions
             </div>
-            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 24, fontWeight: 700, color: '#fff' }}>
+            <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 26, fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>
               Care Cost Runway Calculator
             </div>
           </div>
@@ -291,10 +292,21 @@ function RunwayCalculatorInner() {
               Most families make this care decision not knowing whether the money will last. In two minutes, you&rsquo;ll have an estimate, based on what care in your area costs after the first assessment, not just the quoted rate.
             </p>
 
-            <div style={{ borderLeft: '2px solid #C49A2A', paddingLeft: 12, marginBottom: 20 }}>
+            <div style={{ borderLeft: '2px solid #C49A2A', paddingLeft: 12, marginBottom: 14 }}>
               <p style={{ fontStyle: 'italic', fontSize: 12, color: '#7a6e64', lineHeight: 1.55, margin: 0 }}>
                 Built by a former Executive Director who ran assisted living, memory care, and independent living communities, and who approved the care assessments that showed up on the second invoice.
               </p>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+              <img
+                src="/dave-headshot.jpg"
+                alt="David Johnstone"
+                style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center top', flexShrink: 0, border: '2px solid #C49A2A' }}
+              />
+              <div>
+                <div style={{ fontWeight: 700, fontSize: 13, color: '#3D3025' }}>David Johnstone</div>
+                <div style={{ fontSize: 12, color: '#7a6e64' }}>Former Executive Director, Assisted Living</div>
+              </div>
             </div>
 
             <p style={{ fontSize: 13, fontWeight: 600, color: '#3D3025', marginBottom: 22 }}>
