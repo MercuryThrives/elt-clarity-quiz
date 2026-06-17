@@ -35,7 +35,7 @@ const MARKET_PREFIX: Record<string, string> = {
 const GAP_CARDS = [
   {
     title: 'Care progression',
-    body: "This estimate holds care needs fixed at today’s level. Over time, most residents need more help, and communities charge more as they do. Moving from light to heavy care at the same community can add $2,000 or more per month to the bill. The Care Cost Runway Review models where your loved one’s trajectory is likely to lead.",
+    body: "This estimate holds care needs fixed at today’s level. Over time, most residents need more help, and communities charge more as they do. Moving from light to heavy care at the same community can add $2,000 or more per month to the bill. The Senior Care Savings Optimizer models where your loved one’s trajectory is likely to lead.",
   },
   {
     title: 'Level-of-care step-ups',
@@ -51,7 +51,7 @@ const GAP_CARDS = [
   },
   {
     title: 'VA benefits and unclaimed LTC coverage',
-    body: "Some families are eligible for benefits that would meaningfully extend their loved one’s runway and have never applied. Identifying which apply, calculating their impact on the runway, and knowing what to do next is part of what the Care Cost Runway Review does.",
+    body: "Some families are eligible for benefits that would meaningfully extend their loved one’s runway and have never applied. Identifying which apply, calculating their impact on the runway, and knowing what to do next is part of what the Senior Care Savings Optimizer does.",
   },
 ];
 
@@ -399,7 +399,7 @@ function RunwayCalculatorInner() {
             </div>
 
             <p style={{ fontSize: 12, color: '#7a6e64', textAlign: 'center', marginBottom: 14 }}>
-              Rough numbers are enough. This takes about 90 seconds.
+              Rough numbers are enough. This takes about 2 minutes.
             </p>
 
             <button style={ctaBtnStyle(!allSelected())} disabled={!allSelected()} onClick={startLoad}>
@@ -452,7 +452,7 @@ function RunwayCalculatorInner() {
                 Your runway estimate is ready. It uses your inputs and Colorado cost benchmarks to project how long the money is likely to last. It accounts for more than the quoted rate.
               </p>
               <p style={{ fontSize: 13, color: '#3D3025', lineHeight: 1.65, margin: 0 }}>
-                A Care Cost Runway Review answers the harder question: across five realistic care options, which one makes the money last longest for your loved one. That answer is different for every family.
+                A Senior Care Savings Optimizer answers the harder question: across five realistic care options, which one makes the money last longest for your loved one. That answer is different for every family.
               </p>
             </div>
 
@@ -519,7 +519,7 @@ function RunwayCalculatorInner() {
             )}
 
             <p style={{ textAlign: 'center', fontSize: 11, color: '#7a6e64', marginTop: 11, lineHeight: 1.5 }}>
-              No spam. The Care Cost Runway Review is a flat-fee service paid directly by families. No referral fee from any community.
+              No spam. The Senior Care Savings Optimizer is a flat-fee service paid directly by families. No referral fee from any community.
             </p>
           </div>
         )}
@@ -572,7 +572,7 @@ function RunwayCalculatorInner() {
 
             {/* Gap accordion */}
             <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 17, color: '#5D0E0E', marginBottom: 5 }}>
-              What this estimate doesn&rsquo;t show and a Care Cost Runway Review does.
+              What this estimate doesn&rsquo;t show and a Senior Care Savings Optimizer does.
             </h3>
             <p style={{ fontSize: 13, color: '#7a6e64', marginBottom: 6, lineHeight: 1.5 }}>
               Each of these applies to most families and would materially change this number.
@@ -613,22 +613,22 @@ function RunwayCalculatorInner() {
             <div style={{ background: '#fff', border: '2px solid #C49A2A', borderRadius: 10, padding: '18px 20px', marginTop: 20, textAlign: 'center' }}>
               <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 15, color: '#3D3025', marginBottom: 12, lineHeight: 1.5 }}>
                 {results.primaryYrs < 3
-                  ? "Based on these inputs, your loved one’s resources may run out sooner than your family expects. A Care Cost Runway Review looks at five realistic care options and shows you which ones make the money last longer."
+                  ? "Based on these inputs, your loved one’s resources may run out sooner than your family expects. A Senior Care Savings Optimizer looks at five realistic care options and shows you which ones make the money last longer."
                   : results.primaryYrs < 7
-                  ? "You have a planning window. A Care Cost Runway Review shows you which of the five care options makes the most of it, and where the money runs short before you reach it."
-                  : "You have time to plan well. A Care Cost Runway Review maps five realistic care options, shows you which ones extend the runway furthest, and gives you a written analysis to share with your family."}
+                  ? "You have a planning window. A Senior Care Savings Optimizer shows you which of the five care options makes the most of it, and where the money runs short before you reach it."
+                  : "You have time to plan well. A Senior Care Savings Optimizer maps five realistic care options, shows you which ones extend the runway furthest, and gives you a written analysis to share with your family."}
               </p>
               <p style={{ fontSize: 12, color: '#7a6e64', marginBottom: 10, lineHeight: 1.5 }}>
-                The Care Cost Runway Review covers all five care paths, models how costs change as care needs progress, and delivers a written analysis within about a week. It is built by hand, for one family at a time, by a former Executive Director who ran these communities from the inside. Because each Care Cost Runway Review requires that kind of attention, I only take on a small number of clients each month.
+                The Senior Care Savings Optimizer covers all five care paths, models how costs change as care needs progress, and delivers a written analysis within about a week. It is built by hand, for one family at a time, by a former Executive Director who ran these communities from the inside. Because each Senior Care Savings Optimizer requires that kind of attention, I only take on a small number of clients each month.
               </p>
               <p style={{ fontSize: 14, color: '#3D3025', fontWeight: 600, marginBottom: 8 }}>
-                The founding rate for a Care Cost Runway Review is $1,500.
+                The founding rate for a Senior Care Savings Optimizer is $1,500.
               </p>
               <p style={{ fontSize: 12, color: '#7a6e64', marginBottom: 14, lineHeight: 1.5, fontStyle: 'italic' }}>
                 This is built for families actively working through a care decision, not for general research.
               </p>
               <p style={{ fontSize: 13, color: '#3D3025', lineHeight: 1.55, marginBottom: 16 }}>
-                This is a 20-minute conversation with someone who has run these communities from the inside, before you commit to anything. Bring your questions. If a Review makes sense for your family, you&rsquo;ll know by the end of the call.
+                This is a 20-minute conversation with someone who has run these communities from the inside, before you commit to anything. Bring your questions. If an Optimizer makes sense for your family, you&rsquo;ll know by the end of the call.
               </p>
               <p style={{ fontSize: 11, color: '#7a6e64', lineHeight: 1.5, marginBottom: 14 }}>
                 Former Executive Director of assisted living, memory care, and independent living communities -- the person who built the schedules, set the care fees, and signed the level-of-care notices.
@@ -639,7 +639,7 @@ function RunwayCalculatorInner() {
                 rel="noopener noreferrer"
                 style={{ display: 'block', padding: 13, background: '#C49A2A', color: '#3D3025', borderRadius: 6, fontFamily: "'Open Sans', sans-serif", fontWeight: 700, fontSize: 15, textDecoration: 'none' }}
               >
-                Book a Free 20-Minute Call
+                Book Your Free Hidden Cost Audit
               </a>
             </div>
 
