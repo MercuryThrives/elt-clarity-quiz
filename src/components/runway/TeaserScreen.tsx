@@ -32,7 +32,7 @@ export default function TeaserScreen({ market, onContinue }: Props) {
           Your runway estimate is ready. It uses your inputs and Colorado cost benchmarks to project how long the money is likely to last. It accounts for more than the quoted rate.
         </p>
         <p style={{ fontSize: 13, color: '#3D3025', lineHeight: 1.65, margin: 0 }}>
-          A Senior Care Savings Optimizer answers the harder question: across five realistic care options, which one makes the money last longest for your loved one. That answer is different for every family.
+          A Care Cost Runway Review answers the harder question: across five realistic care options, which one makes the money last longest for your loved one. That answer is different for every family.
         </p>
       </div>
 

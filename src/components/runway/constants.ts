@@ -28,7 +28,7 @@ export const MARKET_PREFIX: Record<string, string> = {
 export const GAP_CARDS = [
   {
     title: 'Care progression',
-    body: "This estimate holds care needs fixed at today's level. Over time, most residents need more help, and communities charge more as they do. Moving from light to heavy care at the same community can add $2,000 or more per month to the bill. The Senior Care Savings Optimizer models where your loved one's trajectory is likely to lead.",
+    body: "This estimate holds care needs fixed at today's level. Over time, most residents need more help, and communities charge more as they do. Moving from light to heavy care at the same community can add $2,000 or more per month to the bill. The Care Cost Runway Review models where your loved one's trajectory is likely to lead.",
   },
   {
     title: 'Level-of-care step-ups',
@@ -44,7 +44,7 @@ export const GAP_CARDS = [
   },
   {
     title: 'VA benefits and unclaimed LTC coverage',
-    body: "Some families are eligible for benefits that would meaningfully extend their loved one's runway and have never applied. Identifying which apply, calculating their impact on the runway, and knowing what to do next is part of what the Senior Care Savings Optimizer does.",
+    body: "Some families are eligible for benefits that would meaningfully extend their loved one's runway and have never applied. Identifying which apply, calculating their impact on the runway, and knowing what to do next is part of what the Care Cost Runway Review does.",
   },
 ];
 

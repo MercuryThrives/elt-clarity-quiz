@@ -94,7 +94,7 @@ export default function GateScreen({
       )}
 
       <p style={{ textAlign: 'center', fontSize: 11, color: '#7a6e64', marginTop: 11, lineHeight: 1.5 }}>
-        No spam. The Senior Care Savings Optimizer is a flat-fee service paid directly by families. No referral fee from any community.
+        No spam. The Care Cost Runway Review is a flat-fee service paid directly by families. No referral fee from any community.
       </p>
     </div>
   );

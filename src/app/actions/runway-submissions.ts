@@ -94,11 +94,11 @@ function buildLeadConfirmationEmail(payload: RunwayLeadPayload): string {
 
         <div style="background:#fdf8f0;border:1px solid #C49A2A;border-radius:8px;padding:16px 20px;margin-bottom:24px;">
           <p style="font-size:13px;color:#3D3025;line-height:1.65;margin:0 0 10px;">This estimate projects how long the money is likely to last based on your inputs and Colorado cost benchmarks. It holds care needs fixed at today's level and does not model care progression, level-of-care step-ups, or other factors that typically shorten the runway.</p>
-          <p style="font-size:13px;color:#3D3025;line-height:1.65;margin:0;">A Senior Care Savings Optimizer covers all five realistic care paths and delivers a written analysis within about a week. The founding rate is $1,500.</p>
+          <p style="font-size:13px;color:#3D3025;line-height:1.65;margin:0;">A Care Cost Runway Review covers all five realistic care paths and delivers a written analysis within about a week. The founding rate is $1,500.</p>
         </div>
 
         <div style="text-align:center;margin-bottom:20px;">
-          <a href="${BOOKING_URL}" style="display:inline-block;padding:13px 28px;background:#C49A2A;color:#3D3025;font-family:Arial,sans-serif;font-weight:700;font-size:15px;text-decoration:none;border-radius:6px;">Book Your Free Hidden Cost Audit</a>
+          <a href="${BOOKING_URL}" style="display:inline-block;padding:13px 28px;background:#C49A2A;color:#3D3025;font-family:Arial,sans-serif;font-weight:700;font-size:15px;text-decoration:none;border-radius:6px;">Book Your Free Runway Clarity Call</a>
         </div>
 
         <p style="font-size:11px;color:#7a6e64;text-align:center;line-height:1.5;margin:0;">Former Executive Director of assisted living, memory care, and independent living communities -- the person who built the schedules, set the care fees, and signed the level-of-care notices.</p>
