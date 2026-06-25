@@ -20,15 +20,15 @@ const PAGE_CONFIG = {
   hero: {
     eyebrow:
       'Former Executive Director of assisted living, memory care, and independent living communities — the person who built the schedules, set the care fees, and signed the level-of-care notices · No Referral Fees on This Engagement · Colorado',
-    h1a: "Will Your Loved One’s Care Money Last?",
+    h1a: "Will Your Loved One's Care Money Last?",
     h1b: "Find Out — and What It Would Take to Add Years to That Number.",
     qualifiers: [
-      "Even if you don’t have official facility quotes yet.",
-      "Even if you aren’t completely sure which care path makes sense.",
+      "Even if you don't have official facility quotes yet.",
+      "Even if you aren't completely sure which care path makes sense.",
       "Even if what you really want is just to stop guessing and know where you actually stand.",
     ],
     subhead:
-      "The monthly price on a community tour isn’t what you end up paying. This free calculator models the real, all-in cost of assisted living in your area — what communities quote, what they bill after the first care assessment, and how many years your loved one’s resources are likely to hold at that number.",
+      "The monthly price on a community tour isn't what you end up paying. This free calculator models the real, all-in cost of assisted living in your area — what communities quote, what they bill after the first care assessment, and how many years your loved one's resources are likely to hold at that number.",
     ctaLabel: 'Run the Free Calculator ↓',
     trustLine:
       'Takes about 2 minutes · Built for Colorado families · No financial statements needed',
@@ -269,10 +269,10 @@ function LandingPageInner() {
             That notice — the one that lands after the boxes are unpacked and your family thinks the plan is settled — is what most families never see coming.
           </p>
           <p style={bodyStyle}>
-            It doesn’t happen because anyone is hiding the numbers. It happens because no one walks a family through what the full cost curve looks like over time before they commit to a lease.
+            It doesn't happen because anyone is hiding the numbers. It happens because no one walks a family through what the full cost curve looks like over time before they commit to a lease.
           </p>
           <p style={{ ...bodyStyle, marginBottom: 0 }}>
-            Most families don’t figure this out until they’re two or three years in. By then, the options aren’t just financial — they involve moving a loved one who has already found her footing somewhere. A chair she’s claimed by a window. A nurse whose name she knows. Most families are trying to make sure they never have to have that conversation.
+            Most families don't figure this out until they're two or three years in. By then, the options aren't just financial — they involve moving a loved one who has already found her footing somewhere. A chair she's claimed by a window. A nurse whose name she knows. Most families are trying to make sure they never have to have that conversation.
           </p>
         </div>
       </div>
@@ -282,7 +282,7 @@ function LandingPageInner() {
         <div style={W}>
           <h2 style={h2Style}>What You Are About to See</h2>
           <p style={bodyStyle}>
-            This calculator models one care path: assisted living in Colorado. It runs your loved one’s approximate assets and income against what assisted living in your area actually costs — not just the rate communities quote on the tour, but the all-in number after the first care assessment, which is almost always higher. Annual escalation is built in at 4.5%, based on West Region senior care cost trend data. Real-world increases in Colorado have often run significantly higher — the 4.5% figure is a planning baseline, not a ceiling.
+            This calculator models one care path: assisted living in Colorado. It runs your loved one's approximate assets and income against what assisted living in your area actually costs — not just the rate communities quote on the tour, but the all-in number after the first care assessment, which is almost always higher. Annual escalation is built in at 4.5%, based on West Region senior care cost trend data. Real-world increases in Colorado have often run significantly higher — the 4.5% figure is a planning baseline, not a ceiling.
           </p>
           <p style={bodyStyle}>
             What comes back is a single number: how many years the money is likely to hold at that real cost.
@@ -290,7 +290,7 @@ function LandingPageInner() {
           <p style={{ ...bodyStyle, marginBottom: 16 }}>
             Once you see it, you'll also see what that single number doesn't account for, and why that matters more than the number itself.
           </p>
-          <p style={{ ...mutedStyle, fontStyle: ‘italic’, margin: 0 }}>
+          <p style={{ ...mutedStyle, fontStyle: 'italic', margin: 0 }}>
             Rough numbers are fine. The model is built to work on ranges. You do not need formal quotes to get a credible picture.
           </p>
         </div>
@@ -346,16 +346,16 @@ function LandingPageInner() {
         {/* ── S7 extra copy + CTA ── */}
         <div style={sect('#fff')}>
           <div style={W}>
-            <h3 style={h3Style}>What the Estimate Shows — and What It Doesn’t</h3>
+            <h3 style={h3Style}>What the Estimate Shows — and What It Doesn't</h3>
             <p style={bodyStyle}>
-              The number above is one path: assisted living at today’s costs, with 4.5% annual escalation built in. It is a planning estimate, not a quote from any specific community. Real-world annual increases in Colorado have often run higher — treat this as a conservative floor, not a prediction.
+              The number above is one path: assisted living at today's costs, with 4.5% annual escalation built in. It is a planning estimate, not a quote from any specific community. Real-world annual increases in Colorado have often run higher — treat this as a conservative floor, not a prediction.
             </p>
             <p style={{ ...bodyStyle, marginBottom: 12 }}>Two things this estimate can't see, and that change the picture most often:</p>
             <p style={bodyStyle}>
-              <strong>The staying-home illusion.</strong> Most families compare a community’s monthly price to staying home "for free." That’s not actually the comparison. Run it the right way and the runway can look very different than what families expect — sometimes in directions that surprise them. Which way it goes depends on specifics this estimate doesn’t have.
+              <strong>The staying-home illusion.</strong> Most families compare a community's monthly price to staying home "for free." That's not actually the comparison. Run it the right way and the runway can look very different than what families expect — sometimes in directions that surprise them. Which way it goes depends on specifics this estimate doesn't have.
             </p>
             <p style={{ ...bodyStyle, marginBottom: 36 }}>
-              <strong>Care progression.</strong> This estimate holds care needs fixed at today’s level. Over time, most residents need more help, and communities charge more as they do. A move from light to moderate care at the same community can add $900 or more per month. The estimate gives you a baseline. The Review shows where the trajectory leads.
+              <strong>Care progression.</strong> This estimate holds care needs fixed at today's level. Over time, most residents need more help, and communities charge more as they do. A move from light to moderate care at the same community can add $900 or more per month. The estimate gives you a baseline. The Review shows where the trajectory leads.
             </p>
 
             <div style={{ border: '1px solid #C49A2A', borderRadius: 10, background: '#fdf8f0', padding: '28px 24px' }}>
@@ -363,9 +363,9 @@ function LandingPageInner() {
                 The Calculator Shows the Numbers. A Conversation Helps You Know What to Do with Them.
               </h3>
               <p style={{ ...bodyStyle, marginBottom: 24 }}>
-                If the estimate raises a question, or you want someone who ran these communities to look at your loved one’s specific situation, the next step is a free Runway Clarity Call: 20 minutes with a former Executive Director who takes no referral fee from any community for this Review.
+                If the estimate raises a question, or you want someone who ran these communities to look at your loved one's specific situation, the next step is a free Runway Clarity Call: 20 minutes with a former Executive Director who takes no referral fee from any community for this Review.
               </p>
-              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" style={{ ...goldBtn(), display: ‘block’, marginBottom: 0 }}>
+              <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" style={{ ...goldBtn(), display: 'block', marginBottom: 0 }}>
                 Book Your Free Runway Clarity Call
               </a>
             </div>
@@ -386,38 +386,38 @@ function LandingPageInner() {
               I have sat in the meetings where level-of-care rates were set. I have reviewed and authorized the care reassessment notices before they went out to families. I have watched plans that looked solid at move-in become precarious eighteen months later — not because the family did anything wrong, but because no one showed them what the true cost curve looked like over time.
             </p>
             <p style={{ ...bodyStyle, color: 'rgba(255,255,255,0.85)' }}>
-              Communities aren’t intentionally hiding this. They show families what families know to ask to see. Most families don’t know what to ask.
+              Communities aren't intentionally hiding this. They show families what families know to ask to see. Most families don't know what to ask.
             </p>
-            <p style={{ ...bodyStyle, color: ‘rgba(255,255,255,0.85)’, marginBottom: 0 }}>
+            <p style={{ ...bodyStyle, color: 'rgba(255,255,255,0.85)', marginBottom: 0 }}>
               I do. The Care Cost Runway Review gives your family the same view I had from inside the building. No community pays me a fee for it.
             </p>
           </div>
         </div>
 
         {/* ── S9 — Book the Call ── */}
-        <div style={sect(‘#fff’)}>
+        <div style={sect('#fff')}>
           <div style={W}>
             <h2 style={h2Style}>Ready to Talk It Through?</h2>
             <p style={bodyStyle}>
-              A free Runway Clarity Call is 20 minutes, by phone or video. We look at your loved one’s actual situation, what the estimate above means for your family specifically, and whether a full Care Cost Runway Review makes sense.
+              A free Runway Clarity Call is 20 minutes, by phone or video. We look at your loved one's actual situation, what the estimate above means for your family specifically, and whether a full Care Cost Runway Review makes sense.
             </p>
             <p style={bodyStyle}>
-              If it does, the Review covers all five realistic care paths (not just assisted living), is built by hand around your loved one’s real numbers, and is delivered within about a week. Where it’s useful, I’ll also pull real numbers from communities your family is considering, not just benchmarks, and flag billing terms that affect the math, like what triggers a care fee increase or how it’s structured. Some of what extends a family’s runway isn’t on any rate sheet. That’s part of what the call is for.
+              If it does, the Review covers all five realistic care paths (not just assisted living), is built by hand around your loved one's real numbers, and is delivered within about a week. Where it's useful, I'll also pull real numbers from communities your family is considering, not just benchmarks, and flag billing terms that affect the math, like what triggers a care fee increase or how it's structured. Some of what extends a family's runway isn't on any rate sheet. That's part of what the call is for.
             </p>
             <p style={{ ...bodyStyle, marginBottom: 24 }}>
-              <strong>The founding rate is $1,500.</strong> If after the final call you don’t feel you have a clearer picture, the fee is refunded in full.
+              <strong>The founding rate is $1,500.</strong> If after the final call you don't feel you have a clearer picture, the fee is refunded in full.
             </p>
             <p style={bodyStyle}>
               This is built for families actively working through a real care decision, not for general research.
             </p>
-            <p style={{ ...mutedStyle, fontStyle: ‘italic’, marginBottom: 24 }}>
+            <p style={{ ...mutedStyle, fontStyle: 'italic', marginBottom: 24 }}>
               Former Executive Director of assisted living, memory care, and independent living communities — the person who built the schedules, set the care fees, and signed the level-of-care notices.
             </p>
-            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" style={{ ...goldBtn(), display: ‘block’, marginBottom: 12 }}>
+            <a href={BOOKING_URL} target="_blank" rel="noopener noreferrer" style={{ ...goldBtn(), display: 'block', marginBottom: 12 }}>
               Book Your Free Runway Clarity Call
             </a>
-            <p style={{ ...mutedStyle, fontStyle: ‘italic’, textAlign: ‘center’ }}>
-              Takes 20 minutes. No forms before the call. If it doesn’t raise your confidence, you’ve lost nothing.
+            <p style={{ ...mutedStyle, fontStyle: 'italic', textAlign: 'center' }}>
+              Takes 20 minutes. No forms before the call. If it doesn't raise your confidence, you've lost nothing.
             </p>
           </div>
         </div>
@@ -427,7 +427,7 @@ function LandingPageInner() {
           <div style={W}>
             <h2 style={h2Style}>Early Client Pricing</h2>
             <p style={bodyStyle}>
-              The first families I work with under the Care Cost Runway Review are helping me build the initial client results for this service. In exchange, they receive the full Blueprint at the current rate of <strong>$1,500</strong> — before pricing moves to $2,500. If you’d like to work together at the current rate, book your Free Runway Clarity Call below or reach out directly.
+              The first families I work with under the Care Cost Runway Review are helping me build the initial client results for this service. In exchange, they receive the full Blueprint at the current rate of <strong>$1,500</strong> — before pricing moves to $2,500. If you'd like to work together at the current rate, book your Free Runway Clarity Call below or reach out directly.
             </p>
             <p style={{ ...mutedStyle, margin: 0 }}>
               — David Johnstone · 720-258-6001 · Dave@ElderLifeTransitions.net
@@ -442,24 +442,24 @@ function LandingPageInner() {
             <div style={{ display: 'grid', gap: 28 }}>
               {[
                 {
-                  q: ‘Is this financial or legal advice?’,
-                  a: ‘No. The Review is a cost analysis built from operating experience. It doesn\’t replace a financial advisor or an elder law attorney, and when those questions come up, I\’ll tell you exactly who to talk to. That boundary is part of what keeps the analysis independent.’,
+                  q: 'Is this financial or legal advice?',
+                  a: 'No. The Review is a cost analysis built from operating experience. It doesn\'t replace a financial advisor or an elder law attorney, and when those questions come up, I\'ll tell you exactly who to talk to. That boundary is part of what keeps the analysis independent.',
                 },
                 {
-                  q: ‘What financial information do you actually need?’,
-                  a: ‘Almost none to book the call. The full intake — approximate assets, rough income, any long-term care coverage — only happens after we\’ve talked and a Review makes sense. Ranges are fine. No account numbers, no statements.’,
+                  q: 'What financial information do you actually need?',
+                  a: 'Almost none to book the call. The full intake — approximate assets, rough income, any long-term care coverage — only happens after we\'ve talked and a Review makes sense. Ranges are fine. No account numbers, no statements.',
                 },
                 {
-                  q: "What if we haven’t toured any communities yet?",
-                  a: "That’s fine, and it’s actually the best time to start. The calculator runs on regional benchmarks, no quote required. A real community quote, when you have one, just sharpens the picture.",
+                  q: "What if we haven't toured any communities yet?",
+                  a: "That's fine, and it's actually the best time to start. The calculator runs on regional benchmarks, no quote required. A real community quote, when you have one, just sharpens the picture.",
                 },
                 {
                   q: "Why not just use a free senior placement service?",
-                  a: "Placement agencies are typically paid by communities when a family signs a lease. Many do good work, but the model is built around placements. This is built around independent analysis. Because you pay me directly, my only obligation is to your family’s decision.",
+                  a: "Placement agencies are typically paid by communities when a family signs a lease. Many do good work, but the model is built around placements. This is built around independent analysis. Because you pay me directly, my only obligation is to your family's decision.",
                 },
                 {
-                  q: ‘What if my loved one lives outside Colorado?’,
-                  a: "The calculator above is built on Colorado benchmarks. The paid Care Cost Runway Review works nationwide, by phone and secure video, using your loved one’s actual location and, where available, real community rates rather than benchmarks.",
+                  q: 'What if my loved one lives outside Colorado?',
+                  a: "The calculator above is built on Colorado benchmarks. The paid Care Cost Runway Review works nationwide, by phone and secure video, using your loved one's actual location and, where available, real community rates rather than benchmarks.",
                 },
               ].map((faq, i) => (
                 <div key={i} style={{ borderBottom: '1px solid #EDE8DC', paddingBottom: 24 }}>
