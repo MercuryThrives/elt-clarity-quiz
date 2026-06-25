@@ -5,10 +5,10 @@ import { GAP_CARDS, fmt, yrDisplay } from './constants';
 
 interface Props {
   results: Results;
-  bookingUrl: string;
+  onBook: () => void;
 }
 
-export default function ResultsScreen({ results, bookingUrl }: Props) {
+export default function ResultsScreen({ results, onBook }: Props) {
   const [openGaps, setOpenGaps] = useState<Set<number>>(new Set());
 
   function toggleGap(i: number) {
@@ -66,7 +66,7 @@ export default function ResultsScreen({ results, bookingUrl }: Props) {
 
       {/* Gap accordion */}
       <h3 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 17, color: '#5D0E0E', marginBottom: 5 }}>
-        What this estimate doesn&rsquo;t show and a Senior Care Savings Optimizer does.
+        What this estimate doesn&rsquo;t show and a Care Cost Runway Review does.
       </h3>
       <p style={{ fontSize: 13, color: '#7a6e64', marginBottom: 6, lineHeight: 1.5 }}>
         Each of these applies to most families and would materially change this number.
@@ -107,34 +107,32 @@ export default function ResultsScreen({ results, bookingUrl }: Props) {
       <div style={{ background: '#fff', border: '2px solid #C49A2A', borderRadius: 10, padding: '18px 20px', marginTop: 20, textAlign: 'center' }}>
         <p style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 15, color: '#3D3025', marginBottom: 12, lineHeight: 1.5 }}>
           {results.primaryYrs < 3
-            ? "Based on these inputs, your loved one's resources may run out sooner than your family expects. A Senior Care Savings Optimizer looks at five realistic care options and shows you which ones make the money last longer."
+            ? "Based on these inputs, your loved one's resources may run out sooner than your family expects. A Care Cost Runway Review looks at five realistic care options and shows you which ones make the money last longer."
             : results.primaryYrs < 7
-            ? "You have a planning window. A Senior Care Savings Optimizer shows you which of the five care options makes the most of it, and where the money runs short before you reach it."
-            : "You have time to plan well. A Senior Care Savings Optimizer maps five realistic care options, shows you which ones extend the runway furthest, and gives you a written analysis to share with your family."}
+            ? "You have a planning window. A Care Cost Runway Review shows you which of the five care options makes the most of it, and where the money runs short before you reach it."
+            : "You have time to plan well. A Care Cost Runway Review maps five realistic care options, shows you which ones extend the runway furthest, and gives you a written analysis to share with your family."}
         </p>
         <p style={{ fontSize: 12, color: '#7a6e64', marginBottom: 10, lineHeight: 1.5 }}>
-          The Senior Care Savings Optimizer covers all five care paths, models how costs change as care needs progress, and delivers a written analysis within about a week. It is built by hand, for one family at a time, by a former Executive Director who ran these communities from the inside. Because each Senior Care Savings Optimizer requires that kind of attention, I only take on a small number of clients each month.
+          The Care Cost Runway Review covers all five care paths, models how costs change as care needs progress, and delivers a written analysis within about a week. It is built by hand, for one family at a time, by a former Executive Director who ran these communities from the inside. Because each Care Cost Runway Review requires that kind of attention, I only take on a small number of clients each month.
         </p>
         <p style={{ fontSize: 14, color: '#3D3025', fontWeight: 600, marginBottom: 8 }}>
-          The founding rate for a Senior Care Savings Optimizer is $1,500.
+          The founding rate for a Care Cost Runway Review is $1,500.
         </p>
         <p style={{ fontSize: 12, color: '#7a6e64', marginBottom: 14, lineHeight: 1.5, fontStyle: 'italic' }}>
           This is built for families actively working through a care decision, not for general research.
         </p>
         <p style={{ fontSize: 13, color: '#3D3025', lineHeight: 1.55, marginBottom: 16 }}>
-          This is a 20-minute conversation with someone who has run these communities from the inside, before you commit to anything. Bring your questions. If an Optimizer makes sense for your family, you&rsquo;ll know by the end of the call.
+          This is a 20-minute conversation with someone who has run these communities from the inside, before you commit to anything. Bring your questions. If a Review makes sense for your family, you&rsquo;ll know by the end of the call.
         </p>
         <p style={{ fontSize: 11, color: '#7a6e64', lineHeight: 1.5, marginBottom: 14 }}>
           Former Executive Director of assisted living, memory care, and independent living communities -- the person who built the schedules, set the care fees, and signed the level-of-care notices.
         </p>
-        <a
-          href={bookingUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          style={{ display: 'block', padding: 13, background: '#C49A2A', color: '#3D3025', borderRadius: 6, fontFamily: "'Open Sans', sans-serif", fontWeight: 700, fontSize: 15, textDecoration: 'none' }}
+        <button
+          onClick={onBook}
+          style={{ display: 'block', width: '100%', padding: 13, background: '#C49A2A', color: '#3D3025', borderRadius: 6, fontFamily: "'Open Sans', sans-serif", fontWeight: 700, fontSize: 15, border: 'none', cursor: 'pointer' }}
         >
-          Book Your Free Hidden Cost Audit
-        </a>
+          Book Your Free Runway Clarity Call
+        </button>
       </div>
 
       <p style={{ textAlign: 'center', fontSize: 10, color: '#7a6e64', marginTop: 18, lineHeight: 1.5 }}>

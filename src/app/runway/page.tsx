@@ -2,6 +2,7 @@
 
 import React, { Suspense, useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Script from 'next/script';
 import { submitRunwayLead } from '@/app/actions/runway-submissions';
 import { ASSET_MID, INCOME_MID, BASE_RENT, CARE_FEE, MEDS, calcMonths } from '@/components/runway/constants';
 import type { Screen, Sels, Results } from '@/components/runway/types';
@@ -33,7 +34,30 @@ function RunwayCalculatorInner() {
     link.rel = 'stylesheet';
     link.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Open+Sans:wght@400;600&display=swap';
     document.head.appendChild(link);
+    const calLink = document.createElement('link');
+    calLink.rel = 'stylesheet';
+    calLink.href = 'https://assets.calendly.com/assets/external/widget.css';
+    document.head.appendChild(calLink);
     referrer.current = document.referrer || undefined;
+  }, []);
+
+  useEffect(() => {
+    function handleMessage(e: MessageEvent) {
+      if (e.data?.event !== 'calendly.event_scheduled') return;
+      type DL = { dataLayer?: unknown[] };
+      const w = window as unknown as DL;
+      if (!w.dataLayer) w.dataLayer = [];
+      // PRIMARY/MACRO conversion — Calendly call booked
+      w.dataLayer.push({
+        event: 'runway_call_booked',
+        gclid: gclid.current,
+        utmSource: utmSource.current,
+        utmMedium: utmMedium.current,
+        utmCampaign: utmCampaign.current,
+      });
+    }
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
   }, []);
 
   useEffect(() => {
@@ -41,9 +65,17 @@ function RunwayCalculatorInner() {
     type DL = { dataLayer?: unknown[] };
     const w = window as unknown as DL;
     if (!w.dataLayer) w.dataLayer = [];
+    // SECONDARY/OBSERVE-ONLY — email captured and gate form submitted
     w.dataLayer.push({ event: 'runway_lead_captured' });
     w.dataLayer.push({ event: 'runway_gate_submitted' });
   }, [screen]);
+
+  function openCalendly() {
+    type Cal = { Calendly: { initPopupWidget: (o: { url: string }) => void } };
+    (window as unknown as Cal).Calendly.initPopupWidget({
+      url: 'https://calendly.com/elder-life-transitions-dave-johnstone/free-runway-clarity-call',
+    });
+  }
 
   function goToScreen(s: Screen) {
     setScreen(s);
@@ -104,12 +136,9 @@ function RunwayCalculatorInner() {
     }
   }
 
-  const bookingUrl =
-    process.env.NEXT_PUBLIC_RUNWAY_BOOKING_URL ??
-    'https://calendar.app.google/wtJzCe3nKDBeiXqv9';
-
   return (
     <div style={{ background: '#EDE8DC', minHeight: '100vh', fontFamily: "'Open Sans', sans-serif" }}>
+      <Script src="https://assets.calendly.com/assets/external/widget.js" strategy="afterInteractive" />
       {/* Header */}
       <div style={{ height: 5, background: '#4a6741' }} />
       <header style={{ background: '#6B6B4A', padding: '18px 24px 18px', borderBottom: '3px solid #C49A2A' }}>
@@ -152,7 +181,7 @@ function RunwayCalculatorInner() {
           />
         )}
         {screen === 'results' && results && (
-          <ResultsScreen results={results} bookingUrl={bookingUrl} />
+          <ResultsScreen results={results} onBook={openCalendly} />
         )}
       </div>
     </div>
