@@ -288,7 +288,7 @@ function LandingPageInner() {
             What comes back is a single number: how many years the money is likely to hold at that real cost.
           </p>
           <p style={{ ...bodyStyle, marginBottom: 16 }}>
-            Once you see it, you’ll also see what that single number doesn’t account for, and why that matters more than the number itself.
+            Once you see it, you'll also see what that single number doesn't account for, and why that matters more than the number itself.
           </p>
           <p style={{ ...mutedStyle, fontStyle: ‘italic’, margin: 0 }}>
             Rough numbers are fine. The model is built to work on ranges. You do not need formal quotes to get a credible picture.
