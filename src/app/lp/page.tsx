@@ -191,6 +191,13 @@ function LandingPageInner() {
     }
   }
 
+  function openCalendly() {
+    type Cal = { Calendly: { initPopupWidget: (o: { url: string }) => void } };
+    (window as unknown as Cal).Calendly.initPopupWidget({
+      url: 'https://calendly.com/elder-life-transitions-dave-johnstone/free-runway-clarity-call',
+    });
+  }
+
   const isPostGate = screen === 'results';
 
   return (
@@ -341,7 +348,7 @@ function LandingPageInner() {
               />
             )}
             {screen === 'results' && results && (
-              <ResultsScreen results={results} bookingUrl={BOOKING_URL} />
+              <ResultsScreen results={results} onBook={openCalendly} />
             )}
           </div>
         </div>
