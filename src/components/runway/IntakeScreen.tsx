@@ -26,9 +26,9 @@ export default function IntakeScreen({ sels, onPick, onSubmit }: Props) {
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
         <img
-          src="/dave-headshot.jpg"
+          src="/Dave_2025-16b.png"
           alt="David Johnstone"
-          style={{ width: 64, height: 64, borderRadius: '50%', objectFit: 'cover', objectPosition: 'center top', flexShrink: 0, border: '2px solid #C49A2A' }}
+          style={{ width: 96, height: 96, borderRadius: '50%', flexShrink: 0, border: '2px solid #C49A2A' }}
         />
         <div>
           <div style={{ fontWeight: 700, fontSize: 13, color: '#3D3025' }}>David Johnstone</div>

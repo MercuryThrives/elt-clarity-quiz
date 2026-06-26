@@ -224,9 +224,23 @@ function LandingPageInner() {
       {/* ── S1 — Hero ── */}
       <div style={sect('#EDE8DC', '52px 0 48px')}>
         <div style={W}>
-          <p style={{ fontSize: 11, fontWeight: 600, color: '#3D3025', letterSpacing: '0.7px', textTransform: 'uppercase', marginBottom: 18, lineHeight: 1.6 }}>
-            {PAGE_CONFIG.hero.eyebrow}
-          </p>
+          <div style={{ display: 'flex', alignItems: 'flex-start', gap: 14, marginBottom: 22 }}>
+            <div style={{ flexShrink: 0 }}>
+              <img
+                src="/Dave_2025-16b.png"
+                alt="David Johnstone"
+                width={112}
+                height={112}
+                style={{ borderRadius: '50%', border: '2px solid #C49A2A', display: 'block' }}
+              />
+            </div>
+            <div style={{ paddingTop: 4 }}>
+              <div style={{ fontWeight: 700, fontSize: 15, color: '#3D3025', marginBottom: 6 }}>David Johnstone</div>
+              <p style={{ fontSize: 11, fontWeight: 600, color: '#3D3025', letterSpacing: '0.7px', textTransform: 'uppercase', lineHeight: 1.6, margin: 0 }}>
+                {PAGE_CONFIG.hero.eyebrow}
+              </p>
+            </div>
+          </div>
           <h1 style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 'clamp(24px, 5vw, 38px)', fontWeight: 700, color: '#5D0E0E', lineHeight: 1.25, marginBottom: 18 }}>
             {PAGE_CONFIG.hero.h1a}
             <br />
