@@ -345,7 +345,7 @@ function LandingPageInner() {
       </div>
 
       {/* ── S4 — Who This Is For ── */}
-      <div style={sect('#fff')}>
+      <div id="who-its-for" style={sect('#fff')}>
         <div style={W}>
           <h2 style={h2Style}>Is This Right for Your Family?</h2>
           <p style={bodyStyle}>
