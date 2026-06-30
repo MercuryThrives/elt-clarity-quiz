@@ -296,7 +296,7 @@ function LandingPageInner() {
       </div>
 
       {/* ── S2 — The Problem ── */}
-      <div style={sect('#fff')}>
+      <div id="brochure-story" style={sect('#fff')}>
         <div style={W}>
           <h2 style={h2Style}>The Number on the Brochure Is Only a Starting Point</h2>
           <blockquote style={{ borderLeft: '3px solid #C49A2A', paddingLeft: 20, margin: '0 0 24px' }}>
