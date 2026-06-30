@@ -292,6 +292,9 @@ function LandingPageInner() {
           <p style={{ fontSize: 11, color: 'rgba(61,48,37,0.5)', textAlign: 'center', lineHeight: 1.6 }}>
             {PAGE_CONFIG.hero.trustLine}
           </p>
+          <p style={{ fontSize: 11, color: 'rgba(61,48,37,0.8)', textAlign: 'center', lineHeight: 1.6, marginTop: 6 }}>
+            The paid Care Cost Runway Review is $1,500.
+          </p>
         </div>
       </div>
 
