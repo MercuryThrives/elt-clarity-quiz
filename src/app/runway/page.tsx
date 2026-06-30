@@ -554,7 +554,13 @@ function LandingPageInner() {
       </div>
 
       {/* Privacy / Terms footer */}
-      <div style={{ padding: '16px 24px', textAlign: 'center', background: '#fff', borderTop: '1px solid #EDE8DC' }}>
+      <div style={{ padding: '20px 24px', textAlign: 'center', background: '#fff', borderTop: '1px solid #EDE8DC' }}>
+        <p style={{ fontSize: 12, color: '#3D3025', lineHeight: 1.6, marginBottom: 10 }}>
+          This is care cost planning information and does not constitute financial, tax, legal, or medical advice.
+        </p>
+        <p style={{ ...mutedStyle, fontSize: 11, marginBottom: 8 }}>
+          Elder Life Transitions · 2525 Arapahoe Ave, Ste E4#1112, Boulder, CO 80302
+        </p>
         <p style={{ ...mutedStyle, fontSize: 11, margin: 0 }}>
           © Elder Life Transitions ·{' '}
           <a href="https://www.elderlifetransitions.net/privacy_policy" target="_blank" rel="noopener noreferrer" style={{ color: '#7a6e64', textDecoration: 'underline' }}>Privacy Policy</a>
