@@ -1,7 +1,42 @@
 'use server';
 
+import { headers } from 'next/headers';
 import { Resend } from 'resend';
 import { supabaseAdmin } from '@/lib/supabase/admin';
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Best-effort, per-instance IP throttle. Not shared across serverless instances or
+// regions and resets on cold start -- good enough to blunt casual bot bursts, not a
+// durable rate limiter. Swap for Upstash Redis if this needs to hold up under real abuse.
+const RATE_LIMIT_WINDOW_MS = 60 * 60 * 1000;
+const RATE_LIMIT_MAX = 5;
+const rateLimitStore = new Map<string, { count: number; resetAt: number }>();
+
+function checkRateLimit(ip: string): boolean {
+  const now = Date.now();
+  if (rateLimitStore.size > 5000) {
+    for (const [key, entry] of rateLimitStore) {
+      if (now > entry.resetAt) rateLimitStore.delete(key);
+    }
+  }
+
+  const entry = rateLimitStore.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitStore.set(ip, { count: 1, resetAt: now + RATE_LIMIT_WINDOW_MS });
+    return true;
+  }
+  if (entry.count >= RATE_LIMIT_MAX) return false;
+  entry.count += 1;
+  return true;
+}
+
+async function getClientIp(): Promise<string> {
+  const h = await headers();
+  const forwarded = h.get('x-forwarded-for');
+  if (forwarded) return forwarded.split(',')[0].trim();
+  return h.get('x-real-ip') ?? 'unknown';
+}
 
 const FROM_RUNWAY = 'Care Cost Runway <care@elderlifetransitions.net>';
 const FROM_NOTIFICATIONS = 'notifications@elderlifetransitions.net';
@@ -40,6 +75,7 @@ export interface RunwayLeadPayload {
   utmMedium?: string;
   utmCampaign?: string;
   referrer?: string;
+  honeypot?: string;
 }
 
 function fmt(n: number): string {
@@ -186,7 +222,23 @@ export async function submitRunwayLead(payload: RunwayLeadPayload): Promise<void
     utmMedium,
     utmCampaign,
     referrer,
+    honeypot,
   } = payload;
+
+  // Bots that blindly fill every field trip this hidden field. Silently no-op --
+  // no error, no DB write, no email -- so the bot gets no signal anything went wrong.
+  if (honeypot) {
+    return;
+  }
+
+  const ip = await getClientIp();
+  if (!checkRateLimit(ip)) {
+    throw new Error('RATE_LIMITED');
+  }
+
+  if (!EMAIL_REGEX.test(email.trim())) {
+    throw new Error('INVALID_EMAIL');
+  }
 
   const { error } = await supabaseAdmin.from('runway_leads').insert({
     first_name: firstName,

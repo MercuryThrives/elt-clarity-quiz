@@ -102,6 +102,7 @@ function LandingPageInner() {
   const [results, setResults] = useState<Results | null>(null);
   const [firstName, setFirstName] = useState('');
   const [email, setEmail] = useState('');
+  const [honeypot, setHoneypot] = useState('');
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
@@ -195,6 +196,7 @@ function LandingPageInner() {
       await submitRunwayLead({
         firstName,
         email,
+        honeypot,
         assetsBucket: sels.assets,
         incomeBucket: sels.income,
         market: sels.market,
@@ -211,8 +213,14 @@ function LandingPageInner() {
         referrer: referrer.current,
       });
       goToScreen('results');
-    } catch {
-      setSubmitError('Something went wrong. Please try again.');
+    } catch (err) {
+      if (err instanceof Error && err.message === 'INVALID_EMAIL') {
+        setSubmitError('Please enter a valid email address.');
+      } else if (err instanceof Error && err.message === 'RATE_LIMITED') {
+        setSubmitError('Too many attempts from this network. Please try again later.');
+      } else {
+        setSubmitError('Something went wrong. Please try again.');
+      }
     } finally {
       setSubmitting(false);
     }
@@ -377,8 +385,10 @@ function LandingPageInner() {
               <GateScreen
                 firstName={firstName}
                 email={email}
+                honeypot={honeypot}
                 onFirstNameChange={setFirstName}
                 onEmailChange={setEmail}
+                onHoneypotChange={setHoneypot}
                 submitting={submitting}
                 error={submitError}
                 onSubmit={handleGateSubmit}

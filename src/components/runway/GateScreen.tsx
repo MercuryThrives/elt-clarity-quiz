@@ -6,8 +6,10 @@ import { ctaBtnStyle } from './styles';
 interface Props {
   firstName: string;
   email: string;
+  honeypot: string;
   onFirstNameChange: (v: string) => void;
   onEmailChange: (v: string) => void;
+  onHoneypotChange: (v: string) => void;
   submitting: boolean;
   error: string | null;
   onSubmit: () => void;
@@ -16,8 +18,10 @@ interface Props {
 export default function GateScreen({
   firstName,
   email,
+  honeypot,
   onFirstNameChange,
   onEmailChange,
+  onHoneypotChange,
   submitting,
   error,
   onSubmit,
@@ -78,6 +82,18 @@ export default function GateScreen({
       <p style={{ fontSize: 12, color: '#7a6e64', textAlign: 'center', marginBottom: 14 }}>
         I work with a small number of families each month. If the estimate raises questions, the 20-minute call is the right next step.
       </p>
+
+      {/* Honeypot: off-screen, not in tab order, no visible label — real users never see or fill this */}
+      <div style={{ position: 'absolute', left: '-9999px', top: '-9999px', height: 0, width: 0, overflow: 'hidden' }} aria-hidden="true">
+        <input
+          type="text"
+          name="company"
+          tabIndex={-1}
+          autoComplete="off"
+          value={honeypot}
+          onChange={e => onHoneypotChange(e.target.value)}
+        />
+      </div>
 
       <button
         style={ctaBtnStyle(!gateValid || submitting)}
