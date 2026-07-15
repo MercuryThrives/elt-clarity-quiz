@@ -104,9 +104,23 @@ export default function GateScreen({
       </button>
 
       {error && (
-        <p style={{ color: '#5D0E0E', fontSize: 13, marginTop: 8, textAlign: 'center' }}>
-          {error}
-        </p>
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'flex-start',
+            gap: 8,
+            background: '#FBEEEE',
+            border: '1px solid #D9A0A0',
+            borderRadius: 6,
+            padding: '10px 12px',
+            marginTop: 10,
+          }}
+        >
+          <span style={{ fontSize: 15, lineHeight: 1, flexShrink: 0 }} aria-hidden="true">⚠️</span>
+          <p style={{ color: '#5D0E0E', fontSize: 13, fontWeight: 600, lineHeight: 1.45, margin: 0 }}>
+            {error}
+          </p>
+        </div>
       )}
 
       <p style={{ textAlign: 'center', fontSize: 11, color: '#7a6e64', marginTop: 11, lineHeight: 1.5 }}>
