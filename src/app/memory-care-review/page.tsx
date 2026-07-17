@@ -93,7 +93,7 @@ function MemoryCareReviewInner() {
               Elder Life Transitions
             </div>
             <div style={{ fontFamily: "'Playfair Display', Georgia, serif", fontSize: 26, fontWeight: 700, color: '#fff', lineHeight: 1.2 }}>
-              Memory Care Crisis Second Opinion
+              Memory Care Crisis Review
             </div>
           </div>
         </div>
