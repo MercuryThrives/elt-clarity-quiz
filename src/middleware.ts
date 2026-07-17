@@ -33,7 +33,7 @@ export function middleware(req: NextRequest) {
     }
   }
 
-  if (host === 'crisis.elderlifetransitions.net') {
+  if (host === 'review.elderlifetransitions.net') {
     const { pathname } = req.nextUrl;
     if (pathname === '/') {
       return NextResponse.rewrite(new URL('/memory-care-review', req.url));
