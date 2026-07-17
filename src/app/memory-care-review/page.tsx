@@ -137,6 +137,23 @@ function MemoryCareReviewInner() {
             Not a salesperson. A second opinion.
           </p>
 
+          <div
+            style={{
+              border: '1px solid #C49A2A',
+              background: 'rgba(196,154,42,0.12)',
+              borderRadius: 6,
+              padding: '14px 18px',
+              margin: '0 auto 28px',
+              maxWidth: 560,
+              textAlign: 'center',
+            }}
+          >
+            <p style={{ fontSize: 13, color: '#3D3025', lineHeight: 1.6, margin: 0 }}>
+              If this is a medical emergency or your parent is in immediate danger, call
+              911 or go to your nearest emergency room.
+            </p>
+          </div>
+
           <button onClick={openCalendly} style={goldBtn()}>
             Book a 20-Minute Call
           </button>
@@ -152,7 +169,7 @@ function MemoryCareReviewInner() {
       {/* Privacy / Terms footer — identical to CCRR footer block */}
       <div style={{ padding: '20px 24px', textAlign: 'center', background: '#fff', borderTop: '1px solid #EDE8DC' }}>
         <p style={{ fontSize: 12, color: '#3D3025', lineHeight: 1.6, marginBottom: 10 }}>
-          This is educational information about senior care options and does not constitute financial, legal, or medical advice.
+          This consultation provides an independent perspective on your care options. It is not medical advice or treatment, and does not replace your parent&rsquo;s treating physician or care team.
         </p>
         <p style={{ fontSize: 13, color: '#7a6e64', lineHeight: 1.6, marginBottom: 8 }}>
           Elder Life Transitions · 2525 Arapahoe Ave, Ste E4#1112, Boulder, CO 80302
