@@ -5,11 +5,7 @@ import type { CSSProperties } from 'react';
 import Script from 'next/script';
 import { useSearchParams } from 'next/navigation';
 
-// Same Calendly event used by the CCRR page's post-gate "Book Your Free Runway
-// Clarity Call" CTA, reused as-is here so the existing "booking confirmation"
-// conversion action keeps firing correctly. Swap this if a dedicated Calendly
-// event type is set up for this crisis-intake offer.
-const CALENDLY_URL = 'https://calendly.com/elder-life-transitions-dave-johnstone/free-runway-clarity-call';
+const CALENDLY_URL = 'https://calendly.com/elder-life-transitions-dave-johnstone/free-memory-care-review';
 
 const W: CSSProperties = { maxWidth: 680, margin: '0 auto', padding: '0 24px' };
 
@@ -60,9 +56,8 @@ function MemoryCareReviewInner() {
       type DL = { dataLayer?: unknown[] };
       const w = window as unknown as DL;
       if (!w.dataLayer) w.dataLayer = [];
-      // Same conversion action as the CCRR page: booking confirmation.
       w.dataLayer.push({
-        event: 'runway_call_booked',
+        event: 'memory_care_call_booked',
         landingPage: 'memory-care-review',
         gclid: gclid.current,
         utmSource: utmSource.current,
