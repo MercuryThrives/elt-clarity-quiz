@@ -28,7 +28,7 @@ A Next.js 16 (App Router, React 19, Tailwind v4) app for Elder Life Transitions 
 
 ## Funnels and subdomain routing
 
-`src/middleware.ts` rewrites the **root path only** of each subdomain to a funnel route. Every other path is served as normal, so all funnels can also be reached directly on any host.
+`src/proxy.ts` (Next 16's replacement for `middleware.ts`) rewrites the **root path only** of each subdomain to a funnel route. Every other path is served as normal, so all funnels can also be reached directly on any host.
 
 | Host | Root rewrites to | Funnel |
 |---|---|---|
